@@ -1,0 +1,45 @@
+<section class="pagina">
+
+  <a mat-button routerLink="/admin/marcas" class="voltar">
+    <mat-icon>arrow_back</mat-icon>
+    Voltar para marcas
+  </a>
+
+  <h1>{{ id() ? 'Editar marca' : 'Nova marca' }}</h1>
+
+  @if (erroGeral()) {
+    <p class="mensagem-erro">{{ erroGeral() }}</p>
+  }
+
+  @if (carregando()) {
+    <p>Carregando...</p>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="salvar()" class="formulario">
+
+      <mat-form-field appearance="outline">
+        <mat-label>Nome</mat-label>
+        <input matInput formControlName="nome" placeholder="Ex.: Taurus">
+        <mat-error>{{ mensagemErro('nome') }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>País de origem</mat-label>
+        <input matInput formControlName="paisOrigem" placeholder="Ex.: Brasil">
+        <mat-error>{{ mensagemErro('paisOrigem') }}</mat-error>
+      </mat-form-field>
+
+      <mat-slide-toggle formControlName="ativa">
+        Marca ativa no catálogo
+      </mat-slide-toggle>
+
+      <div class="botoes">
+        <a mat-stroked-button routerLink="/admin/marcas">Cancelar</a>
+        <button mat-flat-button type="submit" [disabled]="salvando()">
+          {{ salvando() ? 'Salvando...' : 'Salvar' }}
+        </button>
+      </div>
+
+    </form>
+  }
+
+</section>

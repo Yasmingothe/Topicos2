@@ -1,0 +1,82 @@
+<section class="pagina">
+
+  <header class="topo">
+    <div>
+      <h1>Clientes</h1>
+      <p class="subtitulo">Pessoas cadastradas, com endereço por município e estado.</p>
+    </div>
+
+    <a mat-flat-button routerLink="/admin/clientes/novo">
+      <mat-icon>add</mat-icon>
+      Novo cliente
+    </a>
+  </header>
+
+  <mat-form-field appearance="outline" class="busca">
+    <mat-label>Buscar por nome</mat-label>
+    <input matInput #campoBusca (input)="buscar(campoBusca.value)" placeholder="Ex.: Maria">
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+
+  @if (erro()) {
+    <p class="mensagem-erro">{{ erro() }}</p>
+  }
+
+  <table mat-table [dataSource]="clientes()" class="tabela">
+
+    <ng-container matColumnDef="nome">
+      <th mat-header-cell *matHeaderCellDef>Nome</th>
+      <td mat-cell *matCellDef="let cliente">
+        {{ cliente.nome }}
+        <span class="email">{{ cliente.email }}</span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="cpf">
+      <th mat-header-cell *matHeaderCellDef>CPF</th>
+      <td mat-cell *matCellDef="let cliente">{{ formatarCpf(cliente.cpf) }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="telefone">
+      <th mat-header-cell *matHeaderCellDef>Telefone</th>
+      <td mat-cell *matCellDef="let cliente">{{ formatarTelefone(cliente.telefone) }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="cidade">
+      <th mat-header-cell *matHeaderCellDef>Cidade / UF</th>
+      <td mat-cell *matCellDef="let cliente">
+        {{ cliente.municipio.nome }} / {{ cliente.municipio.estado.sigla }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="acoes">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let cliente" class="acoes">
+        <a mat-icon-button [routerLink]="['/admin/clientes/editar', cliente.id]" aria-label="Editar">
+          <mat-icon>edit</mat-icon>
+        </a>
+        <button mat-icon-button (click)="excluir(cliente)" aria-label="Excluir">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="colunas"></tr>
+    <tr mat-row *matRowDef="let linha; columns: colunas"></tr>
+
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell vazio" [attr.colspan]="colunas.length">
+        {{ carregando() ? 'Carregando...' : 'Nenhum cliente cadastrado ainda.' }}
+      </td>
+    </tr>
+  </table>
+
+  <mat-paginator
+    [length]="totalItems()"
+    [pageIndex]="pageIndex()"
+    [pageSize]="pageSize()"
+    [pageSizeOptions]="[5, 10, 20]"
+    (page)="mudarPagina($event)">
+  </mat-paginator>
+
+</section>

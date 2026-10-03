@@ -1,0 +1,127 @@
+<section class="pagina">
+
+  <a mat-button routerLink="/admin/clientes" class="voltar">
+    <mat-icon>arrow_back</mat-icon>
+    Voltar para clientes
+  </a>
+
+  <h1>{{ id() ? 'Editar cliente' : 'Novo cliente' }}</h1>
+
+  @if (erroGeral()) {
+    <p class="mensagem-erro">{{ erroGeral() }}</p>
+  }
+
+  @if (carregando()) {
+    <p>Carregando...</p>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="salvar()" class="formulario">
+
+      <h2 class="c4">Dados pessoais</h2>
+
+      <mat-form-field appearance="outline" class="c4">
+        <mat-label>Nome completo</mat-label>
+        <input matInput formControlName="nome">
+        <mat-error>{{ mensagemErro('nome') }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="c2">
+        <mat-label>E-mail</mat-label>
+        <input matInput type="email" formControlName="email" placeholder="nome@email.com">
+        <mat-error>{{ mensagemErro('email') }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="c2">
+        <mat-label>Telefone</mat-label>
+        <input matInput formControlName="telefone" placeholder="(63) 99999-0000" maxlength="16">
+        <mat-error>{{ mensagemErro('telefone') }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="c2">
+        <mat-label>CPF</mat-label>
+        <input matInput formControlName="cpf" placeholder="000.000.000-00" maxlength="14">
+        <mat-error>{{ mensagemErro('cpf') }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="c2">
+        <mat-label>Data de nascimento</mat-label>
+        <input matInput type="date" formControlName="dataNascimento">
+        <mat-error>{{ mensagemErro('dataNascimento') }}</mat-error>
+      </mat-form-field>
+
+      <h2 class="c4">Endereço</h2>
+
+      <mat-form-field appearance="outline" class="c2">
+        <mat-label>CEP</mat-label>
+        <input matInput formControlName="cep" placeholder="77001-002" maxlength="9" (blur)="buscarCep()">
+        <button mat-icon-button matSuffix type="button" aria-label="Buscar CEP"
+                [disabled]="buscandoCep()" (click)="buscarCep(true)">
+          <mat-icon>search</mat-icon>
+        </button>
+        <mat-hint>Digite o CEP para preencher o endereço.</mat-hint>
+        <mat-error>{{ mensagemErro('cep') }}</mat-error>
+      </mat-form-field>
+
+      <div class="c2 situacao-cep">
+        @if (buscandoCep()) {
+          <span>Consultando CEP...</span>
+        }
+        @if (avisoCep()) {
+          <span class="aviso">{{ avisoCep() }}</span>
+        }
+        @if (falhaRedeCep()) {
+          <span class="aviso">Não foi possível consultar o CEP.</span>
+          <button mat-stroked-button type="button" (click)="buscarCep(true)">Tentar novamente</button>
+        }
+      </div>
+
+      <mat-form-field appearance="outline" class="c3">
+        <mat-label>Logradouro</mat-label>
+        <input matInput formControlName="logradouro">
+        <mat-error>{{ mensagemErro('logradouro') }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="c1">
+        <mat-label>Número</mat-label>
+        <input matInput formControlName="numero">
+        <mat-error>{{ mensagemErro('numero') }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="c2">
+        <mat-label>Complemento (opcional)</mat-label>
+        <input matInput formControlName="complemento">
+        <mat-error>{{ mensagemErro('complemento') }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="c2">
+        <mat-label>Bairro</mat-label>
+        <input matInput formControlName="bairro">
+        <mat-error>{{ mensagemErro('bairro') }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="c3">
+        <mat-label>Cidade</mat-label>
+        <input matInput formControlName="cidade">
+        <mat-error>{{ mensagemErro('cidade') }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="c1">
+        <mat-label>UF</mat-label>
+        <mat-select formControlName="uf">
+          @for (estado of estados(); track estado.id) {
+            <mat-option [value]="estado.sigla">{{ estado.sigla }}</mat-option>
+          }
+        </mat-select>
+        <mat-error>{{ mensagemErro('uf') }}</mat-error>
+      </mat-form-field>
+
+      <div class="botoes c4">
+        <a mat-stroked-button routerLink="/admin/clientes">Cancelar</a>
+        <button mat-flat-button type="submit" [disabled]="salvando()">
+          {{ salvando() ? 'Salvando...' : 'Salvar' }}
+        </button>
+      </div>
+
+    </form>
+  }
+
+</section>

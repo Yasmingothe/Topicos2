@@ -1,0 +1,32 @@
+.pagina {
+  max-width: 560px;
+  margin: 32px auto;
+  padding: 0 16px;
+}
+
+.voltar {
+  margin-left: -12px;
+}
+
+h1 {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 16px 0 24px;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.botoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.mensagem-erro {
+  color: #eb5757;
+}

@@ -1,0 +1,42 @@
+.pagina {
+  max-width: 720px;
+  margin: 32px auto;
+  padding: 0 16px;
+}
+
+.voltar {
+  margin-left: -12px;
+}
+
+h1 {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 16px 0 24px;
+}
+
+.formulario {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+}
+
+.inteiro {
+  grid-column: 1 / -1;
+}
+
+.botoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.mensagem-erro {
+  color: #eb5757;
+}
+
+@media (max-width: 600px) {
+  .formulario {
+    grid-template-columns: 1fr;
+  }
+}

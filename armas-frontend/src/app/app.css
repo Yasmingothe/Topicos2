@@ -1,0 +1,16 @@
+.menu {
+  display: flex;
+  gap: 32px;
+}
+
+.logo {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ativo {
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}
