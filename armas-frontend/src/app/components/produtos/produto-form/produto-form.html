@@ -1,7 +1,11 @@
 <section class="pagina">
 
-  <p class="trilha">CATÁLOGO / PRODUTOS</p>
-  <h1>{{ id() ? 'EDITAR PRODUTO' : 'CADASTRO DE PRODUTO' }}</h1>
+  <h1>{{ id() ? 'EDITAR PRODUTO' : duplicando() ? 'DUPLICAR PRODUTO' : 'CADASTRO DE PRODUTO' }}</h1>
+  <p class="subtitulo">
+    {{ id() ? 'Altere os dados do item.'
+       : duplicando() ? 'Os dados foram copiados. Ajuste o que for diferente e salve como um novo produto.'
+       : 'Adicione um novo item ao catálogo.' }}
+  </p>
   <p class="subtitulo">{{ id() ? 'Altere os dados do item.' : 'Adicione um novo item ao catálogo.' }}</p>
 
   @if (erroGeral()) {
@@ -13,7 +17,6 @@
   } @else {
     <form [formGroup]="form" (ngSubmit)="salvar()" class="colunas">
 
-      <!-- ===== coluna da esquerda: campos ===== -->
       <div class="cartao campos">
 
         <mat-form-field appearance="outline" class="inteiro">
@@ -70,7 +73,6 @@
         </mat-form-field>
       </div>
 
-      <!-- ===== coluna da direita: status + botões ===== -->
       <div class="lateral">
 
         <div class="cartao">

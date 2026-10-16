@@ -105,6 +105,9 @@
         <a mat-icon-button [routerLink]="['/admin/produtos/editar', produto.id]" aria-label="Editar">
           <mat-icon>edit</mat-icon>
         </a>
+        <a mat-icon-button [routerLink]="['/admin/produtos/duplicar', produto.id]" aria-label="Duplicar">
+          <mat-icon>content_copy</mat-icon>
+        </a>
         <button mat-icon-button (click)="excluir(produto)" aria-label="Excluir">
           <mat-icon>delete</mat-icon>
         </button>

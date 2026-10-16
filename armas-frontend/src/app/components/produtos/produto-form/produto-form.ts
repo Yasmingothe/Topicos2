@@ -44,6 +44,7 @@ export class ProdutoForm implements OnInit {
   private route = inject(ActivatedRoute);
 
   id = signal<number | null>(null);
+  duplicando = signal(false);
   carregando = signal(false);
   salvando = signal(false);
   erroGeral = signal('');
@@ -70,24 +71,33 @@ export class ProdutoForm implements OnInit {
     this.marcaService.listar('', 0, 100).subscribe((pagina) => this.marcas.set(pagina.items));
     this.categoriaService.listar().subscribe((lista) => this.categorias.set(lista));
 
-    const idDaUrl = this.route.snapshot.paramMap.get('id');
-    if (!idDaUrl)
-      return;
+    // editar = /editar/5 (tem "id") | duplicar = /duplicar/5 (tem "idOrigem")
+    const idEditar = this.route.snapshot.paramMap.get('id');
+    const idOrigem = this.route.snapshot.paramMap.get('idOrigem');
+    const idParaCarregar = idEditar ?? idOrigem;
 
-    this.id.set(Number(idDaUrl));
+    if (!idParaCarregar)
+      return; // cadastro novo: formulário vazio
+
+    if (idEditar)
+      this.id.set(Number(idEditar));      // editar: salva em cima do mesmo produto
+    else
+      this.duplicando.set(true);          // duplicar: id continua vazio, então salva como NOVO
+
     this.carregando.set(true);
 
-    this.produtoService.buscarPorId(this.id()!).subscribe({
+    this.produtoService.buscarPorId(Number(idParaCarregar)).subscribe({
       next: (produto) => {
         this.form.patchValue({
-          nome: produto.nome,
+          nome: this.duplicando() ? `${produto.nome} (cópia)` : produto.nome,
           idMarca: produto.marca.id ?? null,
           categoria: produto.categoria.codigo,
           calibre: produto.calibre ?? '',
           preco: produto.preco,
           estoque: produto.estoque,
           descricao: produto.descricao ?? '',
-          publicado: produto.publicado,
+          // a cópia começa como rascunho, para não publicar sem querer
+          publicado: this.duplicando() ? false : produto.publicado,
         });
         this.carregando.set(false);
       },

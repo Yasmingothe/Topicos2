@@ -18,6 +18,7 @@ export const routes: Routes = [
   { path: 'admin/produtos', component: ProdutoList, title: 'Produtos' },
   { path: 'admin/produtos/novo', component: ProdutoForm, title: 'Novo produto' },
   { path: 'admin/produtos/editar/:id', component: ProdutoForm, title: 'Editar produto' },
+  { path: 'admin/produtos/duplicar/:idOrigem', component: ProdutoForm, title: 'Duplicar produto' },
 
   { path: 'admin/clientes', component: ClienteList, title: 'Clientes' },
   { path: 'admin/clientes/novo', component: ClienteForm, title: 'Novo cliente' },
