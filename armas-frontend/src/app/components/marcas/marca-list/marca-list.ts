@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Marca } from '../../../models/marca.model';
 import { MarcaService } from '../../../services/marca.service';
 import { NotificacaoService } from '../../../services/notificacao.service';
+import { exportarCsv } from '../../../utils/exportar-csv';
 
 @Component({
   selector: 'app-marca-list',
@@ -62,13 +63,39 @@ export class MarcaList implements OnInit {
     this.carregar();
   }
 
+  // ===== LIMPAR =====
+  limparFiltro(): void {
+    this.buscar('');
+  }
+
   mudarPagina(evento: PageEvent): void {
     this.pageIndex.set(evento.pageIndex);
     this.pageSize.set(evento.pageSize);
     this.carregar();
   }
 
-  // ===== EXCLUIR (com a janela de confirmação nova) =====
+  // ===== EXPORTAR =====
+  // busca TODAS as marcas do filtro atual (não só a página aberta) e baixa o CSV
+  exportar(): void {
+    this.marcaService.listar(this.filtro(), 0, Math.max(this.totalItems(), 1)).subscribe({
+      next: (pagina) => {
+        exportarCsv(
+          'marcas',
+          ['Código', 'Marca', 'País de origem', 'Situação'],
+          pagina.items.map((m) => [
+            m.id ?? '',
+            m.nome,
+            m.paisOrigem,
+            m.ativa ? 'Ativa' : 'Inativa',
+          ]),
+        );
+        this.notificacao.sucesso(`${pagina.items.length} marca(s) exportada(s).`);
+      },
+      error: () => this.notificacao.erro('Não foi possível exportar as marcas.'),
+    });
+  }
+
+  // ===== EXCLUIR (com a janela de confirmação) =====
   excluir(marca: Marca): void {
     this.notificacao.confirmar({
       titulo: 'Excluir marca?',

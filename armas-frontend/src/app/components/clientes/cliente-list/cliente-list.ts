@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Cliente } from '../../../models/cliente.model';
 import { ClienteService } from '../../../services/cliente.service';
 import { NotificacaoService } from '../../../services/notificacao.service';
+import { exportarCsv } from '../../../utils/exportar-csv';
 
 @Component({
   selector: 'app-cliente-list',
@@ -61,6 +62,11 @@ export class ClienteList implements OnInit {
     this.carregar();
   }
 
+  // ===== LIMPAR =====
+  limparFiltro(): void {
+    this.buscar('');
+  }
+
   mudarPagina(evento: PageEvent): void {
     this.pageIndex.set(evento.pageIndex);
     this.pageSize.set(evento.pageSize);
@@ -75,7 +81,33 @@ export class ClienteList implements OnInit {
     return telefone.replace(/(\d{2})(\d{4,5})(\d{4})/, '($1) $2-$3');
   }
 
-  // ===== EXCLUIR (com a janela de confirmação nova) =====
+  // ===== EXPORTAR =====
+  exportar(): void {
+    this.clienteService.listar(this.filtro(), 0, Math.max(this.totalItems(), 1)).subscribe({
+      next: (pagina) => {
+        exportarCsv(
+          'clientes',
+          ['Código', 'Nome', 'E-mail', 'CPF', 'Telefone', 'Nascimento', 'CEP', 'Endereço', 'Cidade', 'UF'],
+          pagina.items.map((c) => [
+            c.id,
+            c.nome,
+            c.email,
+            this.formatarCpf(c.cpf),
+            this.formatarTelefone(c.telefone),
+            c.dataNascimento.split('-').reverse().join('/'),
+            c.cep,
+            `${c.logradouro}, ${c.numero} - ${c.bairro}`,
+            c.municipio.nome,
+            c.municipio.estado.sigla,
+          ]),
+        );
+        this.notificacao.sucesso(`${pagina.items.length} cliente(s) exportado(s).`);
+      },
+      error: () => this.notificacao.erro('Não foi possível exportar os clientes.'),
+    });
+  }
+
+  // ===== EXCLUIR (com a janela de confirmação) =====
   excluir(cliente: Cliente): void {
     this.notificacao.confirmar({
       titulo: 'Excluir cliente?',

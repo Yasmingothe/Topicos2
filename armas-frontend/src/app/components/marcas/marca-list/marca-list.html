@@ -7,17 +7,30 @@
       <p class="subtitulo">Fabricantes cadastrados no catálogo.</p>
     </div>
 
-    <a mat-flat-button routerLink="/admin/marcas/nova">
-      <mat-icon>add</mat-icon>
-      Nova marca
-    </a>
+    <div class="topo-botoes">
+      <button mat-stroked-button (click)="exportar()" [disabled]="!totalItems()">
+        <mat-icon>download</mat-icon>
+        Exportar
+      </button>
+      <a mat-flat-button routerLink="/admin/marcas/nova">
+        <mat-icon>add</mat-icon>
+        Nova marca
+      </a>
+    </div>
   </header>
 
-  <mat-form-field appearance="outline" class="busca">
-    <mat-label>Buscar por nome</mat-label>
-    <input matInput #campoBusca (input)="buscar(campoBusca.value)" placeholder="Ex.: Taurus">
-    <mat-icon matSuffix>search</mat-icon>
-  </mat-form-field>
+  <div class="filtros">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Buscar por nome</mat-label>
+      <input matInput [value]="filtro()" (input)="buscar($any($event.target).value)" placeholder="Ex.: Taurus">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <button mat-stroked-button class="botao-limpar" (click)="limparFiltro()" [disabled]="!filtro()">
+      <mat-icon>restart_alt</mat-icon>
+      Limpar
+    </button>
+  </div>
 
   @if (erro()) {
     <p class="mensagem-erro">{{ erro() }}</p>

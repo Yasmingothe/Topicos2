@@ -7,17 +7,30 @@
       <p class="subtitulo">Pessoas cadastradas, com endereço por município e estado.</p>
     </div>
 
-    <a mat-flat-button routerLink="/admin/clientes/novo">
-      <mat-icon>add</mat-icon>
-      Novo cliente
-    </a>
+    <div class="topo-botoes">
+      <button mat-stroked-button (click)="exportar()" [disabled]="!totalItems()">
+        <mat-icon>download</mat-icon>
+        Exportar
+      </button>
+      <a mat-flat-button routerLink="/admin/clientes/novo">
+        <mat-icon>add</mat-icon>
+        Novo cliente
+      </a>
+    </div>
   </header>
 
-  <mat-form-field appearance="outline" class="busca">
-    <mat-label>Buscar por nome</mat-label>
-    <input matInput #campoBusca (input)="buscar(campoBusca.value)" placeholder="Ex.: Maria">
-    <mat-icon matSuffix>search</mat-icon>
-  </mat-form-field>
+  <div class="filtros">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Buscar por nome</mat-label>
+      <input matInput [value]="filtro()" (input)="buscar($any($event.target).value)" placeholder="Ex.: Maria">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <button mat-stroked-button class="botao-limpar" (click)="limparFiltro()" [disabled]="!filtro()">
+      <mat-icon>restart_alt</mat-icon>
+      Limpar
+    </button>
+  </div>
 
   @if (erro()) {
     <p class="mensagem-erro">{{ erro() }}</p>
@@ -67,7 +80,7 @@
 
     <tr class="mat-row" *matNoDataRow>
       <td class="mat-cell vazio" [attr.colspan]="colunas.length">
-        {{ carregando() ? 'Carregando...' : 'Nenhum cliente cadastrado ainda.' }}
+        {{ carregando() ? 'Carregando...' : 'Nenhum cliente encontrado.' }}
       </td>
     </tr>
   </table>
