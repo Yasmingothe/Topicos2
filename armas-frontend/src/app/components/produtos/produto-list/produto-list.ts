@@ -151,16 +151,16 @@ export class ProdutoList implements OnInit {
       error: () => this.notificacao.erro('Não foi possível exportar os produtos.'),
     });
   }
-
-  // abre a janela de detalhes com o produto clicado
+   
   abrirDetalhes(produto: Produto): void {
     this.dialog.open(ProdutoDetalhe, {
       data: produto,
       width: '520px',
       panelClass: 'janela-produto',
-    });
+    })
+      .afterClosed().subscribe(() => this.carregar());
   }
-
+  
   // ===== EXCLUIR (com a janela de confirmação nova) =====
   excluir(produto: Produto): void {
     this.notificacao.confirmar({

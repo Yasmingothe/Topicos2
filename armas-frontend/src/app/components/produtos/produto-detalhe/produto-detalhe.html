@@ -4,7 +4,7 @@
     <mat-icon>close</mat-icon>
   </button>
 
-    <!-- área da imagem: um desenho para cada tipo (depois trocamos pela foto) -->
+  <!-- área da imagem: um desenho para cada tipo (depois trocamos pela foto) -->
   <div class="imagem">
     @switch (tipoImagem()) {
 
@@ -71,7 +71,7 @@
         </svg>
       }
 
-            @case ('mira') {
+      @case ('mira') {
         <svg viewBox="0 0 160 100" fill="none" stroke="currentColor" stroke-linecap="round">
           <circle cx="80" cy="50" r="42" stroke-width="5"/>
           <line x1="80" y1="4"  x2="80" y2="38" stroke-width="4"/>
@@ -86,7 +86,7 @@
         </svg>
       }
 
-            @case ('coldre') {
+      @case ('coldre') {
         <svg viewBox="0 0 160 100" fill="currentColor">
           <path d="M58 12 H104 Q108 12 108 16 V40 L100 84 Q98 92 90 92 H74 Q68 92 66 86 L56 40 V16 Q56 12 58 12 Z"/>
           <rect x="64" y="22" width="34" height="5" rx="2" fill="#120f0f"/>
@@ -96,6 +96,7 @@
       }
 
       @default {
+        <!-- maleta: qualquer outro acessório -->
         <svg viewBox="0 0 160 100" fill="currentColor">
           <path d="M64 26 V18 Q64 13 69 13 H91 Q96 13 96 18 V26" fill="none" stroke="currentColor" stroke-width="5"/>
           <rect x="28" y="26" width="104" height="62" rx="7"/>
@@ -109,34 +110,48 @@
 
   <div class="info">
     <div class="selos">
-      <span class="selo">{{ produto.marca.nome }}</span>
-      <span class="selo">{{ produto.categoria.nome }}</span>
-      <span class="selo" [class.publicado]="produto.publicado">
-        {{ produto.publicado ? 'PUBLICADO' : 'RASCUNHO' }}
+      <span class="selo">{{ produto().marca.nome }}</span>
+      <span class="selo">{{ produto().categoria.nome }}</span>
+      <span class="selo" [class.publicado]="produto().publicado">
+        {{ produto().publicado ? 'PUBLICADO' : 'RASCUNHO' }}
       </span>
     </div>
 
-    <h2>{{ produto.nome }}</h2>
-    <p class="preco">{{ formatarPreco(produto.preco) }}</p>
+    <h2>{{ produto().nome }}</h2>
+    <p class="preco">{{ formatarPreco(produto().preco) }}</p>
 
     <p class="rotulo">DESCRIÇÃO</p>
-    <p class="descricao">{{ produto.descricao || 'Sem descrição cadastrada.' }}</p>
+    <p class="descricao">{{ produto().descricao || 'Sem descrição cadastrada.' }}</p>
 
     <p class="rotulo">FICHA TÉCNICA</p>
     <div class="ficha">
       <span>Calibre</span>
-      <strong>{{ produto.calibre || '—' }}</strong>
+      <strong>{{ produto().calibre || '—' }}</strong>
 
       <span>Estoque</span>
-      <strong [class.baixo]="produto.estoque <= 6">{{ produto.estoque }} unidades</strong>
+      <strong [class.baixo]="produto().estoque <= 6">{{ produto().estoque }} unidades</strong>
 
       <span>Código</span>
-      <strong>#{{ produto.id }}</strong>
+      <strong>#{{ produto().id }}</strong>
+    </div>
+
+    <!-- ===== movimentar estoque ===== -->
+    <p class="rotulo">MOVIMENTAR ESTOQUE</p>
+    <div class="movimentar">
+      <input type="number" min="1" step="1" class="campo-qtd" aria-label="Quantidade"
+             [value]="quantidade()" (input)="quantidade.set(+$any($event.target).value)">
+
+      <button mat-stroked-button class="entrada" (click)="movimentar('entrada')" [disabled]="movimentando()">
+        <mat-icon>add</mat-icon> ENTRADA
+      </button>
+      <button mat-stroked-button class="saida" (click)="movimentar('saida')" [disabled]="movimentando()">
+        <mat-icon>remove</mat-icon> SAÍDA
+      </button>
     </div>
 
     <div class="botoes">
       <button mat-stroked-button mat-dialog-close>FECHAR</button>
-      <a mat-flat-button mat-dialog-close [routerLink]="['/admin/produtos/editar', produto.id]">
+      <a mat-flat-button mat-dialog-close [routerLink]="['/admin/produtos/editar', produto().id]">
         <mat-icon>edit</mat-icon> EDITAR
       </a>
     </div>

@@ -11,7 +11,6 @@
   z-index: 1;
 }
 
-/* área da imagem */
 .imagem {
   height: 200px;
   display: flex;
@@ -79,12 +78,12 @@ h2 {
   color: var(--texto-suave);
 }
 
-/* ficha técnica: nome à esquerda, valor à direita */
 .ficha {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 10px;
   padding: 12px 0;
+  margin-bottom: 18px;
   border-top: 1px solid var(--borda);
   border-bottom: 1px solid var(--borda);
   font-size: 13px;
@@ -92,6 +91,39 @@ h2 {
 
 .ficha span { color: var(--texto-suave); }
 .ficha .baixo { color: var(--laranja); }
+
+/* movimentar estoque: quantidade + entrada + saída */
+.movimentar {
+  display: grid;
+  grid-template-columns: 80px 1fr 1fr;
+  gap: 8px;
+}
+
+.campo-qtd {
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--borda);
+  border-radius: 6px;
+  background: #120f0f;
+  color: var(--texto);
+  font: inherit;
+  font-size: 15px;
+  text-align: center;
+}
+
+.campo-qtd:focus {
+  outline: none;
+  border-color: var(--vermelho);
+}
+
+.movimentar button {
+  height: 40px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.entrada { color: var(--verde) !important; }
+.saida { color: var(--laranja) !important; }
 
 .botoes {
   display: flex;
