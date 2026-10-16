@@ -11,6 +11,11 @@
   margin-bottom: 24px;
 }
 
+.topo-botoes {
+  display: flex;
+  gap: 10px;
+}
+
 h1 {
   margin: 0;
   text-transform: uppercase;
@@ -22,21 +27,37 @@ h1 {
   opacity: 0.7;
 }
 
+/* 3 filtros + o botão Limpar no fim (auto = só o tamanho do botão) */
 .filtros {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr auto;
   gap: 12px;
+  align-items: center;
   margin-bottom: 16px;
+}
+
+.botao-limpar {
+  height: 56px;
 }
 
 .tabela {
   width: 100%;
 }
 
-.calibre {
-  margin-left: 8px;
-  font-size: 12px;
-  opacity: 0.65;
+/* nome do produto clicável */
+.link-produto {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.link-produto:hover {
+  color: var(--vermelho);
+  text-decoration: underline;
 }
 
 .numero {

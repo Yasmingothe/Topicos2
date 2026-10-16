@@ -1,42 +1,111 @@
 .pagina {
-  max-width: 720px;
-  margin: 32px auto;
-  padding: 0 16px;
+  padding: 28px 32px;
 }
 
-.voltar {
-  margin-left: -12px;
+.trilha {
+  margin: 0 0 6px;
+  color: var(--texto-suave);
+  font-size: 11px;
+  letter-spacing: 0.12em;
 }
 
 h1 {
-  text-transform: uppercase;
+  margin: 0;
+  font-size: 22px;
   letter-spacing: 0.04em;
-  margin: 16px 0 24px;
 }
 
-.formulario {
+.subtitulo {
+  margin: 4px 0 24px;
+  color: var(--texto-suave);
+  font-size: 13px;
+}
+
+/* duas colunas: campos (esquerda) e lateral (direita) */
+.colunas {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 20px;
+  align-items: start;
+}
+
+.cartao {
+  background: var(--cartao);
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+/* grade de 6 partes: inteiro = 6, metade = 3, terço = 2 */
+.campos {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px 16px;
+}
+
+.inteiro { grid-column: span 6; }
+.metade  { grid-column: span 3; }
+.terco   { grid-column: span 2; }
+
+/* coluna da direita */
+.lateral {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rotulo {
+  margin: 0 0 12px;
+  color: var(--texto-suave);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+}
+
+/* botões Publicado / Rascunho */
+.status {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px 16px;
+  gap: 8px;
 }
 
-.inteiro {
-  grid-column: 1 / -1;
+.status button {
+  padding: 10px 0;
+  border-radius: 6px;
+  border: 1px solid var(--borda);
+  background: transparent;
+  color: var(--texto-suave);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  cursor: pointer;
 }
 
-.botoes {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 24px;
+.status button.selecionado {
+  border-color: var(--vermelho);
+  color: var(--vermelho);
+  background: var(--vermelho-escuro);
+}
+
+.dica {
+  margin: 12px 0 0;
+  color: var(--texto-suave);
+  font-size: 12px;
+}
+
+.botao-salvar,
+.botao-cancelar {
+  width: 100%;
+  height: 46px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
 }
 
 .mensagem-erro {
-  color: #eb5757;
+  color: var(--vermelho);
 }
 
-@media (max-width: 600px) {
-  .formulario {
-    grid-template-columns: 1fr;
-  }
+/* celular / tela pequena: uma coluna só */
+@media (max-width: 900px) {
+  .colunas { grid-template-columns: 1fr; }
+  .metade, .terco { grid-column: span 6; }
 }

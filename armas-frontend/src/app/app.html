@@ -1,11 +1,49 @@
-<mat-toolbar class="menu">
-  <span class="logo">Painel administrativo</span>
+<div class="layout">
 
-  <nav>
-    <a mat-button routerLink="/admin/produtos" routerLinkActive="ativo">Produtos</a>
-    <a mat-button routerLink="/admin/marcas" routerLinkActive="ativo">Marcas</a>
-    <a mat-button routerLink="/admin/clientes" routerLinkActive="ativo">Clientes</a>
-  </nav>
-</mat-toolbar>
+  <aside class="menu">
+    <div class="logo">
+      <span class="logo-icone"><mat-icon>gps_fixed</mat-icon></span>
+      <span>
+        <strong>ZERO1</strong>
+        <small>ARMAS &amp; EQUIPAMENTOS</small>
+      </span>
+    </div>
+    <p class="painel">PAINEL ADMINISTRATIVO</p>
 
-<router-outlet />
+    <p class="grupo">CATÁLOGO</p>
+    @for (item of catalogo; track item.rota) {
+      <a class="item" [routerLink]="item.rota" routerLinkActive="ativo">
+        <mat-icon>{{ item.icone }}</mat-icon> {{ item.rotulo }}
+      </a>
+    }
+
+    <p class="grupo">PESSOAS</p>
+    @for (item of pessoas; track item.rota) {
+      <a class="item" [routerLink]="item.rota" routerLinkActive="ativo">
+        <mat-icon>{{ item.icone }}</mat-icon> {{ item.rotulo }}
+      </a>
+    }
+
+    <a class="sair">
+      <mat-icon>logout</mat-icon> Sair
+    </a>
+  </aside>
+
+  <div class="conteudo">
+    <header class="topo">
+      <span class="topo-titulo">ADMINISTRAÇÃO</span>
+                 <span class="usuario">
+        <span class="usuario-texto">
+          <strong>Yasmin Gothe</strong>
+          <small>Administradora</small>
+        </span>
+        <span class="avatar">YG</span>
+      </span>
+    </header>
+
+    <main>
+      <router-outlet />
+    </main>
+  </div>
+
+</div>

@@ -6,14 +6,15 @@ INSERT INTO marca (nome, paisOrigem, ativa, dataCadastro) VALUES ('Bushnell', 'E
 INSERT INTO marca (nome, paisOrigem, ativa, dataCadastro) VALUES ('Condor', 'Brasil', true, NOW());
 
 -- produtos (ids das marcas: 1 Taurus, 2 CBC, 3 Glock, 4 Bushnell, 5 Condor)
+-- o calibre fica so no campo calibre, nao no nome
 INSERT INTO produto (nome, id_marca, categoria, calibre, preco, estoque, descricao, publicado, dataCadastro) VALUES ('Pistola G2C Compacta', 1, 'PISTOLA', '9mm', 3890.00, 12, 'Pistola compacta com armação em polímero.', true, NOW());
 INSERT INTO produto (nome, id_marca, categoria, calibre, preco, estoque, descricao, publicado, dataCadastro) VALUES ('Revólver RT 605', 1, 'REVOLVER', '.357', 4250.00, 5, 'Revólver de 5 tiros em aço inox.', true, NOW());
-INSERT INTO produto (nome, id_marca, categoria, calibre, preco, estoque, descricao, publicado, dataCadastro) VALUES ('Espingarda Pump 12', 2, 'ESPINGARDA', '12', 3190.00, 7, 'Espingarda de repetição por ação de bombeamento.', true, NOW());
-INSERT INTO produto (nome, id_marca, categoria, calibre, preco, estoque, descricao, publicado, dataCadastro) VALUES ('Carabina Bolt-Action .22LR', 2, 'RIFLE_CARABINA', '.22 LR', 2650.00, 4, 'Carabina de ferrolho para tiro esportivo.', true, NOW());
+INSERT INTO produto (nome, id_marca, categoria, calibre, preco, estoque, descricao, publicado, dataCadastro) VALUES ('Espingarda Pump', 2, 'ESPINGARDA', '12', 3190.00, 7, 'Espingarda de repetição por ação de bombeamento.', true, NOW());
+INSERT INTO produto (nome, id_marca, categoria, calibre, preco, estoque, descricao, publicado, dataCadastro) VALUES ('Carabina Bolt-Action', 2, 'RIFLE_CARABINA', '.22 LR', 2650.00, 4, 'Carabina de ferrolho para tiro esportivo.', true, NOW());
 INSERT INTO produto (nome, id_marca, categoria, calibre, preco, estoque, descricao, publicado, dataCadastro) VALUES ('Pistola G17', 3, 'PISTOLA', '9mm', 5490.00, 3, 'Pistola de uso esportivo em polímero.', true, NOW());
 INSERT INTO produto (nome, id_marca, categoria, calibre, preco, estoque, descricao, publicado, dataCadastro) VALUES ('Mira 3-9x40', 4, 'ACESSORIO_OPTICA', NULL, 890.00, 2, 'Luneta com aumento de 3 a 9 vezes.', true, NOW());
 INSERT INTO produto (nome, id_marca, categoria, calibre, preco, estoque, descricao, publicado, dataCadastro) VALUES ('Coldre Tático Kydex IWB', 5, 'ACESSORIO_OPTICA', NULL, 320.00, 6, 'Coldre de uso interno em Kydex.', true, NOW());
-INSERT INTO produto (nome, id_marca, categoria, calibre, preco, estoque, descricao, publicado, dataCadastro) VALUES ('Munição .38 Special - 50un', 2, 'MUNICAO', '.38', 189.90, 4, 'Caixa com 50 unidades.', true, NOW());
+INSERT INTO produto (nome, id_marca, categoria, calibre, preco, estoque, descricao, publicado, dataCadastro) VALUES ('Munição Special - caixa com 50', 2, 'MUNICAO', '.38', 189.90, 4, 'Caixa com 50 unidades.', true, NOW());
 
 -- os 27 estados (26 + Distrito Federal)
 INSERT INTO estado (nome, sigla, dataCadastro) VALUES ('Acre', 'AC', NOW());

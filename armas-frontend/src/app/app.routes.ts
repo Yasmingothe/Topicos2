@@ -5,9 +5,11 @@ import { ProdutoList } from './components/produtos/produto-list/produto-list';
 import { ProdutoForm } from './components/produtos/produto-form/produto-form';
 import { ClienteList } from './components/clientes/cliente-list/cliente-list';
 import { ClienteForm } from './components/clientes/cliente-form/cliente-form';
+import { Dashboard } from './components/dashboard/dashboard';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'admin/produtos', pathMatch: 'full' },
+  { path: '', redirectTo: 'admin/dashboard', pathMatch: 'full' },
+  { path: 'admin/dashboard', component: Dashboard, title: 'Dashboard' },
 
   { path: 'admin/marcas', component: MarcaList, title: 'Marcas' },
   { path: 'admin/marcas/nova', component: MarcaForm, title: 'Nova marca' },

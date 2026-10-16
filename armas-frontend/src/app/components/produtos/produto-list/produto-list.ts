@@ -7,12 +7,15 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialog } from '@angular/material/dialog';
 import { Categoria } from '../../../models/categoria.model';
 import { Marca } from '../../../models/marca.model';
 import { Produto } from '../../../models/produto.model';
 import { CategoriaService } from '../../../services/categoria.service';
 import { MarcaService } from '../../../services/marca.service';
 import { ProdutoService } from '../../../services/produto.service';
+import { ProdutoDetalhe } from '../produto-detalhe/produto-detalhe';
+import { exportarCsv } from '../../../utils/exportar-csv';
 
 @Component({
   selector: 'app-produto-list',
@@ -28,6 +31,7 @@ export class ProdutoList implements OnInit {
   private produtoService = inject(ProdutoService);
   private marcaService = inject(MarcaService);
   private categoriaService = inject(CategoriaService);
+  private dialog = inject(MatDialog);
 
   colunas = ['nome', 'marca', 'categoria', 'preco', 'estoque', 'situacao', 'acoes'];
 
@@ -54,17 +58,20 @@ export class ProdutoList implements OnInit {
     this.carregar();
   }
 
-  carregar(): void {
-    this.carregando.set(true);
-    this.erro.set('');
-
-    const filtro = {
+  // junta os 3 filtros num objeto só
+  private filtroAtual() {
+    return {
       nome: this.filtroNome(),
       idMarca: this.filtroMarca(),
       categoria: this.filtroCategoria(),
     };
+  }
 
-    this.produtoService.listar(filtro, this.pageIndex(), this.pageSize()).subscribe({
+  carregar(): void {
+    this.carregando.set(true);
+    this.erro.set('');
+
+    this.produtoService.listar(this.filtroAtual(), this.pageIndex(), this.pageSize()).subscribe({
       next: (pagina) => {
         this.produtos.set(pagina.items);
         this.totalItems.set(pagina.totalItems);
@@ -92,6 +99,19 @@ export class ProdutoList implements OnInit {
     this.recarregarDoInicio();
   }
 
+  // ===== LIMPAR =====
+  // true quando tem algum filtro preenchido (usado para ligar/desligar o botão)
+  temFiltro(): boolean {
+    return !!(this.filtroNome() || this.filtroMarca() || this.filtroCategoria());
+  }
+
+  limparFiltros(): void {
+    this.filtroNome.set('');
+    this.filtroMarca.set(null);
+    this.filtroCategoria.set(null);
+    this.recarregarDoInicio();
+  }
+
   private recarregarDoInicio(): void {
     this.pageIndex.set(0);
     this.carregar();
@@ -105,6 +125,39 @@ export class ProdutoList implements OnInit {
 
   formatarPreco(valor: number): string {
     return this.moeda.format(valor);
+  }
+
+  // ===== EXPORTAR =====
+  // busca TODOS os produtos do filtro atual (não só a página aberta) e baixa o CSV
+  exportar(): void {
+    this.produtoService.listar(this.filtroAtual(), 0, Math.max(this.totalItems(), 1)).subscribe({
+      next: (pagina) => {
+        exportarCsv(
+          'produtos',
+          ['Código', 'Produto', 'Marca', 'Categoria', 'Calibre', 'Preço', 'Estoque', 'Situação'],
+          pagina.items.map((p) => [
+            p.id,
+            p.nome,
+            p.marca.nome,
+            p.categoria.nome,
+            p.calibre ?? '',
+            p.preco.toFixed(2).replace('.', ','),
+            p.estoque,
+            p.publicado ? 'Publicado' : 'Rascunho',
+          ]),
+        );
+      },
+      error: () => alert('Não foi possível exportar os produtos.'),
+    });
+  }
+
+  // abre a janela de detalhes com o produto clicado
+  abrirDetalhes(produto: Produto): void {
+    this.dialog.open(ProdutoDetalhe, {
+      data: produto,
+      width: '520px',
+      panelClass: 'janela-produto',
+    });
   }
 
   excluir(produto: Produto): void {

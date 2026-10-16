@@ -1,0 +1,145 @@
+<div class="detalhe">
+
+  <button mat-icon-button class="fechar" mat-dialog-close aria-label="Fechar">
+    <mat-icon>close</mat-icon>
+  </button>
+
+    <!-- área da imagem: um desenho para cada tipo (depois trocamos pela foto) -->
+  <div class="imagem">
+    @switch (tipoImagem()) {
+
+      @case ('pistola') {
+        <svg viewBox="0 0 160 100" fill="currentColor">
+          <path d="M22 26 H138 Q142 26 142 30 V44 H22 Z"/>
+          <rect x="134" y="22" width="5" height="5"/>
+          <rect x="26" y="21" width="6" height="6"/>
+          <path d="M34 44 H118 V52 H34 Z"/>
+          <path d="M34 50 H64 L58 92 Q57 95 54 95 H30 Q27 95 28 92 Z"/>
+          <path d="M64 52 Q64 70 80 70 H90 V52" fill="none" stroke="currentColor" stroke-width="4"/>
+          <path d="M72 52 Q74 60 70 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+      }
+
+      @case ('revolver') {
+        <svg viewBox="0 0 160 100" fill="currentColor">
+          <rect x="78" y="30" width="72" height="11" rx="2"/>
+          <rect x="140" y="25" width="4" height="6"/>
+          <path d="M30 24 H80 V50 H40 Z"/>
+          <rect x="50" y="27" width="30" height="24" rx="4" fill="#120f0f"/>
+          <rect x="52" y="29" width="26" height="20" rx="3"/>
+          <path d="M32 24 L28 17 L32 15 L40 24 Z"/>
+          <path d="M32 44 Q20 66 26 92 Q27 95 30 95 H48 Q51 95 50 92 Q44 70 52 50 Z"/>
+          <path d="M54 50 Q54 68 68 68 H76 V50" fill="none" stroke="currentColor" stroke-width="4"/>
+          <path d="M60 50 Q62 58 58 62" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+      }
+
+      @case ('rifle') {
+        <svg viewBox="0 0 160 100" fill="currentColor">
+          <rect x="80" y="44" width="76" height="5" rx="1"/>
+          <path d="M42 40 H96 V54 H42 Z"/>
+          <path d="M84 54 H130 L126 60 H86 Z"/>
+          <path d="M4 50 L42 40 V56 L34 62 Q30 70 22 72 L6 72 Q2 72 2 68 Z"/>
+          <rect x="56" y="30" width="34" height="8" rx="4"/>
+          <rect x="58" y="36" width="3" height="5"/>
+          <rect x="85" y="36" width="3" height="5"/>
+          <circle cx="68" cy="58" r="3"/>
+          <path d="M46 54 Q46 66 58 66 H64 V54" fill="none" stroke="currentColor" stroke-width="3.5"/>
+        </svg>
+      }
+
+      @case ('espingarda') {
+        <svg viewBox="0 0 160 100" fill="currentColor">
+          <rect x="70" y="40" width="86" height="7" rx="1"/>
+          <rect x="78" y="48" width="66" height="5" rx="1"/>
+          <rect x="96" y="46" width="34" height="11" rx="3"/>
+          <path d="M42 36 H74 V54 H42 Z"/>
+          <path d="M4 48 L42 38 V56 L34 62 Q30 70 22 72 L6 72 Q2 72 2 68 Z"/>
+          <path d="M46 54 Q46 66 58 66 H64 V54" fill="none" stroke="currentColor" stroke-width="3.5"/>
+        </svg>
+      }
+
+      @case ('municao') {
+        <svg viewBox="0 0 160 100" fill="currentColor">
+          <path d="M44 40 Q44 14 54 10 Q64 14 64 40 Z"/>
+          <rect x="42" y="42" width="24" height="44" rx="2"/>
+          <path d="M70 40 Q70 14 80 10 Q90 14 90 40 Z"/>
+          <rect x="68" y="42" width="24" height="44" rx="2"/>
+          <path d="M96 40 Q96 14 106 10 Q116 14 116 40 Z"/>
+          <rect x="94" y="42" width="24" height="44" rx="2"/>
+          <rect x="40" y="86" width="80" height="5" rx="1"/>
+        </svg>
+      }
+
+            @case ('mira') {
+        <svg viewBox="0 0 160 100" fill="none" stroke="currentColor" stroke-linecap="round">
+          <circle cx="80" cy="50" r="42" stroke-width="5"/>
+          <line x1="80" y1="4"  x2="80" y2="38" stroke-width="4"/>
+          <line x1="80" y1="62" x2="80" y2="96" stroke-width="4"/>
+          <line x1="34" y1="50" x2="68" y2="50" stroke-width="4"/>
+          <line x1="92" y1="50" x2="126" y2="50" stroke-width="4"/>
+          <line x1="76" y1="24" x2="84" y2="24" stroke-width="2.5"/>
+          <line x1="76" y1="76" x2="84" y2="76" stroke-width="2.5"/>
+          <line x1="54" y1="46" x2="54" y2="54" stroke-width="2.5"/>
+          <line x1="106" y1="46" x2="106" y2="54" stroke-width="2.5"/>
+          <circle cx="80" cy="50" r="3.5" fill="currentColor" stroke="none"/>
+        </svg>
+      }
+
+            @case ('coldre') {
+        <svg viewBox="0 0 160 100" fill="currentColor">
+          <path d="M58 12 H104 Q108 12 108 16 V40 L100 84 Q98 92 90 92 H74 Q68 92 66 86 L56 40 V16 Q56 12 58 12 Z"/>
+          <rect x="64" y="22" width="34" height="5" rx="2" fill="#120f0f"/>
+          <path d="M70 50 L80 86" fill="none" stroke="#120f0f" stroke-width="2" stroke-dasharray="4 3"/>
+          <path d="M94 50 L86 86" fill="none" stroke="#120f0f" stroke-width="2" stroke-dasharray="4 3"/>
+        </svg>
+      }
+
+      @default {
+        <svg viewBox="0 0 160 100" fill="currentColor">
+          <path d="M64 26 V18 Q64 13 69 13 H91 Q96 13 96 18 V26" fill="none" stroke="currentColor" stroke-width="5"/>
+          <rect x="28" y="26" width="104" height="62" rx="7"/>
+          <rect x="28" y="50" width="104" height="4" fill="#120f0f"/>
+          <rect x="46" y="44" width="12" height="16" rx="2"/>
+          <rect x="102" y="44" width="12" height="16" rx="2"/>
+        </svg>
+      }
+    }
+  </div>
+
+  <div class="info">
+    <div class="selos">
+      <span class="selo">{{ produto.marca.nome }}</span>
+      <span class="selo">{{ produto.categoria.nome }}</span>
+      <span class="selo" [class.publicado]="produto.publicado">
+        {{ produto.publicado ? 'PUBLICADO' : 'RASCUNHO' }}
+      </span>
+    </div>
+
+    <h2>{{ produto.nome }}</h2>
+    <p class="preco">{{ formatarPreco(produto.preco) }}</p>
+
+    <p class="rotulo">DESCRIÇÃO</p>
+    <p class="descricao">{{ produto.descricao || 'Sem descrição cadastrada.' }}</p>
+
+    <p class="rotulo">FICHA TÉCNICA</p>
+    <div class="ficha">
+      <span>Calibre</span>
+      <strong>{{ produto.calibre || '—' }}</strong>
+
+      <span>Estoque</span>
+      <strong [class.baixo]="produto.estoque <= 6">{{ produto.estoque }} unidades</strong>
+
+      <span>Código</span>
+      <strong>#{{ produto.id }}</strong>
+    </div>
+
+    <div class="botoes">
+      <button mat-stroked-button mat-dialog-close>FECHAR</button>
+      <a mat-flat-button mat-dialog-close [routerLink]="['/admin/produtos/editar', produto.id]">
+        <mat-icon>edit</mat-icon> EDITAR
+      </a>
+    </div>
+  </div>
+
+</div>

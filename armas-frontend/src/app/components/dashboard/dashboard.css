@@ -1,0 +1,108 @@
+.dashboard {
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* cartões de cima */
+.cartoes {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.cartao, .painel {
+  background: var(--cartao);
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+}
+
+.cartao {
+  padding: 18px 20px;
+  color: inherit;
+  text-decoration: none;
+}
+
+a.cartao:hover { border-color: var(--vermelho); }
+
+.rotulo {
+  display: block;
+  color: var(--texto-suave);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  margin-bottom: 10px;
+}
+
+.valor { font-size: 26px; }
+.verde { color: var(--verde); }
+
+/* parte do meio */
+.meio {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 16px;
+}
+
+.painel { padding: 20px; }
+
+h2 {
+  margin: 0 0 14px;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+
+/* barras das categorias */
+.barra-linha {
+  display: grid;
+  grid-template-columns: 150px 1fr 24px;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  font-size: 13px;
+}
+
+.barra-fundo {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--borda);
+}
+
+.barra {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: var(--vermelho);
+}
+
+/* linhas das listas */
+.linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--borda);
+  color: inherit;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.linha:last-child { border-bottom: 0; }
+.estoque:hover .nome { color: var(--vermelho); }
+
+.codigo { font-weight: 700; width: 40px; }
+.nome { flex: 1; font-weight: 600; display: block; }
+.suave { color: var(--texto-suave); font-size: 12px; }
+
+/* seloznho laranja "4 UN." */
+.selo {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--laranja);
+  background: rgba(224, 137, 58, 0.15);
+}
+
+.erro { color: var(--vermelho); }

@@ -1,1 +1,70 @@
 @import 'material-icons/iconfont/material-icons.css';
+:root {
+  --fundo: #0e0c0c;        /* fundo da página */
+  --cartao: #181414;       /* fundo dos cartões */
+  --borda: #2a2424;        /* linhas e bordas */
+  --texto: #ece7e7;        /* texto principal */
+  --texto-suave: #8d8585;  /* texto secundário */
+  --vermelho: #d63a3a;     /* cor de destaque */
+  --vermelho-escuro: #3a1515;
+  --verde: #4cc38a;        /* valores positivos */
+  --laranja: #e0893a;      /* alertas de estoque */
+}
+
+/* ===== listas (produtos, marcas, clientes) ===== */
+.trilha {
+  margin: 0 0 6px;
+  color: var(--texto-suave);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+}
+
+/* tabela com cara de cartão */
+.tabela {
+  --mat-table-background-color: var(--cartao);
+  border: 1px solid var(--borda);
+  border-bottom: 0;
+  border-radius: 8px 8px 0 0;
+  overflow: hidden;
+}
+
+/* títulos das colunas: pequenos, cinzas e em maiúsculas */
+.tabela .mat-mdc-header-cell {
+  color: var(--texto-suave);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.tabela .mat-mdc-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* paginação colada embaixo da tabela */
+mat-paginator {
+  --mat-paginator-container-background-color: var(--cartao);
+  border: 1px solid var(--borda);
+  border-top: 0;
+  border-radius: 0 0 8px 8px;
+}
+
+/* selinho do estoque: laranja quando está baixo */
+.selo-estoque {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.selo-estoque.baixo {
+  color: var(--laranja);
+  background: rgba(224, 137, 58, 0.15);
+}
+
+.janela-produto .mat-mdc-dialog-surface {
+  background: var(--cartao);
+  border: 1px solid var(--borda);
+  border-radius: 10px;
+  overflow: hidden;
+}
