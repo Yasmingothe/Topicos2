@@ -1,11 +1,8 @@
 <section class="pagina">
 
-  <a mat-button routerLink="/admin/marcas" class="voltar">
-    <mat-icon>arrow_back</mat-icon>
-    Voltar para marcas
-  </a>
-
-  <h1>{{ id() ? 'Editar marca' : 'Nova marca' }}</h1>
+  <p class="trilha">CATÁLOGO / MARCAS</p>
+  <h1>{{ id() ? 'EDITAR MARCA' : 'CADASTRO DE MARCA' }}</h1>
+  <p class="subtitulo">Fabricantes que aparecem no cadastro de produtos.</p>
 
   @if (erroGeral()) {
     <p class="mensagem-erro">{{ erroGeral() }}</p>
@@ -14,29 +11,56 @@
   @if (carregando()) {
     <p>Carregando...</p>
   } @else {
-    <form [formGroup]="form" (ngSubmit)="salvar()" class="formulario">
+    <form [formGroup]="form" (ngSubmit)="salvar()" class="colunas">
 
-      <mat-form-field appearance="outline">
-        <mat-label>Nome</mat-label>
-        <input matInput formControlName="nome" placeholder="Ex.: Taurus">
-        <mat-error>{{ mensagemErro('nome') }}</mat-error>
-      </mat-form-field>
+      <div class="cartao">
+        <p class="rotulo">DADOS DO FABRICANTE</p>
+        <div class="campos">
+          <mat-form-field appearance="outline">
+            <mat-label>Nome da marca</mat-label>
+            <input matInput formControlName="nome" placeholder="Ex.: Taurus">
+            <mat-error>{{ mensagemErro('nome') }}</mat-error>
+          </mat-form-field>
 
-      <mat-form-field appearance="outline">
-        <mat-label>País de origem</mat-label>
-        <input matInput formControlName="paisOrigem" placeholder="Ex.: Brasil">
-        <mat-error>{{ mensagemErro('paisOrigem') }}</mat-error>
-      </mat-form-field>
+                    <mat-form-field appearance="outline">
+            <mat-label>País de origem</mat-label>
+            <input matInput formControlName="paisOrigem" placeholder="Comece a digitar..."
+                   [matAutocomplete]="listaPaises">
+            <mat-icon matSuffix>public</mat-icon>
+            <mat-autocomplete #listaPaises="matAutocomplete">
+              @for (pais of paisesFiltrados(); track pais) {
+                <mat-option [value]="pais">{{ pais }}</mat-option>
+              }
+            </mat-autocomplete>
+            <mat-error>{{ mensagemErro('paisOrigem') }}</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
 
-      <mat-slide-toggle formControlName="ativa">
-        Marca ativa no catálogo
-      </mat-slide-toggle>
+      <div class="lateral">
+        <div class="cartao">
+          <p class="rotulo">STATUS</p>
+          <div class="status">
+            <button type="button" [class.selecionado]="form.controls.ativa.value"
+                    (click)="form.controls.ativa.setValue(true)">
+              ATIVA
+            </button>
+            <button type="button" [class.selecionado]="!form.controls.ativa.value"
+                    (click)="form.controls.ativa.setValue(false)">
+              INATIVA
+            </button>
+          </div>
+          <p class="dica">
+            {{ form.controls.ativa.value
+                ? 'A marca aparece para escolher no cadastro de produtos.'
+                : 'A marca fica salva, mas marcada como inativa.' }}
+          </p>
+        </div>
 
-      <div class="botoes">
-        <a mat-stroked-button routerLink="/admin/marcas">Cancelar</a>
-        <button mat-flat-button type="submit" [disabled]="salvando()">
-          {{ salvando() ? 'Salvando...' : 'Salvar' }}
+        <button mat-flat-button type="submit" class="botao" [disabled]="salvando()">
+          {{ salvando() ? 'SALVANDO...' : 'SALVAR MARCA' }}
         </button>
+        <a mat-stroked-button routerLink="/admin/marcas" class="botao">CANCELAR</a>
       </div>
 
     </form>

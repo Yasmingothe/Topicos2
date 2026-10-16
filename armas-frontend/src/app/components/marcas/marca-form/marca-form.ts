@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
@@ -9,10 +10,18 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { Marca } from '../../../models/marca.model';
 import { ErroApi } from '../../../models/erro-api.model';
 import { MarcaService } from '../../../services/marca.service';
+
+// lista de sugestões do campo "País de origem"
+const PAISES = [
+  'Alemanha', 'Argentina', 'Áustria', 'Bélgica', 'Brasil', 'Canadá', 'China',
+  'Croácia', 'Espanha', 'Estados Unidos', 'Filipinas', 'França', 'Israel',
+  'Itália', 'Japão', 'Portugal', 'Reino Unido', 'República Tcheca', 'Rússia',
+  'Suécia', 'Suíça', 'Turquia',
+];
 
 function naoSomenteEspacos(control: AbstractControl): ValidationErrors | null {
   const valor = control.value as string;
@@ -23,7 +32,7 @@ function naoSomenteEspacos(control: AbstractControl): ValidationErrors | null {
   selector: 'app-marca-form',
   imports: [
     ReactiveFormsModule, RouterLink, MatFormFieldModule, MatInputModule,
-    MatButtonModule, MatIconModule, MatSlideToggleModule,
+    MatButtonModule, MatIconModule, MatAutocompleteModule,
   ],
   templateUrl: './marca-form.html',
   styleUrl: './marca-form.css',
@@ -46,6 +55,15 @@ export class MarcaForm implements OnInit {
     ]],
     paisOrigem: ['', [Validators.required, Validators.maxLength(40), naoSomenteEspacos]],
     ativa: [true],
+  });
+
+  // acompanha o que está sendo digitado no campo país...
+  private paisDigitado = toSignal(this.form.controls.paisOrigem.valueChanges, { initialValue: '' });
+
+  // ...e mostra só os países que contêm o texto digitado
+  paisesFiltrados = computed(() => {
+    const texto = (this.paisDigitado() ?? '').toLowerCase();
+    return PAISES.filter((pais) => pais.toLowerCase().includes(texto));
   });
 
   ngOnInit(): void {

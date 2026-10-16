@@ -1,32 +1,103 @@
 .pagina {
-  max-width: 560px;
-  margin: 32px auto;
-  padding: 0 16px;
+  padding: 28px 32px;
 }
 
-.voltar {
-  margin-left: -12px;
+.trilha {
+  margin: 0 0 6px;
+  color: var(--texto-suave);
+  font-size: 11px;
+  letter-spacing: 0.12em;
 }
 
 h1 {
-  text-transform: uppercase;
+  margin: 0;
+  font-size: 22px;
   letter-spacing: 0.04em;
-  margin: 16px 0 24px;
 }
 
-.formulario {
+.subtitulo {
+  margin: 4px 0 24px;
+  color: var(--texto-suave);
+  font-size: 13px;
+}
+
+.colunas {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 20px;
+  align-items: start;
+}
+
+.cartao {
+  background: var(--cartao);
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.rotulo {
+  margin: 0 0 14px;
+  color: var(--vermelho);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+}
+
+/* os dois campos lado a lado */
+.campos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.lateral {
   display: flex;
   flex-direction: column;
+  gap: 12px;
+}
+
+/* botões Ativa / Inativa */
+.status {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
 }
 
-.botoes {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 24px;
+.status button {
+  padding: 10px 0;
+  border-radius: 6px;
+  border: 1px solid var(--borda);
+  background: transparent;
+  color: var(--texto-suave);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.status button.selecionado {
+  border-color: var(--vermelho);
+  color: var(--vermelho);
+  background: var(--vermelho-escuro);
+}
+
+.dica {
+  margin: 12px 0 0;
+  color: var(--texto-suave);
+  font-size: 12px;
+}
+
+.botao {
+  width: 100%;
+  height: 46px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
 }
 
 .mensagem-erro {
-  color: #eb5757;
+  color: var(--vermelho);
+}
+
+@media (max-width: 900px) {
+  .colunas,
+  .campos { grid-template-columns: 1fr; }
 }
