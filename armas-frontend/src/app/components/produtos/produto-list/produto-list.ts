@@ -14,6 +14,7 @@ import { Produto } from '../../../models/produto.model';
 import { CategoriaService } from '../../../services/categoria.service';
 import { MarcaService } from '../../../services/marca.service';
 import { ProdutoService } from '../../../services/produto.service';
+import { NotificacaoService } from '../../../services/notificacao.service';
 import { ProdutoDetalhe } from '../produto-detalhe/produto-detalhe';
 import { exportarCsv } from '../../../utils/exportar-csv';
 
@@ -32,6 +33,7 @@ export class ProdutoList implements OnInit {
   private marcaService = inject(MarcaService);
   private categoriaService = inject(CategoriaService);
   private dialog = inject(MatDialog);
+  private notificacao = inject(NotificacaoService);
 
   colunas = ['nome', 'marca', 'categoria', 'preco', 'estoque', 'situacao', 'acoes'];
 
@@ -100,7 +102,6 @@ export class ProdutoList implements OnInit {
   }
 
   // ===== LIMPAR =====
-  // true quando tem algum filtro preenchido (usado para ligar/desligar o botão)
   temFiltro(): boolean {
     return !!(this.filtroNome() || this.filtroMarca() || this.filtroCategoria());
   }
@@ -128,7 +129,6 @@ export class ProdutoList implements OnInit {
   }
 
   // ===== EXPORTAR =====
-  // busca TODOS os produtos do filtro atual (não só a página aberta) e baixa o CSV
   exportar(): void {
     this.produtoService.listar(this.filtroAtual(), 0, Math.max(this.totalItems(), 1)).subscribe({
       next: (pagina) => {
@@ -146,8 +146,9 @@ export class ProdutoList implements OnInit {
             p.publicado ? 'Publicado' : 'Rascunho',
           ]),
         );
+        this.notificacao.sucesso(`${pagina.items.length} produto(s) exportado(s).`);
       },
-      error: () => alert('Não foi possível exportar os produtos.'),
+      error: () => this.notificacao.erro('Não foi possível exportar os produtos.'),
     });
   }
 
@@ -160,17 +161,24 @@ export class ProdutoList implements OnInit {
     });
   }
 
+  // ===== EXCLUIR (com a janela de confirmação nova) =====
   excluir(produto: Produto): void {
-    if (!confirm(`Deseja excluir o produto "${produto.nome}"?`))
-      return;
+    this.notificacao.confirmar({
+      titulo: 'Excluir produto?',
+      mensagem: `"${produto.nome}" será removido do catálogo. Essa ação não pode ser desfeita.`,
+    }).subscribe((confirmou) => {
+      if (!confirmou)
+        return;
 
-    this.produtoService.excluir(produto.id).subscribe({
-      next: () => {
-        if (this.produtos().length === 1 && this.pageIndex() > 0)
-          this.pageIndex.update((pagina) => pagina - 1);
-        this.carregar();
-      },
-      error: (erro) => alert(erro.error?.message ?? 'Não foi possível excluir o produto.'),
+      this.produtoService.excluir(produto.id).subscribe({
+        next: () => {
+          this.notificacao.sucesso('Produto excluído com sucesso.');
+          if (this.produtos().length === 1 && this.pageIndex() > 0)
+            this.pageIndex.update((pagina) => pagina - 1);
+          this.carregar();
+        },
+        error: (erro) => this.notificacao.erro(erro.error?.message ?? 'Não foi possível excluir o produto.'),
+      });
     });
   }
 }

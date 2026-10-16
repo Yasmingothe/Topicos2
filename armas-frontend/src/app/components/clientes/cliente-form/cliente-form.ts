@@ -14,6 +14,7 @@ import { ClienteRequest, Estado } from '../../../models/cliente.model';
 import { ErroApi } from '../../../models/erro-api.model';
 import { CepService } from '../../../services/cep.service';
 import { ClienteService } from '../../../services/cliente.service';
+import { NotificacaoService } from '../../../services/notificacao.service';
 
 function soNumeros(texto: string): string {
   return (texto ?? '').replace(/\D/g, '');
@@ -95,6 +96,7 @@ export class ClienteForm implements OnInit {
   private fb = inject(FormBuilder);
   private clienteService = inject(ClienteService);
   private cepService = inject(CepService);
+  private notificacao = inject(NotificacaoService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
@@ -216,7 +218,11 @@ export class ClienteForm implements OnInit {
       : this.clienteService.incluir(dados);
 
     requisicao.subscribe({
-      next: () => this.router.navigateByUrl('/admin/clientes'),
+      // deu certo: mostra o aviso verde e volta para a lista
+      next: () => {
+        this.notificacao.sucesso(this.id() ? 'Cliente atualizado com sucesso.' : 'Cliente cadastrado com sucesso.');
+        this.router.navigateByUrl('/admin/clientes');
+      },
       error: (erro: HttpErrorResponse) => {
         this.aplicarErrosDaApi(erro);
         this.salvando.set(false);

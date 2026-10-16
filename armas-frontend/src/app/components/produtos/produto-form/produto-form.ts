@@ -10,7 +10,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Categoria } from '../../../models/categoria.model';
 import { ErroApi } from '../../../models/erro-api.model';
 import { Marca } from '../../../models/marca.model';
@@ -18,6 +17,7 @@ import { ProdutoRequest } from '../../../models/produto.model';
 import { CategoriaService } from '../../../services/categoria.service';
 import { MarcaService } from '../../../services/marca.service';
 import { ProdutoService } from '../../../services/produto.service';
+import { NotificacaoService } from '../../../services/notificacao.service';
 
 function naoSomenteEspacos(control: AbstractControl): ValidationErrors | null {
   const valor = control.value as string;
@@ -28,7 +28,7 @@ function naoSomenteEspacos(control: AbstractControl): ValidationErrors | null {
   selector: 'app-produto-form',
   imports: [
     ReactiveFormsModule, RouterLink, MatFormFieldModule, MatInputModule,
-    MatSelectModule, MatButtonModule, MatIconModule, MatSlideToggleModule,
+    MatSelectModule, MatButtonModule, MatIconModule,
   ],
   templateUrl: './produto-form.html',
   styleUrl: './produto-form.css',
@@ -39,6 +39,7 @@ export class ProdutoForm implements OnInit {
   private produtoService = inject(ProdutoService);
   private marcaService = inject(MarcaService);
   private categoriaService = inject(CategoriaService);
+  private notificacao = inject(NotificacaoService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
@@ -112,7 +113,11 @@ export class ProdutoForm implements OnInit {
       : this.produtoService.incluir(dados);
 
     requisicao.subscribe({
-      next: () => this.router.navigateByUrl('/admin/produtos'),
+      // deu certo: mostra o aviso verde e volta para a lista
+      next: () => {
+        this.notificacao.sucesso(this.id() ? 'Produto atualizado com sucesso.' : 'Produto cadastrado com sucesso.');
+        this.router.navigateByUrl('/admin/produtos');
+      },
       error: (erro: HttpErrorResponse) => {
         this.aplicarErrosDaApi(erro);
         this.salvando.set(false);

@@ -14,6 +14,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { Marca } from '../../../models/marca.model';
 import { ErroApi } from '../../../models/erro-api.model';
 import { MarcaService } from '../../../services/marca.service';
+import { NotificacaoService } from '../../../services/notificacao.service';
 
 // lista de sugestões do campo "País de origem"
 const PAISES = [
@@ -41,6 +42,7 @@ export class MarcaForm implements OnInit {
 
   private fb = inject(FormBuilder);
   private marcaService = inject(MarcaService);
+  private notificacao = inject(NotificacaoService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
@@ -101,7 +103,11 @@ export class MarcaForm implements OnInit {
       : this.marcaService.incluir(dados);
 
     requisicao.subscribe({
-      next: () => this.router.navigateByUrl('/admin/marcas'),
+      // deu certo: mostra o aviso verde e volta para a lista
+      next: () => {
+        this.notificacao.sucesso(this.id() ? 'Marca atualizada com sucesso.' : 'Marca cadastrada com sucesso.');
+        this.router.navigateByUrl('/admin/marcas');
+      },
       error: (erro: HttpErrorResponse) => {
         this.aplicarErrosDaApi(erro);
         this.salvando.set(false);

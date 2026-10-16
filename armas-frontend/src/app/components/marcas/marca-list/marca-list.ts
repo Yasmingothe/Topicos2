@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Marca } from '../../../models/marca.model';
 import { MarcaService } from '../../../services/marca.service';
+import { NotificacaoService } from '../../../services/notificacao.service';
 
 @Component({
   selector: 'app-marca-list',
@@ -21,6 +22,7 @@ import { MarcaService } from '../../../services/marca.service';
 export class MarcaList implements OnInit {
 
   private marcaService = inject(MarcaService);
+  private notificacao = inject(NotificacaoService);
 
   colunas = ['nome', 'paisOrigem', 'ativa', 'acoes'];
 
@@ -66,17 +68,24 @@ export class MarcaList implements OnInit {
     this.carregar();
   }
 
+  // ===== EXCLUIR (com a janela de confirmação nova) =====
   excluir(marca: Marca): void {
-    if (!confirm(`Deseja excluir a marca "${marca.nome}"?`))
-      return;
+    this.notificacao.confirmar({
+      titulo: 'Excluir marca?',
+      mensagem: `A marca "${marca.nome}" será removida. Marcas com produtos cadastrados não podem ser excluídas.`,
+    }).subscribe((confirmou) => {
+      if (!confirmou)
+        return;
 
-    this.marcaService.excluir(marca.id!).subscribe({
-      next: () => {
-        if (this.marcas().length === 1 && this.pageIndex() > 0)
-          this.pageIndex.update((pagina) => pagina - 1);
-        this.carregar();
-      },
-      error: (erro) => alert(erro.error?.message ?? 'Não foi possível excluir a marca.'),
+      this.marcaService.excluir(marca.id!).subscribe({
+        next: () => {
+          this.notificacao.sucesso('Marca excluída com sucesso.');
+          if (this.marcas().length === 1 && this.pageIndex() > 0)
+            this.pageIndex.update((pagina) => pagina - 1);
+          this.carregar();
+        },
+        error: (erro) => this.notificacao.erro(erro.error?.message ?? 'Não foi possível excluir a marca.'),
+      });
     });
   }
 }

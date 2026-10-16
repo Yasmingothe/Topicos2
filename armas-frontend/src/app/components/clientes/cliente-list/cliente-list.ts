@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Cliente } from '../../../models/cliente.model';
 import { ClienteService } from '../../../services/cliente.service';
+import { NotificacaoService } from '../../../services/notificacao.service';
 
 @Component({
   selector: 'app-cliente-list',
@@ -21,6 +22,7 @@ import { ClienteService } from '../../../services/cliente.service';
 export class ClienteList implements OnInit {
 
   private clienteService = inject(ClienteService);
+  private notificacao = inject(NotificacaoService);
 
   colunas = ['nome', 'cpf', 'telefone', 'cidade', 'acoes'];
 
@@ -73,17 +75,24 @@ export class ClienteList implements OnInit {
     return telefone.replace(/(\d{2})(\d{4,5})(\d{4})/, '($1) $2-$3');
   }
 
+  // ===== EXCLUIR (com a janela de confirmação nova) =====
   excluir(cliente: Cliente): void {
-    if (!confirm(`Deseja excluir o cliente "${cliente.nome}"?`))
-      return;
+    this.notificacao.confirmar({
+      titulo: 'Excluir cliente?',
+      mensagem: `O cadastro de "${cliente.nome}" e o endereço dele serão removidos.`,
+    }).subscribe((confirmou) => {
+      if (!confirmou)
+        return;
 
-    this.clienteService.excluir(cliente.id).subscribe({
-      next: () => {
-        if (this.clientes().length === 1 && this.pageIndex() > 0)
-          this.pageIndex.update((pagina) => pagina - 1);
-        this.carregar();
-      },
-      error: (erro) => alert(erro.error?.message ?? 'Não foi possível excluir o cliente.'),
+      this.clienteService.excluir(cliente.id).subscribe({
+        next: () => {
+          this.notificacao.sucesso('Cliente excluído com sucesso.');
+          if (this.clientes().length === 1 && this.pageIndex() > 0)
+            this.pageIndex.update((pagina) => pagina - 1);
+          this.carregar();
+        },
+        error: (erro) => this.notificacao.erro(erro.error?.message ?? 'Não foi possível excluir o cliente.'),
+      });
     });
   }
 }

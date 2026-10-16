@@ -68,3 +68,16 @@ mat-paginator {
   border-radius: 10px;
   overflow: hidden;
 }
+
+/* avisos no canto da tela (snackbar) */
+.aviso-sucesso {
+  --mat-snack-bar-container-color: #1f3d2b;
+  --mat-snack-bar-supporting-text-color: #b8f0cf;
+  --mat-snack-bar-button-color: #6fcf97;
+}
+
+.aviso-erro {
+  --mat-snack-bar-container-color: #3a1515;
+  --mat-snack-bar-supporting-text-color: #ffd2cc;
+  --mat-snack-bar-button-color: var(--vermelho);
+}
