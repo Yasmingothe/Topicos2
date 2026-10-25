@@ -138,7 +138,7 @@
         <button mat-flat-button type="submit" class="botao" [disabled]="salvando()">
           {{ salvando() ? 'SALVANDO...' : 'SALVAR CLIENTE' }}
         </button>
-        <a mat-stroked-button routerLink="/admin/clientes" class="botao">CANCELAR</a>
+        <button type="button" mat-stroked-button appVoltar="/admin/clientes" class="botao">CANCELAR</button>
       </div>
 
     </form>

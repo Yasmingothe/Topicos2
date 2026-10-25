@@ -31,6 +31,11 @@ public class TratadorDeErros {
     }
 
     @ServerExceptionMapper
+    public Response regraDeNegocio(RegraNegocioException e) {
+        return resposta(Status.BAD_REQUEST, e.getMessage(), List.of());
+    }
+
+    @ServerExceptionMapper
     public Response naoEncontrado(NotFoundException e) {
         return resposta(Status.NOT_FOUND, e.getMessage(), List.of());
     }

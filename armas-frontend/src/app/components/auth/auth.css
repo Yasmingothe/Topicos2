@@ -1,0 +1,133 @@
+/* login e cadastro: logo no topo e o formulário no meio da tela (igual sites de loja) */
+.tela {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(ellipse at 50% 0%, #2a1414 0%, var(--fundo) 55%);
+}
+
+.topo {
+  display: flex;
+  justify-content: center;
+  padding: 28px 20px 0;
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--texto);
+  text-decoration: none;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.logo-icone {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--vermelho);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.formulario {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 48px 20px 40px;
+}
+
+.cartao {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  padding: 32px;
+  box-sizing: border-box;
+  border: 1px solid var(--borda);
+  border-radius: 14px;
+  background: var(--cartao);
+}
+
+h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.apoio {
+  margin: 6px 0 24px;
+  color: var(--texto-suave);
+  font-size: 14px;
+  text-align: center;
+}
+
+.erro, .aviso {
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.erro { background: var(--vermelho-escuro); color: #ffd2cc; }
+.aviso { background: rgba(224, 137, 58, 0.15); color: var(--laranja); }
+.erro-campo { margin: -12px 0 12px; color: #eb5757; font-size: 12px; }
+
+mat-form-field { width: 100%; }
+
+.botao {
+  height: 48px;
+  margin-top: 8px;
+  font-weight: 700;
+}
+
+.troca {
+  margin: 18px 0 0;
+  text-align: center;
+  color: var(--texto-suave);
+  font-size: 14px;
+}
+
+.troca a { color: var(--vermelho); }
+
+.contas-teste {
+  width: 100%;
+  max-width: 400px;
+}
+
+.contas-teste p {
+  margin: 0 0 8px;
+  color: var(--texto-suave);
+  font-size: 12px;
+  text-align: center;
+}
+
+.contas-teste button {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  margin-bottom: 4px;
+  border: 1px solid var(--borda);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--texto);
+  font: inherit;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.contas-teste button:hover { border-color: var(--vermelho); }
+.contas-teste span { color: var(--texto-suave); }
+
+@media (max-width: 480px) {
+  .cartao { padding: 24px 18px; }
+}

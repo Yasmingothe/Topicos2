@@ -1,5 +1,6 @@
 .pagina {
-  padding: 28px 32px;
+  margin: 0;
+  padding: 0;
 }
 
 .trilha {
@@ -109,3 +110,27 @@ h1 {
   .colunas { grid-template-columns: 1fr; }
   .metade, .terco { grid-column: span 6; }
 }
+/* aviso de onde vem o estoque */
+.estoque-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border: 1px dashed var(--borda);
+  border-radius: 6px;
+  color: var(--texto-suave);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.estoque-info mat-icon { color: var(--vermelho); flex: 0 0 auto; }
+.estoque-info strong { color: var(--texto); }
+.estoque-info span { flex: 1; }
+
+/* foto */
+.foto { border-radius: 6px; background: #120f0f; overflow: hidden; }
+.foto-imagem { width: 100%; height: 160px; }
+.foto-botoes { display: flex; gap: 6px; margin-top: 10px; }
+.foto-botoes button:first-child { flex: 1; }
+
+.campo-link { width: 100%; margin-top: 12px; }

@@ -1,0 +1,60 @@
+<section class="pagina">
+  <h1>Carrinho</h1>
+
+  @if (!carrinho.itens().length) {
+    <div class="vazio-carrinho">
+      <mat-icon>shopping_bag</mat-icon>
+      <p>Seu carrinho está vazio.</p>
+      <a mat-flat-button routerLink="/">Ver o catálogo</a>
+    </div>
+  } @else {
+    <div class="colunas">
+      <ul class="itens">
+        @for (item of carrinho.itens(); track item.idProduto) {
+          <li class="item">
+            <a [routerLink]="['/produto', item.idProduto]" class="miniatura">
+              <app-produto-imagem [idProduto]="item.idProduto" [categoria]="item.categoria.codigo"
+                                  [nome]="item.nome" [temImagem]="item.temImagem" [imagemUrl]="item.imagemUrl" />
+            </a>
+            <div class="descricao">
+              <a [routerLink]="['/produto', item.idProduto]" class="nome">{{ item.nome }}</a>
+              <span>{{ item.marca }}{{ item.calibre ? ', ' + item.calibre : '' }}</span>
+              @if (item.categoria.controlada) {
+                <span class="controlado"><mat-icon>verified_user</mat-icon> Controlado</span>
+              }
+            </div>
+            <div class="quantidade" role="group" [attr.aria-label]="'Quantidade de ' + item.nome">
+              <button type="button" (click)="carrinho.alterar(item.idProduto, item.quantidade - 1)"
+                      [disabled]="item.quantidade <= 1" aria-label="Diminuir">−</button>
+              <span>{{ item.quantidade }}</span>
+              <button type="button" (click)="carrinho.alterar(item.idProduto, item.quantidade + 1)"
+                      [disabled]="item.quantidade >= item.estoque" aria-label="Aumentar">+</button>
+            </div>
+            <strong class="subtotal">{{ moeda(item.preco * item.quantidade) }}</strong>
+            <button mat-icon-button (click)="carrinho.remover(item.idProduto)" [attr.aria-label]="'Remover ' + item.nome">
+              <mat-icon>close</mat-icon>
+            </button>
+          </li>
+        }
+      </ul>
+
+      <aside class="resumo">
+        <div class="linha"><span>{{ carrinho.quantidadeTotal() }} item(ns)</span><span>{{ moeda(carrinho.total()) }}</span></div>
+        <div class="linha"><span>Entrega</span><span>Retirada na loja</span></div>
+        <div class="linha total"><span>Total</span><strong>{{ moeda(carrinho.total()) }}</strong></div>
+
+        @if (carrinho.temControlado()) {
+          <p class="aviso">
+            <mat-icon>verified_user</mat-icon>
+            Tem item controlado no carrinho. A compra só passa com autorização aprovada e 25 anos ou mais.
+          </p>
+        }
+
+        <a mat-flat-button routerLink="/checkout" class="botao">
+          {{ auth.ehCliente() ? 'Ir para o pagamento' : 'Entrar e finalizar' }}
+        </a>
+        <a mat-stroked-button routerLink="/" class="botao">Continuar comprando</a>
+      </aside>
+    </div>
+  }
+</section>

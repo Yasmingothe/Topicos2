@@ -1,0 +1,80 @@
+.pagina { max-width: 1200px; margin: 0 auto; padding: 24px 20px 0; box-sizing: border-box; }
+
+.voltar {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-bottom: 20px; color: var(--texto-suave); text-decoration: none; font-size: 14px;
+}
+.voltar:hover { color: var(--texto); }
+
+.colunas { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; align-items: start; }
+
+.vitrine {
+  position: sticky;
+  top: 88px;
+  aspect-ratio: 1 / 1;
+  border: 1px solid var(--borda);
+  border-radius: 10px;
+  overflow: hidden;
+  --recorte: #130f0f;
+  background: #130f0f;
+}
+.imagem { width: 100%; height: 100%; }
+
+.categoria { color: var(--vermelho); font-size: 13px; font-weight: 700; text-decoration: none; }
+h1 { margin: 6px 0 4px; font-size: clamp(28px, 3vw, 38px); font-weight: 700; line-height: 1.15; }
+.marca { margin: 0; color: var(--texto-suave); }
+
+.preco { margin: 24px 0 0; font-size: 36px; font-weight: 700; color: var(--latao); line-height: 1; }
+.parcelas { margin: 4px 0 0; color: var(--texto-suave); font-size: 13px; }
+
+.regra {
+  display: flex;
+  gap: 12px;
+  margin: 24px 0 0;
+  padding: 14px 16px;
+  border: 1px solid rgba(214, 58, 58, 0.45);
+  border-radius: 8px;
+  background: rgba(58, 21, 21, 0.45);
+}
+.regra mat-icon { color: var(--vermelho); flex: 0 0 auto; }
+.regra p { margin: 4px 0 0; color: var(--texto-suave); font-size: 13px; line-height: 1.5; }
+
+.compra { display: flex; gap: 10px; align-items: stretch; margin-top: 24px; flex-wrap: wrap; }
+
+.quantidade {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--borda);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.quantidade button {
+  width: 40px; height: 46px; border: 0; background: var(--cartao);
+  color: var(--texto); font-size: 20px; cursor: pointer;
+}
+.quantidade button:disabled { color: var(--borda); cursor: default; }
+.quantidade span { min-width: 40px; text-align: center; font-weight: 700; }
+
+.botao { height: 48px; font-weight: 700; }
+.disponivel { margin: 8px 0 0; color: var(--verde); font-size: 13px; }
+.sem-estoque { margin: 24px 0 0; color: var(--laranja); font-weight: 700; }
+
+.ficha {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin: 28px 0 0;
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+}
+.ficha div { padding: 12px 14px; border-bottom: 1px solid var(--borda); }
+.ficha div:nth-child(odd) { border-right: 1px solid var(--borda); }
+.ficha div:nth-last-child(-n + 2) { border-bottom: 0; }
+.ficha dt { color: var(--texto-suave); font-size: 12px; }
+.ficha dd { margin: 2px 0 0; font-weight: 700; }
+
+.descricao { margin: 24px 0 0; color: var(--texto-suave); line-height: 1.6; max-width: 60ch; }
+
+@media (max-width: 860px) {
+  .colunas { grid-template-columns: 1fr; gap: 24px; }
+  .vitrine { position: static; }
+}

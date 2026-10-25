@@ -1,0 +1,101 @@
+<div class="faixa">
+
+  @if (!filtrando()) {
+    <!-- ===== banner do produto em destaque ===== -->
+    @if (destaque(); as d) {
+      <section class="banner">
+        <div class="banner-texto">
+          <span class="etiqueta">Destaque da semana</span>
+          <h1>{{ d.nome }}</h1>
+          <p class="banner-marca">{{ d.marca.nome }}{{ d.calibre ? ', calibre ' + d.calibre : '' }}</p>
+          <p class="banner-preco">{{ moeda(d.preco) }}</p>
+          <p class="banner-parcela">ou 10x de {{ parcela(d.preco) }} sem juros</p>
+          <div class="banner-botoes">
+            <a mat-flat-button [routerLink]="['/produto', d.id]">Ver produto</a>
+            <a mat-stroked-button routerLink="/" [queryParams]="{ categoria: d.categoria.codigo }">Mais {{ d.categoria.nome.toLowerCase() }}</a>
+          </div>
+        </div>
+        <a class="banner-foto" [routerLink]="['/produto', d.id]" [attr.aria-label]="d.nome">
+          <app-produto-imagem [idProduto]="d.id" [categoria]="d.categoria.codigo" [nome]="d.nome" [temImagem]="d.temImagem" [imagemUrl]="d.imagemUrl" />
+        </a>
+      </section>
+    }
+
+    <!-- ===== como a loja funciona ===== -->
+    <ul class="vantagens">
+      <li><mat-icon>credit_card</mat-icon><span><strong>Até 10x sem juros</strong>no cartão de crédito</span></li>
+      <li><mat-icon>storefront</mat-icon><span><strong>Retirada na loja</strong>com documento com foto</span></li>
+      <li><mat-icon>verified_user</mat-icon><span><strong>Compra legal</strong>armas só com autorização de compra</span></li>
+    </ul>
+  }
+
+  <!-- ===== título + filtro ===== -->
+  <div class="barra">
+    <h2>
+      @if (busca()) { Resultados para "{{ busca() }}" }
+      @else if (categoria()) { {{ nomeCategoria() }} }
+      @else { Todos os produtos }
+      <span>{{ total() }} produto(s)</span>
+    </h2>
+
+    <div class="barra-filtros">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Marca</mat-label>
+        <mat-select [value]="marca()" (selectionChange)="escolherMarca($event.value)">
+          <mat-option [value]="null">Todas</mat-option>
+          @for (m of marcas(); track m.id) {
+            <mat-option [value]="m.id">{{ m.nome }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      @if (filtrando()) {
+        <button mat-stroked-button (click)="limpar()"><mat-icon>restart_alt</mat-icon> Limpar</button>
+      }
+    </div>
+  </div>
+
+  @if (erro()) {
+    <p class="mensagem-erro">{{ erro() }}</p>
+  }
+
+  <!-- ===== grade de produtos ===== -->
+  <div class="grade">
+    @for (p of produtos(); track p.id) {
+      <article class="produto" [class.esgotado]="p.estoque === 0">
+        <a class="produto-foto" [routerLink]="['/produto', p.id]" [attr.aria-label]="p.nome">
+          <app-produto-imagem [idProduto]="p.id" [categoria]="p.categoria.codigo" [nome]="p.nome" [temImagem]="p.temImagem" [imagemUrl]="p.imagemUrl" />
+          @if (p.categoria.controlada) { <span class="selo controlado">Exige autorização</span> }
+          @if (p.estoque === 0) { <span class="selo esgotado-selo">Esgotado</span> }
+        </a>
+        <a class="produto-nome" [routerLink]="['/produto', p.id]">{{ p.nome }}</a>
+        <span class="produto-marca">{{ p.marca.nome }}{{ p.calibre ? ', ' + p.calibre : '' }}</span>
+        <span class="produto-preco">{{ moeda(p.preco) }}</span>
+        <span class="produto-parcela">ou 10x de {{ parcela(p.preco) }}</span>
+        @if (auth.ehAdmin()) {
+          <a mat-stroked-button class="comprar" [routerLink]="['/admin/produtos/editar', p.id]">
+            <mat-icon>edit</mat-icon> Editar produto
+          </a>
+        } @else {
+          <button mat-flat-button class="comprar" (click)="adicionar($event, p)" [disabled]="p.estoque === 0">
+            {{ p.estoque === 0 ? 'Esgotado' : 'Comprar' }}
+          </button>
+        }
+      </article>
+    } @empty {
+      @if (!carregando()) {
+        <div class="vazio-loja">
+          <p>Nada encontrado com esses filtros.</p>
+          <button mat-stroked-button (click)="limpar()">Ver todos os produtos</button>
+        </div>
+      }
+    }
+  </div>
+
+  @if (temMais()) {
+    <div class="mais">
+      <button mat-stroked-button (click)="carregarMais()" [disabled]="carregando()">
+        {{ carregando() ? 'Carregando...' : 'Mostrar mais produtos' }}
+      </button>
+    </div>
+  }
+</div>

@@ -1,0 +1,71 @@
+.adm-filtros mat-slide-toggle { flex: 0 0 auto; }
+
+.corpo { display: grid; grid-template-columns: 1fr; gap: 20px; align-items: start; }
+.corpo.com-painel { grid-template-columns: minmax(0, 1fr) 360px; }
+
+.codigo { font-family: var(--fonte-titulo); font-size: 17px; letter-spacing: 0.04em; white-space: nowrap; }
+tr.selecionado { background: var(--vermelho-escuro); }
+
+.painel { position: sticky; top: 16px; }
+
+.painel-topo { display: flex; justify-content: space-between; gap: 8px; }
+.painel-topo span { font-size: 12px; }
+.painel-topo h2 { margin: 0; font-family: var(--fonte-titulo); font-size: 30px; font-weight: 700; letter-spacing: 0.03em; }
+.painel-topo p { margin: 2px 0 0; color: var(--texto-suave); }
+
+.contagem {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 18px 0;
+  border: 1px solid var(--borda);
+  border-radius: 6px;
+}
+.contagem div { padding: 10px; text-align: center; border-right: 1px solid var(--borda); }
+.contagem div:last-child { border-right: 0; }
+.contagem strong { display: block; font-family: var(--fonte-titulo); font-size: 28px; font-weight: 700; }
+.contagem span { color: var(--texto-suave); font-size: 12px; }
+.verde { color: var(--verde); }
+
+.linha-tempo { list-style: none; margin: 0; padding: 0; }
+
+.linha-tempo li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 12px;
+  padding-bottom: 18px;
+}
+
+/* o traço vertical que liga os eventos */
+.linha-tempo li:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 32px;
+  bottom: 0;
+  width: 2px;
+  background: var(--borda);
+}
+
+.marcador {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--vermelho-escuro);
+  color: var(--vermelho);
+}
+.marcador mat-icon { font-size: 18px; width: 18px; height: 18px; }
+.entrada .marcador { background: #1f3d2b; color: var(--verde); }
+.cancelada { opacity: 0.55; }
+
+.linha-tempo p { margin: 2px 0; font-size: 13px; line-height: 1.45; }
+.linha-tempo a { display: inline-block; margin-top: 4px; margin-left: 6px; color: var(--vermelho); font-size: 13px; }
+.entrada a { margin-left: 0; }
+
+@media (max-width: 980px) {
+  .corpo.com-painel { grid-template-columns: 1fr; }
+  .painel { position: static; order: -1; }
+}

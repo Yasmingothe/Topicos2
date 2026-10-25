@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, input, signal } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -6,16 +7,20 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Cliente } from '../../../models/cliente.model';
 import { ClienteService } from '../../../services/cliente.service';
 import { NotificacaoService } from '../../../services/notificacao.service';
+import { OpcaoService } from '../../../services/opcao.service';
+import { corSituacao, data } from '../../../utils/formatar';
 import { exportarCsv } from '../../../utils/exportar-csv';
 
 @Component({
   selector: 'app-cliente-list',
   imports: [
-    RouterLink, MatTableModule, MatPaginatorModule, MatFormFieldModule,
-    MatInputModule, MatButtonModule, MatIconModule,
+    AsyncPipe, RouterLink, MatTableModule, MatPaginatorModule, MatFormFieldModule,
+    MatInputModule, MatButtonModule, MatIconModule, MatSelectModule, MatTooltipModule,
   ],
   templateUrl: './cliente-list.html',
   styleUrl: './cliente-list.css',
@@ -24,8 +29,15 @@ export class ClienteList implements OnInit {
 
   private clienteService = inject(ClienteService);
   private notificacao = inject(NotificacaoService);
+  opcoes = inject(OpcaoService);
 
-  colunas = ['nome', 'cpf', 'telefone', 'cidade', 'acoes'];
+  autorizacao = input<string>(); // /admin/clientes?autorizacao=EM_ANALISE (vem do dashboard)
+
+  colunas = ['nome', 'cpf', 'cidade', 'autorizacao', 'acoes'];
+  filtroAutorizacao = signal<string | null>(null);
+
+  corSituacao = corSituacao;
+  data = data;
 
   clientes = signal<Cliente[]>([]);
   totalItems = signal(0);
@@ -36,6 +48,7 @@ export class ClienteList implements OnInit {
   erro = signal('');
 
   ngOnInit(): void {
+    if (this.autorizacao()) this.filtroAutorizacao.set(this.autorizacao()!);
     this.carregar();
   }
 
@@ -43,7 +56,7 @@ export class ClienteList implements OnInit {
     this.carregando.set(true);
     this.erro.set('');
 
-    this.clienteService.listar(this.filtro(), this.pageIndex(), this.pageSize()).subscribe({
+    this.clienteService.listar(this.filtro(), this.pageIndex(), this.pageSize(), this.filtroAutorizacao()).subscribe({
       next: (pagina) => {
         this.clientes.set(pagina.items);
         this.totalItems.set(pagina.totalItems);
@@ -62,9 +75,38 @@ export class ClienteList implements OnInit {
     this.carregar();
   }
 
+  filtrarAutorizacao(situacao: string | null): void {
+    this.filtroAutorizacao.set(situacao);
+    this.pageIndex.set(0);
+    this.carregar();
+  }
+
   // ===== LIMPAR =====
   limparFiltro(): void {
+    this.filtroAutorizacao.set(null);
     this.buscar('');
+  }
+
+  // ===== AUTORIZAÇÃO DE COMPRA =====
+  avaliar(cliente: Cliente, situacao: 'APROVADA' | 'RECUSADA'): void {
+    const aprovar = situacao === 'APROVADA';
+    this.notificacao.confirmar({
+      titulo: aprovar ? 'Aprovar autorização?' : 'Recusar autorização?',
+      mensagem: aprovar
+        ? `${cliente.nome} poderá comprar armas e munições até ${data(cliente.validadeAutorizacao)} (nº ${cliente.numeroAutorizacao}).`
+        : `${cliente.nome} continua podendo comprar acessórios, mas não armas e munições.`,
+      textoBotao: aprovar ? 'APROVAR' : 'RECUSAR',
+      icone: aprovar ? 'task_alt' : 'do_not_disturb_on',
+    }).subscribe((confirmou) => {
+      if (!confirmou) return;
+      this.clienteService.avaliarAutorizacao(cliente.id, situacao).subscribe({
+        next: () => {
+          this.notificacao.sucesso(aprovar ? 'Autorização aprovada.' : 'Autorização recusada.');
+          this.carregar();
+        },
+        error: (erro) => this.notificacao.erro(erro.error?.message ?? 'Não foi possível avaliar a autorização.'),
+      });
+    });
   }
 
   mudarPagina(evento: PageEvent): void {

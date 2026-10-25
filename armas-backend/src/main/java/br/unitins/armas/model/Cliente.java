@@ -4,8 +4,11 @@ import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 
 @Entity
 public class Cliente extends EntidadeBase {
@@ -44,6 +47,28 @@ public class Cliente extends EntidadeBase {
     @JoinColumn(name = "id_municipio", nullable = false)
     private Municipio municipio;
 
+    // conta de login do cliente (fica vazio se o admin cadastrou o cliente direto)
+    @OneToOne
+    @JoinColumn(name = "id_usuario", unique = true)
+    private Usuario usuario;
+
+    // ===== autorização de compra (simplificada) =====
+    @Column(length = 30)
+    private String numeroAutorizacao;
+
+    private LocalDate validadeAutorizacao;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20, nullable = false)
+    private SituacaoAutorizacao situacaoAutorizacao = SituacaoAutorizacao.NAO_ENVIADA;
+
+    // pode comprar arma/munição = autorização aprovada e dentro da validade
+    public boolean autorizacaoValida() {
+        return situacaoAutorizacao == SituacaoAutorizacao.APROVADA
+                && validadeAutorizacao != null
+                && !validadeAutorizacao.isBefore(LocalDate.now());
+    }
+
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
 
@@ -76,4 +101,16 @@ public class Cliente extends EntidadeBase {
 
     public Municipio getMunicipio() { return municipio; }
     public void setMunicipio(Municipio municipio) { this.municipio = municipio; }
+
+    public Usuario getUsuario() { return usuario; }
+    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
+
+    public String getNumeroAutorizacao() { return numeroAutorizacao; }
+    public void setNumeroAutorizacao(String numeroAutorizacao) { this.numeroAutorizacao = numeroAutorizacao; }
+
+    public LocalDate getValidadeAutorizacao() { return validadeAutorizacao; }
+    public void setValidadeAutorizacao(LocalDate validadeAutorizacao) { this.validadeAutorizacao = validadeAutorizacao; }
+
+    public SituacaoAutorizacao getSituacaoAutorizacao() { return situacaoAutorizacao; }
+    public void setSituacaoAutorizacao(SituacaoAutorizacao situacaoAutorizacao) { this.situacaoAutorizacao = situacaoAutorizacao; }
 }

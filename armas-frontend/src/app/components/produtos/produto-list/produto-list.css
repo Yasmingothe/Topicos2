@@ -1,7 +1,6 @@
 .pagina {
-  max-width: 1100px;
-  margin: 32px auto;
-  padding: 0 16px;
+  margin: 0;
+  padding: 0;
 }
 
 .topo {
@@ -46,6 +45,9 @@ h1 {
 
 /* nome do produto clicável */
 .link-produto {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
   padding: 0;
   border: 0;
   background: none;
@@ -73,7 +75,7 @@ h1 {
   padding: 2px 10px;
   border-radius: 4px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   background: #1f3d2b;
   color: #6fcf97;
 }
@@ -97,4 +99,11 @@ h1 {
   .filtros {
     grid-template-columns: 1fr;
   }
+}
+.miniatura {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 36px;
+  border-radius: 4px;
+  background: #120f0f;
 }

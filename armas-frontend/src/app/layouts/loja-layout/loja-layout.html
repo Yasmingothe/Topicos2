@@ -1,0 +1,73 @@
+@if (auth.ehAdmin()) {
+  <div class="faixa-admin" role="status">
+    <span><mat-icon>visibility</mat-icon> Você está vendo a loja como administrador. Compras ficam só para clientes.</span>
+    <a routerLink="/admin/dashboard">Voltar ao painel</a>
+  </div>
+}
+
+<header class="cabecalho">
+  <div class="faixa">
+    <a routerLink="/" class="logo" aria-label="ZERO1, página inicial">
+      <span class="logo-icone"><mat-icon>gps_fixed</mat-icon></span>
+      <span>ZERO1</span>
+    </a>
+
+    <form class="busca" role="search" (submit)="buscar($event, campo.value)">
+      <mat-icon aria-hidden="true">search</mat-icon>
+      <input #campo type="search" placeholder="Buscar pistola, calibre, marca..." aria-label="Buscar produtos">
+    </form>
+
+    <nav class="acoes">
+      @if (auth.ehAdmin()) {
+        <a mat-stroked-button routerLink="/admin/dashboard"><mat-icon>dashboard</mat-icon> Painel</a>
+      }
+
+      @if (!auth.ehAdmin()) {
+        <a mat-icon-button routerLink="/carrinho" aria-label="Carrinho" routerLinkActive="ativo">
+          <mat-icon [matBadge]="carrinho.quantidadeTotal() || null" matBadgeColor="primary" matBadgeSize="medium"
+                    aria-hidden="false">shopping_bag</mat-icon>
+        </a>
+      }
+
+      @if (auth.logado()) {
+        <button mat-button [matMenuTriggerFor]="menuConta" class="conta">
+          <mat-icon>account_circle</mat-icon> {{ primeiroNome() }}
+        </button>
+        <mat-menu #menuConta="matMenu" xPosition="before">
+          @if (auth.ehCliente()) {
+            <a mat-menu-item routerLink="/minha-conta"><mat-icon>badge</mat-icon> Minha conta</a>
+            <a mat-menu-item routerLink="/meus-pedidos"><mat-icon>receipt_long</mat-icon> Meus pedidos</a>
+          }
+          <button mat-menu-item (click)="sair()"><mat-icon>logout</mat-icon> Sair</button>
+        </mat-menu>
+      } @else {
+        <a mat-flat-button routerLink="/login">Entrar</a>
+      }
+    </nav>
+  </div>
+
+  <!-- menu de categorias, igual loja online -->
+  <nav class="menu-categorias" aria-label="Categorias">
+    <div class="faixa">
+      <a routerLink="/" [queryParams]="{}" class="link-categoria">Todos os produtos</a>
+      @for (c of categorias(); track c.codigo) {
+        <a routerLink="/" [queryParams]="{ categoria: c.codigo }" class="link-categoria">{{ c.nome }}</a>
+      }
+    </div>
+  </nav>
+</header>
+
+<main class="conteudo">
+  <router-outlet />
+</main>
+
+<footer class="rodape">
+  <div class="faixa">
+    <div>
+      <strong>ZERO1 Armas e Equipamentos</strong>
+      <p>Armas e munições são vendidas só para maiores de 25 anos com autorização de compra válida
+        (Lei 10.826/2003). A retirada é feita na loja, com documento.</p>
+    </div>
+    <p class="academico">Projeto acadêmico de Tópicos 2, UNITINS, {{ ano }}. Produtos e preços fictícios.</p>
+  </div>
+</footer>

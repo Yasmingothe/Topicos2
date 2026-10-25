@@ -1,0 +1,82 @@
+<section class="adm-pagina">
+
+  @if (erro()) {
+    <p class="mensagem-erro">{{ erro() }}</p>
+    <a mat-stroked-button routerLink="/admin/pedidos">Voltar para os pedidos</a>
+  }
+
+  @if (pedido(); as p) {
+    <header class="adm-topo">
+      <div>
+        <p class="trilha">VENDAS / PEDIDOS</p>
+        <h1>Pedido #{{ p.id }}</h1>
+        <p class="subtitulo">Feito em {{ dataHora(p.data) }}, pago com {{ p.formaPagamento.nome }}{{ p.parcelas > 1 ? ' em ' + p.parcelas + 'x' : '' }}</p>
+      </div>
+      <div class="adm-botoes">
+        <button type="button" mat-stroked-button appVoltar="/admin/pedidos"><mat-icon>arrow_back</mat-icon> Voltar</button>
+        @if (!encerrado()) {
+          <button mat-stroked-button (click)="cancelar()" [disabled]="salvando()">
+            <mat-icon>block</mat-icon> Cancelar pedido
+          </button>
+          @if (proxima(); as prox) {
+            <button mat-flat-button (click)="avancar()" [disabled]="salvando()">
+              <mat-icon>check</mat-icon> Marcar como {{ prox.nome.toLowerCase() }}
+            </button>
+          }
+        }
+      </div>
+    </header>
+
+    <!-- andamento do pedido -->
+    @if (p.situacao.codigo === 'CANCELADO') {
+      <p class="cancelado"><mat-icon>block</mat-icon> Pedido cancelado. As unidades voltaram para os lotes.</p>
+    } @else {
+      <ol class="andamento" aria-label="Andamento do pedido">
+        @for (etapa of etapas; track etapa.codigo; let i = $index) {
+          <li [class.feita]="i <= indiceAtual()" [class.atual]="i === indiceAtual()">
+            <span class="bolinha">{{ i < indiceAtual() ? '✓' : i + 1 }}</span>
+            {{ etapa.nome }}
+          </li>
+        }
+      </ol>
+    }
+
+    <div class="colunas">
+      <div class="adm-cartao">
+        <p class="adm-rotulo">ITENS E LOTES DE ONDE SAÍRAM</p>
+        @for (item of p.itens; track item.id) {
+          <div class="item">
+            <app-produto-imagem class="miniatura" [idProduto]="item.produto.id" [categoria]="item.produto.categoria.codigo"
+                                [nome]="item.produto.nome" [temImagem]="item.produto.temImagem" [imagemUrl]="item.produto.imagemUrl" />
+            <div>
+              <strong>{{ item.produto.nome }}</strong>
+              @if (item.produto.categoria.controlada) { <span class="chip vermelho">controlado</span> }
+              <small>{{ item.quantidade }} × {{ moeda(item.precoUnitario) }}</small>
+              <div class="lotes">
+                @for (lote of item.lotes; track lote.idLote) {
+                  <a [routerLink]="['/admin/lotes']" [queryParams]="{ lote: lote.idLote }">
+                    {{ lote.codigo }} <span>({{ lote.quantidade }} un.)</span>
+                  </a>
+                }
+              </div>
+            </div>
+            <strong class="subtotal">{{ moeda(item.subtotal) }}</strong>
+          </div>
+        }
+        <div class="total">
+          <span>Total</span>
+          <strong>{{ moeda(p.valorTotal) }}</strong>
+        </div>
+      </div>
+
+      <aside class="adm-cartao cliente">
+        <p class="adm-rotulo">CLIENTE</p>
+        <strong>{{ p.cliente.nome }}</strong>
+        <span>{{ p.cliente.email }}</span>
+        <span>{{ telefone(p.cliente.telefone) }}</span>
+        <p class="endereco">{{ p.cliente.endereco }}</p>
+        <a mat-stroked-button [routerLink]="['/admin/clientes/editar', p.cliente.id]">Ver cadastro</a>
+      </aside>
+    </div>
+  }
+</section>

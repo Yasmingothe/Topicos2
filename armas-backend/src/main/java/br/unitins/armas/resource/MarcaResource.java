@@ -4,6 +4,8 @@ import br.unitins.armas.dto.MarcaRequestDTO;
 import br.unitins.armas.dto.MarcaResponseDTO;
 import br.unitins.armas.dto.PaginaDTO;
 import br.unitins.armas.service.MarcaService;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
@@ -23,12 +25,14 @@ import jakarta.ws.rs.core.Response.Status;
 @Path("/marcas")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@RolesAllowed("ADMIN") // só o admin cadastra, altera e exclui
 public class MarcaResource {
 
     @Inject
     MarcaService service;
 
     @GET
+    @PermitAll // a loja usa a lista de marcas no filtro do catálogo
     public PaginaDTO<MarcaResponseDTO> listar(
             @QueryParam("nome") String nome,
             @QueryParam("page") @DefaultValue("0") int page,

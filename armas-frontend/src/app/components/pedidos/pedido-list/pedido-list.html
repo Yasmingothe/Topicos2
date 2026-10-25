@@ -1,0 +1,88 @@
+<section class="adm-pagina">
+
+  <header class="adm-topo">
+    <div>
+      <p class="trilha">VENDAS / PEDIDOS</p>
+      <h1>Pedidos</h1>
+      <p class="subtitulo">Vendas feitas pela loja. Cada venda tira as unidades dos lotes mais antigos primeiro.</p>
+    </div>
+  </header>
+
+  <div class="adm-filtros">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Buscar por cliente</mat-label>
+      <input matInput [value]="filtroCliente()" (input)="buscar($any($event.target).value)">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Situação</mat-label>
+      <mat-select [value]="filtroSituacao()" (selectionChange)="filtrarSituacao($event.value)">
+        <mat-option [value]="null">Todas</mat-option>
+        @for (s of (opcoes.situacoesPedido$ | async) ?? []; track s.codigo) {
+          <mat-option [value]="s.codigo">{{ s.nome }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  @if (erro()) {
+    <p class="mensagem-erro">{{ erro() }}</p>
+  }
+
+  <table mat-table [dataSource]="pedidos()" class="tabela tabela-larga">
+    <ng-container matColumnDef="numero">
+      <th mat-header-cell *matHeaderCellDef>Pedido</th>
+      <td mat-cell *matCellDef="let p" class="linha-dupla">
+        <strong>#{{ p.id }}</strong>
+        <small>{{ dataHora(p.data) }}</small>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="cliente">
+      <th mat-header-cell *matHeaderCellDef>Cliente</th>
+      <td mat-cell *matCellDef="let p" class="linha-dupla">
+        {{ p.cliente.nome }}
+        <small>{{ p.cliente.email }}</small>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="itens">
+      <th mat-header-cell *matHeaderCellDef>Itens</th>
+      <td mat-cell *matCellDef="let p" class="linha-dupla">
+        {{ p.itens[0]?.produto?.nome }}
+        @if (p.itens.length > 1) { <small>e mais {{ p.itens.length - 1 }} produto(s)</small> }
+        @else { <small>{{ unidades(p) }} un.</small> }
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="pagamento">
+      <th mat-header-cell *matHeaderCellDef>Pagamento</th>
+      <td mat-cell *matCellDef="let p">
+        {{ p.formaPagamento.nome }}{{ p.parcelas > 1 ? ' em ' + p.parcelas + 'x' : '' }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="valor">
+      <th mat-header-cell *matHeaderCellDef class="numero">Total</th>
+      <td mat-cell *matCellDef="let p" class="numero">{{ moeda(p.valorTotal) }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="situacao">
+      <th mat-header-cell *matHeaderCellDef>Situação</th>
+      <td mat-cell *matCellDef="let p"><span class="chip {{ corSituacao(p.situacao.codigo) }}">{{ p.situacao.nome }}</span></td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="colunas"></tr>
+    <tr mat-row *matRowDef="let linha; columns: colunas" class="clicavel" (click)="abrir(linha)"
+        tabindex="0" (keydown.enter)="abrir(linha)"></tr>
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell vazio" [attr.colspan]="colunas.length">
+        {{ carregando() ? 'Carregando...' : 'Nenhum pedido encontrado.' }}
+      </td>
+    </tr>
+  </table>
+
+  <mat-paginator [length]="totalItems()" [pageIndex]="pageIndex()" [pageSize]="pageSize()"
+                 [pageSizeOptions]="[5, 10, 20]" (page)="mudarPagina($event)" />
+</section>

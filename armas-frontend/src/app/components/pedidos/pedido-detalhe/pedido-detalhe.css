@@ -1,0 +1,74 @@
+.cancelado {
+  display: flex; align-items: center; gap: 8px;
+  margin: 0 0 20px; padding: 12px 14px; border-radius: 6px;
+  background: var(--vermelho-escuro); color: #ffd2cc;
+}
+
+.andamento {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin: 0 0 20px;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.andamento li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-right: 1px solid var(--borda);
+  color: var(--texto-suave);
+  font-size: 13px;
+}
+.andamento li:last-child { border-right: 0; }
+.andamento li.feita { color: var(--texto); }
+.andamento li.atual { background: var(--vermelho-escuro); font-weight: 700; }
+
+.bolinha {
+  flex: 0 0 26px; height: 26px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--borda); font-size: 12px;
+}
+.feita .bolinha { background: var(--vermelho); border-color: var(--vermelho); color: #fff; }
+
+.colunas { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
+
+.item {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: 14px;
+  padding: 12px 0;
+  border-top: 1px solid var(--borda);
+}
+.item:first-of-type { border-top: 0; }
+.item small { display: block; color: var(--texto-suave); margin-top: 2px; }
+.item .chip { margin-left: 8px; }
+.miniatura { width: 64px; height: 48px; border-radius: 6px; background: #120f0f; }
+
+.lotes { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.lotes a {
+  padding: 3px 8px; border: 1px solid var(--borda); border-radius: 4px;
+  color: var(--texto); text-decoration: none;
+  font-family: var(--fonte-titulo); font-size: 14px; letter-spacing: 0.03em;
+}
+.lotes a:hover { border-color: var(--vermelho); }
+.lotes span { color: var(--texto-suave); font-family: Roboto, sans-serif; font-size: 11px; }
+
+.total {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding-top: 14px; margin-top: 4px; border-top: 1px solid var(--borda);
+}
+.total strong { font-family: var(--fonte-titulo); font-size: 30px; font-weight: 700; color: var(--verde); }
+
+.cliente { display: flex; flex-direction: column; gap: 4px; }
+.cliente span { color: var(--texto-suave); font-size: 13px; }
+.endereco { margin: 8px 0 14px; font-size: 13px; line-height: 1.5; }
+
+@media (max-width: 900px) {
+  .colunas { grid-template-columns: 1fr; }
+  .andamento { grid-template-columns: 1fr 1fr; }
+}

@@ -4,12 +4,18 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
 
+import br.unitins.armas.dto.AutorizacaoRequestDTO;
 import br.unitins.armas.dto.ClienteRequestDTO;
 import br.unitins.armas.dto.ClienteResponseDTO;
 import br.unitins.armas.dto.PaginaDTO;
 import br.unitins.armas.exception.CampoInvalidoException;
+import br.unitins.armas.exception.RegraNegocioException;
 import br.unitins.armas.model.Cliente;
+import br.unitins.armas.model.SituacaoAutorizacao;
+import br.unitins.armas.model.Usuario;
 import br.unitins.armas.repository.ClienteRepository;
+import br.unitins.armas.repository.PedidoRepository;
+import br.unitins.armas.repository.UsuarioRepository;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -26,6 +32,12 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Inject
     MunicipioService municipioService;
+
+    @Inject
+    UsuarioRepository usuarioRepository;
+
+    @Inject
+    PedidoRepository pedidoRepository;
 
     @Override
     @Transactional
@@ -49,6 +61,10 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     @Transactional
     public void delete(Long id) {
+        if (pedidoRepository.existeComCliente(id))
+            throw new CampoInvalidoException("cliente",
+                    "Este cliente tem pedidos e não pode ser excluído (o histórico de vendas precisa ficar).");
+
         if (!repository.deleteById(id))
             throw new NotFoundException("Cliente não encontrado.");
     }
@@ -59,10 +75,12 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
-    public PaginaDTO<ClienteResponseDTO> findAll(String nome, int page, int pageSize) {
-        PanacheQuery<Cliente> consulta = (nome == null || nome.isBlank())
-                ? repository.findAllOrdenado()
-                : repository.findByNome(nome);
+    public PaginaDTO<ClienteResponseDTO> findAll(String nome, String situacaoAutorizacao, int page, int pageSize) {
+        SituacaoAutorizacao filtro = (situacaoAutorizacao == null || situacaoAutorizacao.isBlank())
+                ? null
+                : SituacaoAutorizacao.buscarPorCodigo(situacaoAutorizacao);
+
+        PanacheQuery<Cliente> consulta = repository.buscar(nome, filtro);
 
         List<ClienteResponseDTO> itens = consulta.page(page, pageSize)
                 .list()
@@ -71,6 +89,80 @@ public class ClienteServiceImpl implements ClienteService {
                 .toList();
 
         return PaginaDTO.of(itens, page, pageSize, consulta.count());
+    }
+
+    @Override
+    @Transactional
+    public void avaliarAutorizacao(Long idCliente, String situacao) {
+        SituacaoAutorizacao nova = SituacaoAutorizacao.buscarPorCodigo(situacao);
+        if (nova != SituacaoAutorizacao.APROVADA && nova != SituacaoAutorizacao.RECUSADA)
+            throw new CampoInvalidoException("situacao", "Escolha APROVADA ou RECUSADA.");
+
+        Cliente cliente = buscarOuFalhar(idCliente);
+        if (cliente.getNumeroAutorizacao() == null)
+            throw new RegraNegocioException("Este cliente ainda não enviou uma autorização de compra.");
+
+        cliente.setSituacaoAutorizacao(nova);
+    }
+
+    // ===== Minha conta =====
+
+    @Override
+    public ClienteResponseDTO buscarDoUsuario(Long idUsuario) {
+        Cliente cliente = repository.findByUsuario(idUsuario);
+        return cliente == null ? null : ClienteResponseDTO.valueOf(cliente);
+    }
+
+    @Override
+    @Transactional
+    public ClienteResponseDTO salvarDoUsuario(Long idUsuario, ClienteRequestDTO dto) {
+        Usuario usuario = usuarioRepository.findByIdOptional(idUsuario)
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado."));
+
+        // o e-mail do cadastro é sempre o e-mail do login
+        ClienteRequestDTO dados = comEmail(dto, usuario.getEmail());
+
+        Cliente cliente = repository.findByUsuario(idUsuario);
+
+        // se o admin já tinha cadastrado esse cliente pelo e-mail, liga a conta a ele
+        if (cliente == null) {
+            Cliente existente = repository.findByEmail(usuario.getEmail());
+            if (existente != null && existente.getUsuario() == null)
+                cliente = existente;
+        }
+
+        if (cliente == null) {
+            validarRegras(dados, null);
+            cliente = new Cliente();
+            preencher(cliente, dados);
+            cliente.setUsuario(usuario);
+            repository.persist(cliente);
+        } else {
+            validarRegras(dados, cliente.getId());
+            preencher(cliente, dados);
+            cliente.setUsuario(usuario);
+        }
+
+        usuario.setNome(cliente.getNome());
+        return ClienteResponseDTO.valueOf(cliente);
+    }
+
+    @Override
+    @Transactional
+    public ClienteResponseDTO enviarAutorizacao(Long idUsuario, AutorizacaoRequestDTO dto) {
+        Cliente cliente = repository.findByUsuario(idUsuario);
+        if (cliente == null)
+            throw new RegraNegocioException("Preencha primeiro seus dados pessoais e endereço.");
+
+        cliente.setNumeroAutorizacao(dto.numero().trim().toUpperCase());
+        cliente.setValidadeAutorizacao(dto.validade());
+        cliente.setSituacaoAutorizacao(SituacaoAutorizacao.EM_ANALISE); // a loja confere e aprova no painel
+        return ClienteResponseDTO.valueOf(cliente);
+    }
+
+    private ClienteRequestDTO comEmail(ClienteRequestDTO dto, String email) {
+        return new ClienteRequestDTO(dto.nome(), email, dto.cpf(), dto.dataNascimento(), dto.telefone(),
+                dto.cep(), dto.logradouro(), dto.numero(), dto.complemento(), dto.bairro(), dto.cidade(), dto.uf());
     }
 
     private void validarRegras(ClienteRequestDTO dto, Long idIgnorado) {

@@ -4,11 +4,12 @@ import java.math.BigDecimal;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+// o estoque saiu daqui: agora ele só muda pela nota de entrada e pela venda
 public record ProdutoRequestDTO(
 
     @NotBlank(message = "Informe o nome do produto.")
@@ -29,13 +30,14 @@ public record ProdutoRequestDTO(
     @Digits(integer = 8, fraction = 2, message = "Use no máximo 2 casas decimais no preço.")
     BigDecimal preco,
 
-    @NotNull(message = "Informe o estoque.")
-    @Min(value = 0, message = "O estoque não pode ser negativo.")
-    Integer estoque,
-
     @Size(max = 1000, message = "A descrição deve ter no máximo 1000 caracteres.")
     String descricao,
 
-    Boolean publicado
+    Boolean publicado,
+
+    // link de uma foto na internet (opcional)
+    @Size(max = 500, message = "O link da foto deve ter no máximo 500 caracteres.")
+    @Pattern(regexp = "(https?://\\S+)?", message = "O link da foto deve começar com http:// ou https://.")
+    String imagemUrl
 ) {
 }

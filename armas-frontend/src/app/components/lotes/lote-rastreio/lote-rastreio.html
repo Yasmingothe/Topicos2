@@ -1,0 +1,143 @@
+<section class="adm-pagina">
+
+  <header class="adm-topo">
+    <div>
+      <p class="trilha">ESTOQUE / RASTREIO DE LOTES</p>
+      <h1>Rastreio de lotes</h1>
+      <p class="subtitulo">Escolha um lote para ver de qual nota ele veio e para quais clientes as unidades foram vendidas.</p>
+    </div>
+  </header>
+
+  <div class="adm-filtros">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Código do lote</mat-label>
+      <input matInput [value]="filtroCodigo()" (input)="buscar($any($event.target).value)" placeholder="Ex.: TAU-G2C">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Produto</mat-label>
+      <mat-select [value]="filtroProduto()" (selectionChange)="filtrarProduto($event.value)">
+        <mat-option [value]="null">Todos</mat-option>
+        @for (p of produtos(); track p.id) {
+          <mat-option [value]="p.id">{{ p.nome }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-slide-toggle [checked]="somenteComSaldo()" (change)="alternarSaldo($event.checked)">
+      Só lotes com saldo
+    </mat-slide-toggle>
+  </div>
+
+  @if (erro()) {
+    <p class="mensagem-erro">{{ erro() }}</p>
+  }
+
+  <div class="corpo" [class.com-painel]="rastreio() || carregandoRastreio()">
+
+    <div>
+      <table mat-table [dataSource]="lotes()" class="tabela tabela-larga">
+        <ng-container matColumnDef="codigo">
+          <th mat-header-cell *matHeaderCellDef>Lote</th>
+          <td mat-cell *matCellDef="let l" class="linha-dupla">
+            <strong class="codigo">{{ l.codigo }}</strong>
+            <small>Entrou em {{ data(l.dataEntrada) }}</small>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="produto">
+          <th mat-header-cell *matHeaderCellDef>Produto</th>
+          <td mat-cell *matCellDef="let l" class="linha-dupla">
+            {{ l.produto.nome }}
+            <small>{{ l.produto.categoria.nome }}</small>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="nota">
+          <th mat-header-cell *matHeaderCellDef>Origem</th>
+          <td mat-cell *matCellDef="let l" class="linha-dupla">
+            NF {{ l.numeroNota }}
+            <small>{{ l.fornecedor }}</small>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="saldo">
+          <th mat-header-cell *matHeaderCellDef class="numero">Saldo</th>
+          <td mat-cell *matCellDef="let l" class="numero">
+            <span class="chip" [class.verde]="l.quantidadeDisponivel > 0">
+              {{ l.quantidadeDisponivel }} / {{ l.quantidadeInicial }}
+            </span>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="colunas"></tr>
+        <tr mat-row *matRowDef="let linha; columns: colunas" class="clicavel"
+            [class.selecionado]="rastreio()?.lote?.id === linha.id"
+            (click)="abrir(linha.id)" tabindex="0" (keydown.enter)="abrir(linha.id)"></tr>
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell vazio" [attr.colspan]="colunas.length">
+            {{ carregando() ? 'Carregando...' : 'Nenhum lote encontrado.' }}
+          </td>
+        </tr>
+      </table>
+
+      <mat-paginator [length]="totalItems()" [pageIndex]="pageIndex()" [pageSize]="pageSize()"
+                     [pageSizeOptions]="[5, 10, 20]" (page)="mudarPagina($event)" />
+    </div>
+
+    @if (carregandoRastreio()) {
+      <aside class="painel adm-cartao"><p class="texto-suave">Montando o rastreio...</p></aside>
+    } @else if (rastreio(); as r) {
+      <aside class="painel adm-cartao" aria-live="polite">
+        <div class="painel-topo">
+          <div>
+            <span class="texto-suave">Lote</span>
+            <h2>{{ r.lote.codigo }}</h2>
+            <p>{{ r.lote.produto.nome }}</p>
+          </div>
+          <button mat-icon-button (click)="fechar()" aria-label="Fechar rastreio"><mat-icon>close</mat-icon></button>
+        </div>
+
+        <div class="contagem">
+          <div><strong>{{ r.lote.quantidadeInicial }}</strong><span>entraram</span></div>
+          <div><strong>{{ r.quantidadeVendida }}</strong><span>vendidas</span></div>
+          <div><strong class="verde">{{ r.lote.quantidadeDisponivel }}</strong><span>em estoque</span></div>
+        </div>
+
+        <!-- linha do tempo: é uma sequência de verdade (entrada -> vendas) -->
+        <ol class="linha-tempo">
+          <li class="entrada">
+            <span class="marcador"><mat-icon>south</mat-icon></span>
+            <div>
+              <strong>Entrada pela NF {{ r.lote.numeroNota }} (série {{ r.lote.serieNota }})</strong>
+              <p>{{ r.lote.fornecedor }}</p>
+              <p class="texto-suave">
+                Emitida em {{ data(r.dataEmissaoNota) }}, recebida em {{ data(r.lote.dataEntrada) }}.
+                {{ r.lote.quantidadeInicial }} un. a {{ moeda(r.custoUnitario) }} cada.
+              </p>
+              <a [routerLink]="['/admin/notas', r.lote.idNota]">Abrir a nota</a>
+            </div>
+          </li>
+
+          @for (saida of r.saidas; track saida.idPedido) {
+            <li class="saida" [class.cancelada]="saida.situacaoPedido.codigo === 'CANCELADO'">
+              <span class="marcador"><mat-icon>north_east</mat-icon></span>
+              <div>
+                <strong>{{ saida.quantidade }} un. para {{ saida.nomeCliente }}</strong>
+                <p class="texto-suave">CPF {{ saida.cpfCliente }}, pedido #{{ saida.idPedido }} em {{ dataHora(saida.dataPedido) }}</p>
+                <span class="chip {{ corSituacao(saida.situacaoPedido.codigo) }}">{{ saida.situacaoPedido.nome }}</span>
+                <a [routerLink]="['/admin/pedidos', saida.idPedido]">Abrir o pedido</a>
+              </div>
+            </li>
+          } @empty {
+            <li class="vazio-tempo">
+              <span class="marcador"><mat-icon>inventory_2</mat-icon></span>
+              <div><p class="texto-suave">Nenhuma unidade deste lote foi vendida ainda.</p></div>
+            </li>
+          }
+        </ol>
+      </aside>
+    }
+  </div>
+</section>

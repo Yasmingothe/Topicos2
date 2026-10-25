@@ -1,0 +1,144 @@
+<section class="pagina">
+  <h1>Minha conta</h1>
+  <p class="apoio">{{ auth.usuario()?.email }}</p>
+
+  @if (carregando()) {
+    <p class="texto-suave">Carregando...</p>
+  } @else {
+    <mat-tab-group [selectedIndex]="abaAtual()" (selectedIndexChange)="abaAtual.set($event)" animationDuration="0ms">
+
+      <!-- ===== dados e endereço ===== -->
+      <mat-tab label="Dados e endereço">
+        <form [formGroup]="dados" (ngSubmit)="salvarDados()" class="conteudo-aba">
+          @if (!cliente()) {
+            <p class="aviso">Preencha uma vez e pronto: estes dados são usados em todas as suas compras.</p>
+          }
+
+          <div class="grade">
+            <mat-form-field appearance="outline" class="c4">
+              <mat-label>Nome completo</mat-label>
+              <input matInput formControlName="nome" autocomplete="name">
+              <mat-error>{{ erro('dados', 'nome') }}</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="c2">
+              <mat-label>CPF</mat-label>
+              <input matInput formControlName="cpf" maxlength="14" placeholder="000.000.000-00">
+              <mat-error>{{ erro('dados', 'cpf') }}</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="c2">
+              <mat-label>Data de nascimento</mat-label>
+              <input matInput type="date" formControlName="dataNascimento">
+              <mat-error>{{ erro('dados', 'dataNascimento') }}</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="c2">
+              <mat-label>Celular</mat-label>
+              <input matInput formControlName="telefone" maxlength="16" placeholder="(63) 99999-0000" autocomplete="tel">
+              <mat-error>{{ erro('dados', 'telefone') }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="c2">
+              <mat-label>CEP</mat-label>
+              <input matInput formControlName="cep" maxlength="9" (blur)="buscarCep()" autocomplete="postal-code">
+              <button mat-icon-button matSuffix type="button" (click)="buscarCep()" [disabled]="buscandoCep()" aria-label="Buscar CEP">
+                <mat-icon>search</mat-icon>
+              </button>
+              @if (buscandoCep() || avisoCep()) {
+                <mat-hint>{{ buscandoCep() ? 'Consultando o CEP...' : avisoCep() }}</mat-hint>
+              }
+              <mat-error>{{ erro('dados', 'cep') }}</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="c4">
+              <mat-label>Logradouro</mat-label>
+              <input matInput formControlName="logradouro">
+              <mat-error>{{ erro('dados', 'logradouro') }}</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="c2">
+              <mat-label>Número</mat-label>
+              <input matInput formControlName="numero">
+              <mat-error>{{ erro('dados', 'numero') }}</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="c2">
+              <mat-label>Complemento</mat-label>
+              <input matInput formControlName="complemento">
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="c4">
+              <mat-label>Bairro</mat-label>
+              <input matInput formControlName="bairro">
+              <mat-error>{{ erro('dados', 'bairro') }}</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="c4">
+              <mat-label>Cidade</mat-label>
+              <input matInput formControlName="cidade">
+              <mat-error>{{ erro('dados', 'cidade') }}</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="c2">
+              <mat-label>UF</mat-label>
+              <mat-select formControlName="uf">
+                @for (e of estados(); track e.id) {
+                  <mat-option [value]="e.sigla">{{ e.sigla }}</mat-option>
+                }
+              </mat-select>
+              <mat-error>{{ erro('dados', 'uf') }}</mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="botoes">
+            <button mat-flat-button type="submit" [disabled]="salvando()">{{ salvando() ? 'Salvando...' : 'Salvar dados' }}</button>
+          </div>
+        </form>
+      </mat-tab>
+
+      <!-- ===== autorização de compra ===== -->
+      <mat-tab label="Autorização de compra">
+        <div class="conteudo-aba autorizacao">
+          <div class="explicacao">
+            <h2>Para comprar arma ou munição</h2>
+            <p>A autorização de compra é emitida pela Polícia Federal depois que você apresenta certidões,
+              laudo psicológico e teste de tiro. Aqui você só informa o número e a validade. A loja confere e libera.</p>
+            <p>Acessórios, coldres e óptica não precisam de autorização.</p>
+            @if (cliente() && cliente()!.idade < 25) {
+              <p class="aviso-idade"><mat-icon>info</mat-icon> A lei exige 25 anos ou mais para comprar arma. Você tem {{ cliente()!.idade }}.</p>
+            }
+          </div>
+
+          <div class="situacao-cartao">
+            @if (cliente(); as c) {
+              <span class="chip {{ corSituacao(c.situacaoAutorizacao.codigo) }}">{{ c.situacaoAutorizacao.nome }}</span>
+              @if (c.numeroAutorizacao) {
+                <p>Nº {{ c.numeroAutorizacao }}, válida até {{ data(c.validadeAutorizacao) }}.</p>
+              }
+              @if (c.autorizacaoValida) {
+                <p class="ok"><mat-icon>verified_user</mat-icon> Compra de produtos controlados liberada.</p>
+              }
+            }
+
+            @if (podeEnviarAutorizacao()) {
+              <form [formGroup]="autorizacao" (ngSubmit)="enviarAutorizacao()">
+                <mat-form-field appearance="outline">
+                  <mat-label>Número da autorização</mat-label>
+                  <input matInput formControlName="numero" placeholder="Ex.: PF-2026/004512">
+                  <mat-error>{{ erro('autorizacao', 'numero') }}</mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Válida até</mat-label>
+                  <input matInput type="date" formControlName="validade">
+                  <mat-error>{{ erro('autorizacao', 'validade') }}</mat-error>
+                </mat-form-field>
+                <button mat-flat-button type="submit" [disabled]="enviandoAutorizacao()">
+                  {{ enviandoAutorizacao() ? 'Enviando...' : (cliente()?.numeroAutorizacao ? 'Enviar nova autorização' : 'Enviar autorização') }}
+                </button>
+                <p class="dica">Ao enviar uma nova, ela volta para análise.</p>
+              </form>
+            } @else {
+              <p class="aviso">Salve primeiro seus dados e endereço na outra aba.</p>
+            }
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+
+    @if (voltar()) {
+      <a mat-stroked-button [routerLink]="voltar()" class="voltar"><mat-icon>arrow_back</mat-icon> Voltar para a compra</a>
+    }
+  }
+</section>

@@ -1,0 +1,60 @@
+<section class="adm-pagina formulario-estreito">
+
+  <header class="adm-topo">
+    <div>
+      <p class="trilha">ESTOQUE / FORNECEDORES</p>
+      <h1>{{ id() ? 'Editar fornecedor' : 'Novo fornecedor' }}</h1>
+    </div>
+  </header>
+
+  @if (erroGeral()) {
+    <p class="mensagem-erro">{{ erroGeral() }}</p>
+  }
+
+  @if (carregando()) {
+    <p>Carregando...</p>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="salvar()" class="adm-cartao grade-form">
+      <mat-form-field appearance="outline" class="cheia">
+        <mat-label>Razão social</mat-label>
+        <input matInput formControlName="razaoSocial">
+        <mat-error>{{ mensagemErro('razaoSocial') }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Nome fantasia (opcional)</mat-label>
+        <input matInput formControlName="nomeFantasia">
+        <mat-error>{{ mensagemErro('nomeFantasia') }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>CNPJ</mat-label>
+        <input matInput formControlName="cnpj" placeholder="00.000.000/0000-00" maxlength="18">
+        <mat-error>{{ mensagemErro('cnpj') }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>E-mail (opcional)</mat-label>
+        <input matInput type="email" formControlName="email">
+        <mat-error>{{ mensagemErro('email') }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Telefone (opcional)</mat-label>
+        <input matInput formControlName="telefone" placeholder="(63) 3214-0000" maxlength="16">
+        <mat-error>{{ mensagemErro('telefone') }}</mat-error>
+      </mat-form-field>
+
+      <mat-slide-toggle formControlName="ativo" class="cheia">
+        {{ form.controls.ativo.value ? 'Ativo: pode receber notas novas' : 'Inativo: não aparece no lançamento de notas' }}
+      </mat-slide-toggle>
+
+      <div class="cheia botoes-form">
+        <button type="button" mat-stroked-button appVoltar="/admin/fornecedores">Cancelar</button>
+        <button mat-flat-button type="submit" [disabled]="salvando()">
+          {{ salvando() ? 'Salvando...' : 'Salvar fornecedor' }}
+        </button>
+      </div>
+    </form>
+  }
+</section>

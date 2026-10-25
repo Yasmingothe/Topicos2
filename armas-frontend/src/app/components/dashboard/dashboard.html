@@ -1,72 +1,114 @@
 <section class="dashboard">
 
+  <header class="topo">
+    <div>
+      <p class="trilha">VISÃO GERAL</p>
+      <h1>Dashboard</h1>
+      <p class="subtitulo">Olá, {{ primeiroNome() }}. Este é o resumo da loja hoje.</p>
+    </div>
+    <div class="botoes-topo">
+      <a mat-stroked-button routerLink="/"><mat-icon>storefront</mat-icon> Ver a loja</a>
+      <a mat-flat-button routerLink="/admin/notas/nova"><mat-icon>add</mat-icon> Lançar nota de entrada</a>
+    </div>
+  </header>
+
   @if (erro()) {
     <p class="erro">{{ erro() }}</p>
   }
 
-  <!-- ===== 4 cartões de cima ===== -->
+  <!-- ===== 4 números principais ===== -->
   <div class="cartoes">
-    <div class="cartao">
+    <a class="cartao" routerLink="/admin/pedidos">
+      <span class="rotulo">FATURAMENTO</span>
+      <strong class="valor verde">{{ moeda(resumo()?.faturamento) }}</strong>
+      <small class="suave">{{ resumo()?.totalPedidos ?? 0 }} venda(s), sem contar canceladas</small>
+    </a>
+    <a class="cartao" routerLink="/admin/lotes">
       <span class="rotulo">VALOR EM ESTOQUE</span>
-      <strong class="valor verde">{{ formatarPreco(valorEstoque()) }}</strong>
-    </div>
-    <a class="cartao" routerLink="/admin/produtos">
-      <span class="rotulo">PRODUTOS ATIVOS</span>
-      <strong class="valor">{{ publicados() }}</strong>
+      <strong class="valor">{{ formatarPreco(valorEstoque()) }}</strong>
+      <small class="suave">{{ unidadesEmEstoque() }} unidades em {{ resumo()?.lotesComSaldo ?? 0 }} lotes</small>
     </a>
-    <a class="cartao" routerLink="/admin/marcas">
-      <span class="rotulo">MARCAS</span>
-      <strong class="valor">{{ totalMarcas() }}</strong>
+    <a class="cartao" routerLink="/admin/pedidos">
+      <span class="rotulo">PEDIDOS EM ANDAMENTO</span>
+      <strong class="valor">{{ resumo()?.pedidosEmAberto ?? 0 }}</strong>
+      <small class="suave">pagos, em separação ou para retirada</small>
     </a>
-    <a class="cartao" routerLink="/admin/clientes">
-      <span class="rotulo">CLIENTES</span>
-      <strong class="valor">{{ totalClientes() }}</strong>
+    <a class="cartao" [class.alerta]="(resumo()?.autorizacoesEmAnalise ?? 0) > 0"
+       routerLink="/admin/clientes" [queryParams]="{ autorizacao: 'EM_ANALISE' }">
+      <span class="rotulo">AUTORIZAÇÕES PARA CONFERIR</span>
+      <strong class="valor">{{ resumo()?.autorizacoesEmAnalise ?? 0 }}</strong>
+      <small class="suave">clientes esperando liberação</small>
     </a>
   </div>
 
-  <!-- ===== meio: categorias + clientes ===== -->
+  <!-- ===== vitrine: cada produto em um quadrado, com a foto ===== -->
+  <div class="painel">
+    <div class="painel-topo">
+      <h2>PRODUTOS ({{ produtos().length }})</h2>
+      <a routerLink="/admin/produtos" class="ver-todos">Gerenciar produtos</a>
+    </div>
+
+    <div class="vitrine">
+      @for (p of produtos(); track p.id) {
+        <a class="item-vitrine" [routerLink]="['/admin/produtos/editar', p.id]">
+          <div class="foto">
+            <app-produto-imagem [idProduto]="p.id" [categoria]="p.categoria.codigo" [nome]="p.nome" [temImagem]="p.temImagem" [imagemUrl]="p.imagemUrl" />
+            <span class="selo-estoque" [class.baixo]="p.estoque <= 6" [class.zerado]="p.estoque === 0">
+              {{ p.estoque }} un.
+            </span>
+            @if (!p.publicado) { <span class="selo-rascunho">Rascunho</span> }
+          </div>
+          <strong class="nome-produto">{{ p.nome }}</strong>
+          <span class="linha-preco">
+            <span class="suave">{{ p.marca.nome }}</span>
+            <span>{{ formatarPreco(p.preco) }}</span>
+          </span>
+        </a>
+      } @empty {
+        <p class="suave">Nenhum produto cadastrado.</p>
+      }
+    </div>
+  </div>
+
+  <!-- ===== pedidos + estoque baixo ===== -->
   <div class="meio">
     <div class="painel">
-      <h2>PRODUTOS POR CATEGORIA</h2>
-      @for (cat of porCategoria(); track cat.nome) {
-        <div class="barra-linha">
-          <span class="barra-nome">{{ cat.nome }}</span>
-          <span class="barra-fundo">
-            <span class="barra" [style.width.%]="cat.largura"></span>
+      <div class="painel-topo">
+        <h2>ÚLTIMOS PEDIDOS</h2>
+        <a routerLink="/admin/pedidos" class="ver-todos">Ver todos</a>
+      </div>
+      @for (pedido of pedidos(); track pedido.id) {
+        <a class="linha" [routerLink]="['/admin/pedidos', pedido.id]">
+          <span class="codigo">#{{ pedido.id }}</span>
+          <span class="nome">
+            {{ pedido.cliente.nome }}
+            <small class="suave">{{ dataHora(pedido.data) }}</small>
           </span>
-          <strong>{{ cat.qtd }}</strong>
-        </div>
+          <span class="chip {{ corSituacao(pedido.situacao.codigo) }}">{{ pedido.situacao.nome }}</span>
+          <strong class="valor-linha">{{ moeda(pedido.valorTotal) }}</strong>
+        </a>
+      } @empty {
+        <p class="suave">Nenhuma venda ainda.</p>
       }
     </div>
 
     <div class="painel">
-      <h2>CLIENTES CADASTRADOS</h2>
-      @for (cliente of clientes(); track cliente.id) {
-        <div class="linha">
-          <span class="codigo">#{{ cliente.id }}</span>
-          <span class="nome">{{ cliente.nome }}</span>
-          <span class="suave">{{ cliente.municipio.nome }} / {{ cliente.municipio.estado.sigla }}</span>
-        </div>
+      <div class="painel-topo">
+        <h2>ESTOQUE BAIXO</h2>
+        <a routerLink="/admin/notas/nova" class="ver-todos">Repor estoque</a>
+      </div>
+      @for (produto of estoqueBaixo(); track produto.id) {
+        <a class="linha estoque" [routerLink]="['/admin/lotes']" [queryParams]="{ produto: produto.id }">
+          <span>
+            <span class="nome">{{ produto.nome }}</span>
+            <small class="suave">{{ produto.marca.nome }}</small>
+          </span>
+          <span class="selo">{{ produto.estoque }} UN.</span>
+        </a>
       } @empty {
-        <p class="suave">Nenhum cliente cadastrado.</p>
+        <p class="suave">Nenhum produto com estoque baixo.</p>
       }
     </div>
-  </div>
-
-  <!-- ===== estoque baixo ===== -->
-  <div class="painel">
-    <h2>PRODUTOS COM ESTOQUE BAIXO</h2>
-    @for (produto of estoqueBaixo(); track produto.id) {
-      <a class="linha estoque" [routerLink]="['/admin/produtos/editar', produto.id]">
-        <span>
-          <span class="nome">{{ produto.nome }}</span>
-          <small class="suave">{{ produto.marca.nome }}</small>
-        </span>
-        <span class="selo">{{ produto.estoque }} UN.</span>
-      </a>
-    } @empty {
-      <p class="suave">Nenhum produto com estoque baixo. 👍</p>
-    }
   </div>
 
 </section>

@@ -29,14 +29,23 @@ public class Produto extends EntidadeBase {
     @Column(precision = 10, scale = 2, nullable = false)
     private BigDecimal preco;
 
+    // o estoque NÃO é digitado: sobe pela nota de entrada e desce pela venda
     @Column(nullable = false)
-    private Integer estoque;
+    private Integer estoque = 0;
 
     @Column(length = 1000)
     private String descricao;
 
     @Column(nullable = false)
     private Boolean publicado = true;
+
+    // nome do arquivo da foto salvo na pasta de imagens (pode ficar vazio)
+    @Column(length = 120)
+    private String nomeImagem;
+
+    // ou um link de foto na internet (usado quando não tem arquivo enviado)
+    @Column(length = 500)
+    private String imagemUrl;
 
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
@@ -61,4 +70,10 @@ public class Produto extends EntidadeBase {
 
     public Boolean getPublicado() { return publicado; }
     public void setPublicado(Boolean publicado) { this.publicado = publicado; }
+
+    public String getNomeImagem() { return nomeImagem; }
+    public void setNomeImagem(String nomeImagem) { this.nomeImagem = nomeImagem; }
+
+    public String getImagemUrl() { return imagemUrl; }
+    public void setImagemUrl(String imagemUrl) { this.imagemUrl = imagemUrl; }
 }

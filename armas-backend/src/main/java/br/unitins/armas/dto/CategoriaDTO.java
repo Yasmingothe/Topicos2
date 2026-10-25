@@ -2,9 +2,9 @@ package br.unitins.armas.dto;
 
 import br.unitins.armas.model.Categoria;
 
-public record CategoriaDTO(String codigo, String nome) {
+public record CategoriaDTO(String codigo, String nome, boolean controlada) {
 
     public static CategoriaDTO valueOf(Categoria categoria) {
-        return new CategoriaDTO(categoria.name(), categoria.getNome());
+        return new CategoriaDTO(categoria.name(), categoria.getNome(), categoria.isControlada());
     }
 }

@@ -1,0 +1,55 @@
+<div class="tela">
+
+  <header class="topo">
+    <a routerLink="/" class="logo" aria-label="ZERO1, voltar para a loja">
+      <span class="logo-icone"><mat-icon>gps_fixed</mat-icon></span>
+      ZERO1
+    </a>
+  </header>
+
+  <section class="formulario">
+    <form [formGroup]="form" (ngSubmit)="criar()" class="cartao">
+      <h1>Criar conta</h1>
+      <p class="apoio">Endereço e documentos você completa depois, em Minha conta.</p>
+
+      @if (erro()) {
+        <p class="erro" role="alert">{{ erro() }}</p>
+      }
+
+      <mat-form-field appearance="outline">
+        <mat-label>Nome completo</mat-label>
+        <input matInput formControlName="nome" autocomplete="name">
+        <mat-error>Informe o nome (pelo menos 2 letras).</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>E-mail</mat-label>
+        <input matInput type="email" formControlName="email" autocomplete="email">
+        <mat-error>{{ erroEmail() }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Senha</mat-label>
+        <input matInput type="password" formControlName="senha" autocomplete="new-password">
+        <mat-hint>Pelo menos 6 caracteres.</mat-hint>
+        <mat-error>A senha deve ter pelo menos 6 caracteres.</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Confirmar senha</mat-label>
+        <input matInput type="password" formControlName="confirmacao" autocomplete="new-password">
+        <mat-error>Repita a senha.</mat-error>
+      </mat-form-field>
+      @if (form.hasError('senhasDiferentes') && form.controls.confirmacao.touched) {
+        <p class="erro-campo">As senhas não são iguais.</p>
+      }
+
+      <button mat-flat-button type="submit" class="botao" [disabled]="salvando()">
+        {{ salvando() ? 'Criando...' : 'Criar conta' }}
+      </button>
+
+      <p class="troca">Já tem conta? <a routerLink="/login">Entrar</a></p>
+    </form>
+  </section>
+
+</div>

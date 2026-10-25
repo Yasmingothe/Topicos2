@@ -1,0 +1,151 @@
+<section class="pagina">
+
+  @if (pedidoFeito(); as pedido) {
+    <!-- ===== compra concluída ===== -->
+    <div class="concluido">
+      <mat-icon>task_alt</mat-icon>
+      <h1>Pedido #{{ pedido.id }} confirmado.</h1>
+      <p>Pagamento de {{ moeda(pedido.valorTotal) }} via {{ pedido.formaPagamento.nome }}{{ pedido.parcelas > 1 ? ' em ' + pedido.parcelas + 'x' : '' }}.
+        Avisamos por e-mail quando estiver pronto para retirada. Leve um documento com foto.</p>
+      <div class="botoes">
+        <a mat-flat-button routerLink="/meus-pedidos">Acompanhar pedido</a>
+        <a mat-stroked-button routerLink="/">Voltar à loja</a>
+      </div>
+    </div>
+  } @else if (!carrinho.itens().length) {
+    <div class="concluido">
+      <h1>Não há nada para pagar.</h1>
+      <p>Seu carrinho está vazio.</p>
+      <a mat-flat-button routerLink="/">Ver o catálogo</a>
+    </div>
+  } @else {
+    <h1>Finalizar compra</h1>
+
+    <div class="colunas">
+      <ol class="etapas">
+
+        <!-- 1. dados -->
+        <li class="etapa">
+          <h2><span class="numero">1</span> Seus dados</h2>
+          @if (carregando()) {
+            <p class="texto-suave">Carregando...</p>
+          } @else if (cliente(); as c) {
+            <div class="dados">
+              <div>
+                <strong>{{ c.nome }}</strong>
+                <span>{{ c.email }}</span>
+                <span>{{ c.logradouro }}, {{ c.numero }}{{ c.complemento ? ' - ' + c.complemento : '' }}, {{ c.bairro }}, {{ c.municipio.nome }}/{{ c.municipio.estado.sigla }}</span>
+              </div>
+              <a mat-stroked-button routerLink="/minha-conta">Alterar</a>
+            </div>
+          } @else {
+            <div class="pendente">
+              <p>Para comprar, preencha CPF, data de nascimento e endereço.</p>
+              <a mat-flat-button routerLink="/minha-conta" [queryParams]="{ voltar: '/checkout' }">Completar cadastro</a>
+            </div>
+          }
+        </li>
+
+        <!-- 2. documentação: só aparece se tiver item controlado -->
+        @if (carrinho.temControlado()) {
+          <li class="etapa">
+            <h2><span class="numero">2</span> Autorização de compra</h2>
+            @if (problemaControlado()) {
+              <div class="alerta" role="alert">
+                <mat-icon>gpp_bad</mat-icon>
+                <div>
+                  <strong>{{ problemaControlado() }}</strong>
+                  <p>Sem isso a loja não pode vender arma nem munição. Você ainda pode comprar acessórios.</p>
+                  <a routerLink="/minha-conta" [queryParams]="{ aba: 'autorizacao', voltar: '/checkout' }">Enviar autorização</a>
+                </div>
+              </div>
+            } @else if (cliente(); as c) {
+              <div class="liberado">
+                <mat-icon>verified_user</mat-icon>
+                Autorização nº {{ c.numeroAutorizacao }} aprovada. Compra de produtos controlados liberada.
+              </div>
+            }
+          </li>
+        }
+
+        <!-- 3. pagamento -->
+        <li class="etapa">
+          <h2><span class="numero">{{ carrinho.temControlado() ? 3 : 2 }}</span> Pagamento</h2>
+          <div class="formas" role="radiogroup" aria-label="Forma de pagamento">
+            @for (f of formas; track f.codigo) {
+              <button type="button" class="forma" role="radio" [attr.aria-checked]="forma() === f.codigo"
+                      [class.escolhida]="forma() === f.codigo" (click)="forma.set(f.codigo)">
+                <mat-icon>{{ f.icone }}</mat-icon>
+                <strong>{{ f.nome }}</strong>
+                <span>{{ f.detalhe }}</span>
+              </button>
+            }
+          </div>
+
+          @switch (forma()) {
+            @case ('PIX') {
+              <p class="explica">Ao confirmar, o QR Code aparece aqui. Neste projeto o pagamento é simulado e aprovado na hora.</p>
+            }
+            @case ('BOLETO') {
+              <p class="explica">Ao confirmar, geramos o boleto. Neste projeto o pagamento é simulado e aprovado na hora.</p>
+            }
+            @case ('CARTAO_CREDITO') {
+              <form [formGroup]="cartao" class="cartao">
+                <mat-form-field appearance="outline" class="cheio">
+                  <mat-label>Número do cartão</mat-label>
+                  <input matInput formControlName="numero" inputmode="numeric" autocomplete="off"
+                         (input)="formatarNumero($event)" placeholder="0000 0000 0000 0000">
+                  <mat-error>Use os 16 números do cartão.</mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="cheio">
+                  <mat-label>Nome impresso</mat-label>
+                  <input matInput formControlName="nome" autocomplete="off">
+                  <mat-error>Informe o nome.</mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Validade</mat-label>
+                  <input matInput formControlName="validade" placeholder="MM/AA" maxlength="5" autocomplete="off">
+                  <mat-error>Use MM/AA.</mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>CVV</mat-label>
+                  <input matInput formControlName="cvv" inputmode="numeric" maxlength="4" autocomplete="off">
+                  <mat-error>3 ou 4 números.</mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="cheio">
+                  <mat-label>Parcelas</mat-label>
+                  <mat-select formControlName="parcelas">
+                    @for (n of parcelas(); track n) {
+                      <mat-option [value]="n">{{ n }}x de {{ moeda(carrinho.total() / n) }}{{ n === 1 ? ' (à vista)' : ' sem juros' }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+                <p class="explica cheio">Simulação: os dados do cartão não saem desta tela e não são salvos.</p>
+              </form>
+            }
+          }
+        </li>
+      </ol>
+
+      <aside class="resumo">
+        <p class="rotulo-resumo">Resumo</p>
+        @for (item of carrinho.itens(); track item.idProduto) {
+          <div class="linha">
+            <span>{{ item.quantidade }} × {{ item.nome }}</span>
+            <span>{{ moeda(item.preco * item.quantidade) }}</span>
+          </div>
+        }
+        <div class="linha total"><span>Total</span><strong>{{ moeda(carrinho.total()) }}</strong></div>
+
+        @if (erroCompra()) {
+          <p class="erro-compra" role="alert"><mat-icon>error</mat-icon> {{ erroCompra() }}</p>
+        }
+
+        <button mat-flat-button class="botao" (click)="finalizar()" [disabled]="enviando() || !cliente()">
+          {{ enviando() ? 'Confirmando...' : 'Confirmar pedido' }}
+        </button>
+        <a mat-stroked-button routerLink="/carrinho" class="botao">Voltar ao carrinho</a>
+      </aside>
+    </div>
+  }
+</section>

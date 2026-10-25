@@ -60,7 +60,7 @@
         <button mat-flat-button type="submit" class="botao" [disabled]="salvando()">
           {{ salvando() ? 'SALVANDO...' : 'SALVAR MARCA' }}
         </button>
-        <a mat-stroked-button routerLink="/admin/marcas" class="botao">CANCELAR</a>
+        <button type="button" mat-stroked-button appVoltar="/admin/marcas" class="botao">CANCELAR</button>
       </div>
 
     </form>

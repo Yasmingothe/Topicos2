@@ -6,7 +6,6 @@
        : duplicando() ? 'Os dados foram copiados. Ajuste o que for diferente e salve como um novo produto.'
        : 'Adicione um novo item ao catálogo.' }}
   </p>
-  <p class="subtitulo">{{ id() ? 'Altere os dados do item.' : 'Adicione um novo item ao catálogo.' }}</p>
 
   @if (erroGeral()) {
     <p class="mensagem-erro">{{ erroGeral() }}</p>
@@ -47,23 +46,33 @@
           <mat-error>{{ mensagemErro('categoria') }}</mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="terco">
+        <mat-form-field appearance="outline" class="metade">
           <mat-label>Calibre (opcional)</mat-label>
           <input matInput formControlName="calibre" placeholder="Ex.: 9mm">
           <mat-error>{{ mensagemErro('calibre') }}</mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="terco">
+        <mat-form-field appearance="outline" class="metade">
           <mat-label>Preço (R$)</mat-label>
           <input matInput type="number" formControlName="preco" min="0" step="0.01">
           <mat-error>{{ mensagemErro('preco') }}</mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="terco">
-          <mat-label>Estoque (un.)</mat-label>
-          <input matInput type="number" formControlName="estoque" min="0" step="1">
-          <mat-error>{{ mensagemErro('estoque') }}</mat-error>
-        </mat-form-field>
+        <!-- o estoque não é digitado: vem das notas de entrada -->
+        <div class="inteiro estoque-info">
+          <mat-icon>inventory</mat-icon>
+          <span>
+            @if (estoqueAtual() !== null) {
+              <strong>{{ estoqueAtual() }} unidade(s) em estoque.</strong>
+            } @else {
+              <strong>Produto novo começa com estoque zero.</strong>
+            }
+            O estoque sobe pelas notas de entrada e desce pelas vendas.
+          </span>
+          @if (id()) {
+            <a mat-stroked-button routerLink="/admin/notas/nova">Lançar entrada</a>
+          }
+        </div>
 
         <mat-form-field appearance="outline" class="inteiro">
           <mat-label>Descrição (opcional)</mat-label>
@@ -74,6 +83,39 @@
       </div>
 
       <div class="lateral">
+
+        <div class="cartao">
+          <p class="rotulo">FOTO</p>
+          <div class="foto">
+            <app-produto-imagem class="foto-imagem" [idProduto]="id() ?? 0"
+                                [categoria]="form.controls.categoria.value || 'ACESSORIO_OPTICA'"
+                                [nome]="form.controls.nome.value" [temImagem]="temImagem()" [versao]="versaoImagem()"
+                                [imagemUrl]="form.controls.imagemUrl.valid ? form.controls.imagemUrl.value : null" />
+          </div>
+
+          <!-- link de foto: funciona mesmo antes de salvar -->
+          <mat-form-field appearance="outline" class="campo-link" subscriptSizing="dynamic">
+            <mat-label>Link da foto (opcional)</mat-label>
+            <input matInput formControlName="imagemUrl" placeholder="https://...">
+            <mat-error>{{ mensagemErro('imagemUrl') }}</mat-error>
+          </mat-form-field>
+          @if (id()) {
+            <input #arquivo type="file" accept="image/jpeg,image/png,image/webp" hidden (change)="escolherImagem($event)">
+            <div class="foto-botoes">
+              <button mat-stroked-button type="button" (click)="arquivo.click()" [disabled]="enviandoImagem()">
+                <mat-icon>upload</mat-icon> {{ enviandoImagem() ? 'Enviando...' : (temImagem() ? 'Trocar' : 'Enviar foto') }}
+              </button>
+              @if (temImagem()) {
+                <button mat-icon-button type="button" (click)="removerImagem()" aria-label="Remover foto">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              }
+            </div>
+            <p class="dica">Envie um arquivo (JPG, PNG ou WEBP de até 5 MB) ou cole um link acima. O arquivo enviado tem prioridade.</p>
+          } @else {
+            <p class="dica">Cole um link de foto acima. Para enviar um arquivo, salve o produto primeiro.</p>
+          }
+        </div>
 
         <div class="cartao">
           <p class="rotulo">STATUS</p>
@@ -97,7 +139,7 @@
         <button mat-flat-button type="submit" class="botao-salvar" [disabled]="salvando()">
           {{ salvando() ? 'SALVANDO...' : 'SALVAR PRODUTO' }}
         </button>
-        <a mat-stroked-button routerLink="/admin/produtos" class="botao-cancelar">CANCELAR</a>
+        <button type="button" mat-stroked-button appVoltar="/admin/produtos" class="botao-cancelar">CANCELAR</button>
       </div>
 
     </form>

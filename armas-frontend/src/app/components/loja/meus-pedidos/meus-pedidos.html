@@ -1,0 +1,45 @@
+<section class="pagina">
+  <h1>Meus pedidos</h1>
+
+  @if (carregando()) {
+    <p class="texto-suave">Carregando...</p>
+  } @else {
+    <ul class="lista">
+      @for (p of pedidos(); track p.id) {
+        <li class="pedido" [class.aberto]="aberto() === p.id">
+          <button type="button" class="cabeca" (click)="alternar(p.id)" [attr.aria-expanded]="aberto() === p.id">
+            <span class="id">#{{ p.id }}</span>
+            <span class="quando">{{ dataHora(p.data) }}</span>
+            <span class="chip {{ corSituacao(p.situacao.codigo) }}">{{ p.situacao.nome }}</span>
+            <strong class="valor">{{ moeda(p.valorTotal) }}</strong>
+            <mat-icon>{{ aberto() === p.id ? 'expand_less' : 'expand_more' }}</mat-icon>
+          </button>
+
+          @if (aberto() === p.id) {
+            <div class="corpo">
+              @for (item of p.itens; track item.id) {
+                <div class="item">
+                  <app-produto-imagem class="miniatura" [idProduto]="item.produto.id" [categoria]="item.produto.categoria.codigo"
+                                      [nome]="item.produto.nome" [temImagem]="item.produto.temImagem" [imagemUrl]="item.produto.imagemUrl" />
+                  <span>{{ item.quantidade }} × {{ item.produto.nome }}</span>
+                  <span>{{ moeda(item.subtotal) }}</span>
+                </div>
+              }
+              <div class="rodape">
+                <span>{{ p.formaPagamento.nome }}{{ p.parcelas > 1 ? ' em ' + p.parcelas + 'x' : '' }}. Retirada na loja com documento.</span>
+                @if (p.situacao.codigo === 'PAGO') {
+                  <button mat-stroked-button (click)="cancelar(p)">Cancelar pedido</button>
+                }
+              </div>
+            </div>
+          }
+        </li>
+      } @empty {
+        <li class="vazio-pedidos">
+          <p>Você ainda não fez nenhum pedido.</p>
+          <a mat-flat-button routerLink="/">Ver o catálogo</a>
+        </li>
+      }
+    </ul>
+  }
+</section>

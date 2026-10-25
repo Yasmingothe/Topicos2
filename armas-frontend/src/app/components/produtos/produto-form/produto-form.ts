@@ -18,17 +18,20 @@ import { CategoriaService } from '../../../services/categoria.service';
 import { MarcaService } from '../../../services/marca.service';
 import { ProdutoService } from '../../../services/produto.service';
 import { NotificacaoService } from '../../../services/notificacao.service';
+import { ProdutoImagem } from '../../shared/produto-imagem';
 
 function naoSomenteEspacos(control: AbstractControl): ValidationErrors | null {
   const valor = control.value as string;
   return valor && valor.trim().length === 0 ? { somenteEspacos: true } : null;
 }
 
+import { VoltarDirective } from '../../../directives/voltar.directive';
+
 @Component({
   selector: 'app-produto-form',
-  imports: [
+  imports: [VoltarDirective, 
     ReactiveFormsModule, RouterLink, MatFormFieldModule, MatInputModule,
-    MatSelectModule, MatButtonModule, MatIconModule,
+    MatSelectModule, MatButtonModule, MatIconModule, ProdutoImagem,
   ],
   templateUrl: './produto-form.html',
   styleUrl: './produto-form.css',
@@ -49,6 +52,12 @@ export class ProdutoForm implements OnInit {
   salvando = signal(false);
   erroGeral = signal('');
 
+  // estoque e foto: só leitura aqui (estoque muda pela nota; foto tem botão próprio)
+  estoqueAtual = signal<number | null>(null);
+  temImagem = signal(false);
+  versaoImagem = signal('');
+  enviandoImagem = signal(false);
+
   marcas = signal<Marca[]>([]);
   categorias = signal<Categoria[]>([]);
 
@@ -60,11 +69,9 @@ export class ProdutoForm implements OnInit {
     categoria: this.fb.nonNullable.control('', Validators.required),
     calibre: this.fb.nonNullable.control('', Validators.maxLength(30)),
     preco: this.fb.control<number | null>(null, [Validators.required, Validators.min(0.01)]),
-    estoque: this.fb.control<number | null>(null, [
-      Validators.required, Validators.min(0), Validators.pattern(/^\d+$/),
-    ]),
     descricao: this.fb.nonNullable.control('', Validators.maxLength(1000)),
     publicado: this.fb.nonNullable.control(true),
+    imagemUrl: this.fb.nonNullable.control('', [Validators.maxLength(500), Validators.pattern(/^(https?:\/\/\S+)?$/)]),
   });
 
   ngOnInit(): void {
@@ -94,11 +101,15 @@ export class ProdutoForm implements OnInit {
           categoria: produto.categoria.codigo,
           calibre: produto.calibre ?? '',
           preco: produto.preco,
-          estoque: produto.estoque,
           descricao: produto.descricao ?? '',
           // a cópia começa como rascunho, para não publicar sem querer
           publicado: this.duplicando() ? false : produto.publicado,
+          imagemUrl: produto.imagemUrl ?? '',
         });
+        if (!this.duplicando()) {
+          this.estoqueAtual.set(produto.estoque);
+          this.temImagem.set(produto.temImagem);
+        }
         this.carregando.set(false);
       },
       error: () => {
@@ -124,14 +135,63 @@ export class ProdutoForm implements OnInit {
 
     requisicao.subscribe({
       // deu certo: mostra o aviso verde e volta para a lista
-      next: () => {
-        this.notificacao.sucesso(this.id() ? 'Produto atualizado com sucesso.' : 'Produto cadastrado com sucesso.');
-        this.router.navigateByUrl('/admin/produtos');
+      next: (resposta) => {
+        if (this.id()) {
+          this.notificacao.sucesso('Produto atualizado com sucesso.');
+          this.router.navigateByUrl('/admin/produtos');
+          return;
+        }
+        // produto novo: abre a edição para poder enviar a foto (a foto precisa do id)
+        const criado = resposta as { id: number };
+        this.notificacao.sucesso('Produto cadastrado. Agora você pode enviar a foto.');
+        this.router.navigate(['/admin/produtos/editar', criado.id]);
       },
       error: (erro: HttpErrorResponse) => {
         this.aplicarErrosDaApi(erro);
         this.salvando.set(false);
       },
+    });
+  }
+
+  // ===== FOTO =====
+  escolherImagem(evento: Event): void {
+    const campo = evento.target as HTMLInputElement;
+    const arquivo = campo.files?.[0];
+    campo.value = ''; // permite escolher o mesmo arquivo de novo
+    if (!arquivo || !this.id()) return;
+
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(arquivo.type)) {
+      this.notificacao.erro('Envie uma imagem JPG, PNG ou WEBP.');
+      return;
+    }
+    if (arquivo.size > 5 * 1024 * 1024) {
+      this.notificacao.erro('A imagem deve ter no máximo 5 MB.');
+      return;
+    }
+
+    this.enviandoImagem.set(true);
+    this.produtoService.enviarImagem(this.id()!, arquivo).subscribe({
+      next: () => {
+        this.temImagem.set(true);
+        this.versaoImagem.set(String(Date.now()));
+        this.enviandoImagem.set(false);
+        this.notificacao.sucesso('Foto enviada.');
+      },
+      error: (erro: HttpErrorResponse) => {
+        this.enviandoImagem.set(false);
+        this.notificacao.erro((erro.error as ErroApi | null)?.message ?? 'Não foi possível enviar a foto.');
+      },
+    });
+  }
+
+  removerImagem(): void {
+    if (!this.id()) return;
+    this.produtoService.removerImagem(this.id()!).subscribe({
+      next: () => {
+        this.temImagem.set(false);
+        this.notificacao.sucesso('Foto removida. A loja volta a mostrar o desenho da categoria.');
+      },
+      error: () => this.notificacao.erro('Não foi possível remover a foto.'),
     });
   }
 
@@ -164,9 +224,9 @@ export class ProdutoForm implements OnInit {
     if (erros['maxlength'])
       return `Use no máximo ${erros['maxlength'].requiredLength} caracteres.`;
     if (erros['min'])
-      return campo === 'preco' ? 'O preço deve ser maior que zero.' : 'O estoque não pode ser negativo.';
-    if (erros['pattern'])
-      return 'Use um número inteiro.';
+      return 'O preço deve ser maior que zero.';
+    if (erros['pattern'] && campo === 'imagemUrl')
+      return 'O link deve começar com http:// ou https://.';
     if (erros['api'])
       return erros['api'];
 

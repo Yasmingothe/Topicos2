@@ -1,0 +1,43 @@
+.pagina { max-width: 860px; margin: 0 auto; padding: 32px 20px 0; box-sizing: border-box; }
+h1 { margin: 0 0 24px; font-size: 32px; font-weight: 700; line-height: 1.15; }
+
+.lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+
+.pedido { border: 1px solid var(--borda); border-radius: 8px; background: var(--cartao); overflow: hidden; }
+.pedido.aberto { border-color: var(--texto-suave); }
+
+.cabeca {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 60px 1fr auto 120px 24px;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 16px;
+  border: 0;
+  background: transparent;
+  color: var(--texto);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.id { font-family: var(--fonte-titulo); font-size: 22px; font-weight: 700; }
+.quando { color: var(--texto-suave); font-size: 13px; }
+.valor { text-align: right; }
+
+.corpo { padding: 0 16px 16px; border-top: 1px solid var(--borda); }
+.item { display: grid; grid-template-columns: 56px 1fr auto; gap: 12px; align-items: center; padding: 10px 0; font-size: 14px; }
+.miniatura { width: 56px; height: 42px; border-radius: 4px; background: #130f0f; }
+
+.rodape {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding-top: 12px; border-top: 1px dashed var(--borda); color: var(--texto-suave); font-size: 13px;
+}
+
+.vazio-pedidos { padding: 48px 0; text-align: center; color: var(--texto-suave); }
+
+@media (max-width: 600px) {
+  .cabeca { grid-template-columns: 50px 1fr 24px; }
+  .quando { display: none; }
+  .cabeca .chip { grid-column: 2; grid-row: 1; justify-self: start; }
+  .valor { grid-column: 2; text-align: left; }
+}

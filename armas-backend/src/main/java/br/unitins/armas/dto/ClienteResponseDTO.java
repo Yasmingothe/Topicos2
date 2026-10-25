@@ -1,6 +1,7 @@
 package br.unitins.armas.dto;
 
 import java.time.LocalDate;
+import java.time.Period;
 
 import br.unitins.armas.model.Cliente;
 
@@ -16,7 +17,13 @@ public record ClienteResponseDTO(
     String numero,
     String complemento,
     String bairro,
-    MunicipioResponseDTO municipio 
+    MunicipioResponseDTO municipio,
+    int idade,
+    boolean temConta,
+    String numeroAutorizacao,
+    LocalDate validadeAutorizacao,
+    OpcaoDTO situacaoAutorizacao,
+    boolean autorizacaoValida
 ) {
     public static ClienteResponseDTO valueOf(Cliente cliente) {
         return new ClienteResponseDTO(
@@ -31,7 +38,13 @@ public record ClienteResponseDTO(
             cliente.getNumero(),
             cliente.getComplemento(),
             cliente.getBairro(),
-            MunicipioResponseDTO.valueOf(cliente.getMunicipio())
+            MunicipioResponseDTO.valueOf(cliente.getMunicipio()),
+            Period.between(cliente.getDataNascimento(), LocalDate.now()).getYears(),
+            cliente.getUsuario() != null,
+            cliente.getNumeroAutorizacao(),
+            cliente.getValidadeAutorizacao(),
+            new OpcaoDTO(cliente.getSituacaoAutorizacao().name(), cliente.getSituacaoAutorizacao().getNome()),
+            cliente.autorizacaoValida()
         );
     }
 }

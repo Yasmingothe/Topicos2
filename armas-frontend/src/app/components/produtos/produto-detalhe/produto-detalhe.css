@@ -20,11 +20,7 @@
   border-bottom: 1px solid var(--borda);
 }
 
-.imagem svg {
-  width: 260px;
-  height: 160px;
-  color: var(--vermelho);
-}
+
 
 .info {
   padding: 20px 24px 24px;
@@ -92,38 +88,24 @@ h2 {
 .ficha span { color: var(--texto-suave); }
 .ficha .baixo { color: var(--laranja); }
 
-/* movimentar estoque: quantidade + entrada + saída */
-.movimentar {
+/* lotes com saldo */
+.lote {
   display: grid;
-  grid-template-columns: 80px 1fr 1fr;
-  gap: 8px;
-}
-
-.campo-qtd {
-  height: 40px;
-  padding: 0 10px;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
+  align-items: baseline;
+  padding: 8px 10px;
+  margin-bottom: 6px;
   border: 1px solid var(--borda);
   border-radius: 6px;
-  background: #120f0f;
-  color: var(--texto);
-  font: inherit;
-  font-size: 15px;
-  text-align: center;
+  color: inherit;
+  text-decoration: none;
+  font-size: 12px;
 }
-
-.campo-qtd:focus {
-  outline: none;
-  border-color: var(--vermelho);
-}
-
-.movimentar button {
-  height: 40px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-}
-
-.entrada { color: var(--verde) !important; }
-.saida { color: var(--laranja) !important; }
+.lote:hover { border-color: var(--vermelho); }
+.lote strong { font-family: var(--fonte-titulo); font-size: 15px; letter-spacing: 0.03em; }
+.lote span { color: var(--texto-suave); }
+.lote .qtd { color: var(--verde); font-weight: 700; }
 
 .botoes {
   display: flex;

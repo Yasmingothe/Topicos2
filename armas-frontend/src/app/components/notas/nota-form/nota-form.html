@@ -1,0 +1,138 @@
+<section class="adm-pagina">
+
+  <header class="adm-topo">
+    <div>
+      <p class="trilha">ESTOQUE / NOTAS DE ENTRADA</p>
+      <h1>Lançar nota de entrada</h1>
+      <p class="subtitulo">Copie os dados da nota do fornecedor. Ao salvar, cada linha vira um lote e o estoque sobe.</p>
+    </div>
+  </header>
+
+  @if (erroGeral()) {
+    <p class="mensagem-erro" role="alert">{{ erroGeral() }}</p>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="salvar()" class="colunas">
+
+    <div class="esquerda">
+      <div class="adm-cartao cabecalho">
+        <p class="adm-rotulo">DADOS DA NOTA</p>
+        <div class="grade">
+          <mat-form-field appearance="outline" class="g2">
+            <mat-label>Número da NF</mat-label>
+            <input matInput formControlName="numero" inputmode="numeric" maxlength="20">
+            <mat-error>{{ mensagemErro('numero') }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="g1">
+            <mat-label>Série</mat-label>
+            <input matInput formControlName="serie" maxlength="5">
+            <mat-error>{{ mensagemErro('serie') }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="g3">
+            <mat-label>Fornecedor</mat-label>
+            <mat-select formControlName="idFornecedor">
+              @for (f of fornecedores(); track f.id) {
+                <mat-option [value]="f.id">{{ f.razaoSocial }}</mat-option>
+              }
+            </mat-select>
+            @if (!fornecedores().length) {
+              <mat-hint>Nenhum fornecedor ativo. <a routerLink="/admin/fornecedores/novo">Cadastre um</a>.</mat-hint>
+            }
+            <mat-error>{{ mensagemErro('idFornecedor') }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="g3">
+            <mat-label>Data de emissão</mat-label>
+            <input matInput type="date" formControlName="dataEmissao" [max]="hoje">
+            <mat-error>{{ mensagemErro('dataEmissao') }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="g3">
+            <mat-label>Data de entrada no estoque</mat-label>
+            <input matInput type="date" formControlName="dataEntrada" [max]="hoje">
+            <mat-error>{{ mensagemErro('dataEntrada') }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="g6">
+            <mat-label>Observação (opcional)</mat-label>
+            <input matInput formControlName="observacao" maxlength="500">
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="adm-cartao">
+        <div class="titulo-itens">
+          <p class="adm-rotulo">PRODUTOS DA NOTA</p>
+          <button mat-stroked-button type="button" (click)="adicionarLinha()">
+            <mat-icon>add</mat-icon> Adicionar produto
+          </button>
+        </div>
+
+        <div formArrayName="itens" class="linhas">
+          @for (linha of itens.controls; track linha; let i = $index) {
+            <div class="linha" [formGroupName]="i">
+              <span class="ordem" aria-hidden="true">{{ i + 1 }}</span>
+
+              <mat-form-field appearance="outline" class="produto" subscriptSizing="dynamic">
+                <mat-label>Produto</mat-label>
+                <mat-select formControlName="idProduto">
+                  @for (p of produtos(); track p.id) {
+                    <mat-option [value]="p.id">{{ p.nome }} ({{ p.marca.nome }})</mat-option>
+                  }
+                </mat-select>
+                @if (estoqueAtual(linha.value.idProduto) !== null) {
+                  <mat-hint>Estoque hoje: {{ estoqueAtual(linha.value.idProduto) }} un.</mat-hint>
+                }
+                <mat-error>{{ erroLinha(i, 'idProduto') }}</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="qtd" subscriptSizing="dynamic">
+                <mat-label>Qtd.</mat-label>
+                <input matInput type="number" formControlName="quantidade" min="1" step="1">
+                <mat-error>{{ erroLinha(i, 'quantidade') }}</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="custo" subscriptSizing="dynamic">
+                <mat-label>Custo unitário (R$)</mat-label>
+                <input matInput type="number" formControlName="custoUnitario" min="0" step="0.01">
+                <mat-error>{{ erroLinha(i, 'custoUnitario') }}</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="lote" subscriptSizing="dynamic">
+                <mat-label>Código do lote</mat-label>
+                <input matInput formControlName="codigoLote" maxlength="30" placeholder="Ex.: TAU-G2C-2611A">
+                <mat-hint>Deixe vazio para o sistema gerar.</mat-hint>
+                <mat-error>{{ erroLinha(i, 'codigoLote') }}</mat-error>
+              </mat-form-field>
+
+              <span class="subtotal">Subtotal <strong>{{ moeda(subtotal(i)) }}</strong></span>
+
+              <button mat-icon-button type="button" class="remover" (click)="removerLinha(i)" [disabled]="itens.length === 1"
+                      aria-label="Remover produto">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <aside class="lateral">
+      <div class="adm-cartao resumo">
+        <p class="adm-rotulo">TOTAL DA NOTA</p>
+        <strong class="total">{{ moeda(total()) }}</strong>
+        <span>{{ unidades() }} unidade(s) em {{ itens.length }} lote(s)</span>
+        <p class="explica">
+          Nota fiscal não é editada depois de lançada. Se errar, exclua (enquanto nada foi vendido) e lance de novo.
+        </p>
+      </div>
+      <button mat-flat-button type="submit" class="botao" [disabled]="salvando()">
+        {{ salvando() ? 'Lançando...' : 'Lançar nota e dar entrada' }}
+      </button>
+      <button type="button" mat-stroked-button appVoltar="/admin/notas" class="botao">Cancelar</button>
+    </aside>
+
+  </form>
+</section>

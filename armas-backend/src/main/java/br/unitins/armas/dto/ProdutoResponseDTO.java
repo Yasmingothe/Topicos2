@@ -13,7 +13,9 @@ public record ProdutoResponseDTO(
     BigDecimal preco,
     Integer estoque,
     String descricao,
-    Boolean publicado
+    Boolean publicado,
+    boolean temImagem,   // tem arquivo de foto enviado
+    String imagemUrl     // ou um link de foto
 ) {
     public static ProdutoResponseDTO valueOf(Produto produto) {
         return new ProdutoResponseDTO(
@@ -25,7 +27,9 @@ public record ProdutoResponseDTO(
             produto.getPreco(),
             produto.getEstoque(),
             produto.getDescricao(),
-            produto.getPublicado()
+            produto.getPublicado(),
+            produto.getNomeImagem() != null,
+            produto.getImagemUrl()
         );
     }
 }

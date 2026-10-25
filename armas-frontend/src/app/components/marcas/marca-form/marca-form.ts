@@ -1,7 +1,7 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators,
 } from '@angular/forms';
@@ -29,10 +29,12 @@ function naoSomenteEspacos(control: AbstractControl): ValidationErrors | null {
   return valor && valor.trim().length === 0 ? { somenteEspacos: true } : null;
 }
 
+import { VoltarDirective } from '../../../directives/voltar.directive';
+
 @Component({
   selector: 'app-marca-form',
-  imports: [
-    ReactiveFormsModule, RouterLink, MatFormFieldModule, MatInputModule,
+  imports: [VoltarDirective, 
+    ReactiveFormsModule, MatFormFieldModule, MatInputModule,
     MatButtonModule, MatIconModule, MatAutocompleteModule,
   ],
   templateUrl: './marca-form.html',

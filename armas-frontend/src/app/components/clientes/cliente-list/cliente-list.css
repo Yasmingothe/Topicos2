@@ -1,7 +1,6 @@
 .pagina {
-  max-width: 1100px;
-  margin: 32px auto;
-  padding: 0 16px;
+  margin: 0;
+  padding: 0;
 }
 
 .topo {
@@ -30,7 +29,7 @@ h1 {
 /* busca + botão Limpar na mesma linha */
 .filtros {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr 240px auto;
   gap: 12px;
   align-items: center;
   margin-bottom: 16px;
@@ -63,4 +62,20 @@ h1 {
 
 .mensagem-erro {
   color: #eb5757;
+}
+.conta {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  vertical-align: -3px;
+  margin-left: 4px;
+  color: var(--verde);
+}
+
+.aviso-idade { color: var(--laranja); opacity: 1; }
+.aprovar { color: var(--verde) !important; }
+.recusar { color: var(--laranja) !important; }
+
+@media (max-width: 720px) {
+  .filtros { grid-template-columns: 1fr; }
 }

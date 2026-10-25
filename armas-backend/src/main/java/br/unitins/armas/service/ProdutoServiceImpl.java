@@ -1,14 +1,24 @@
 package br.unitins.armas.service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Map;
+
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import br.unitins.armas.dto.PaginaDTO;
 import br.unitins.armas.dto.ProdutoRequestDTO;
 import br.unitins.armas.dto.ProdutoResponseDTO;
 import br.unitins.armas.exception.CampoInvalidoException;
+import br.unitins.armas.exception.RegraNegocioException;
 import br.unitins.armas.model.Categoria;
 import br.unitins.armas.model.Marca;
 import br.unitins.armas.model.Produto;
+import br.unitins.armas.repository.LoteRepository;
 import br.unitins.armas.repository.MarcaRepository;
 import br.unitins.armas.repository.ProdutoRepository;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
@@ -25,6 +35,20 @@ public class ProdutoServiceImpl implements ProdutoService {
 
     @Inject
     MarcaRepository marcaRepository;
+
+    @Inject
+    LoteRepository loteRepository;
+
+    // pasta onde as fotos ficam salvas (configurada no application.properties)
+    @ConfigProperty(name = "armas.imagens.pasta")
+    String pastaImagens;
+
+    private static final long TAMANHO_MAXIMO = 5 * 1024 * 1024; // 5 MB
+
+    private static final Map<String, String> EXTENSOES = Map.of(
+            "image/jpeg", "jpg",
+            "image/png", "png",
+            "image/webp", "webp");
 
     @Override
     @Transactional
@@ -44,8 +68,13 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Override
     @Transactional
     public void delete(Long id) {
-        if (!repository.deleteById(id))
-            throw new NotFoundException("Produto não encontrado.");
+        if (loteRepository.existeComProduto(id))
+            throw new CampoInvalidoException("produto",
+                    "Este produto já tem notas de entrada e lotes. Para tirar da loja, deixe como rascunho.");
+
+        Produto produto = buscarOuFalhar(id);
+        apagarArquivo(produto.getNomeImagem());
+        repository.delete(produto);
     }
 
     @Override
@@ -54,13 +83,13 @@ public class ProdutoServiceImpl implements ProdutoService {
     }
 
     @Override
-    public PaginaDTO<ProdutoResponseDTO> findAll(String nome, Long idMarca, String categoria,
+    public PaginaDTO<ProdutoResponseDTO> findAll(String nome, Long idMarca, String categoria, Boolean publicado,
                                                  int page, int pageSize) {
         Categoria filtroCategoria = (categoria == null || categoria.isBlank())
                 ? null
                 : converterCategoria(categoria);
 
-        PanacheQuery<Produto> consulta = repository.buscar(nome, idMarca, filtroCategoria);
+        PanacheQuery<Produto> consulta = repository.buscar(nome, idMarca, filtroCategoria, publicado);
 
         List<ProdutoResponseDTO> itens = consulta.page(page, pageSize)
                 .list()
@@ -84,9 +113,72 @@ public class ProdutoServiceImpl implements ProdutoService {
         produto.setCategoria(converterCategoria(dto.categoria()));
         produto.setCalibre(textoOuNulo(dto.calibre()));
         produto.setPreco(dto.preco());
-        produto.setEstoque(dto.estoque());
         produto.setDescricao(textoOuNulo(dto.descricao()));
         produto.setPublicado(dto.publicado() == null ? true : dto.publicado());
+        produto.setImagemUrl(textoOuNulo(dto.imagemUrl()));
+    }
+
+    // ===== FOTO =====
+
+    @Override
+    @Transactional
+    public void salvarImagem(Long id, FileUpload arquivo) {
+        Produto produto = buscarOuFalhar(id);
+
+        if (arquivo == null || arquivo.uploadedFile() == null)
+            throw new RegraNegocioException("Selecione uma imagem.");
+
+        String extensao = EXTENSOES.get(arquivo.contentType());
+        if (extensao == null)
+            throw new RegraNegocioException("Envie uma imagem JPG, PNG ou WEBP.");
+
+        if (arquivo.size() > TAMANHO_MAXIMO)
+            throw new RegraNegocioException("A imagem deve ter no máximo 5 MB.");
+
+        // nome fixo pelo id (produto-1.jpg): assim a foto volta sozinha mesmo depois
+        // do drop-and-create recriar o banco (ver FotoProdutoService)
+        String nomeArquivo = "produto-" + id + "." + extensao;
+
+        apagarArquivo(produto.getNomeImagem());
+        try {
+            Path pasta = Path.of(pastaImagens);
+            Files.createDirectories(pasta);
+            Files.copy(arquivo.uploadedFile(), pasta.resolve(nomeArquivo), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new RegraNegocioException("Não foi possível salvar a imagem.");
+        }
+
+        produto.setNomeImagem(nomeArquivo);
+    }
+
+    @Override
+    @Transactional
+    public void removerImagem(Long id) {
+        Produto produto = buscarOuFalhar(id);
+        apagarArquivo(produto.getNomeImagem());
+        produto.setNomeImagem(null);
+    }
+
+    @Override
+    public Path caminhoImagem(Long id) {
+        Produto produto = buscarOuFalhar(id);
+        if (produto.getNomeImagem() == null)
+            throw new NotFoundException("Este produto não tem foto.");
+
+        Path caminho = Path.of(pastaImagens).resolve(produto.getNomeImagem());
+        if (!Files.exists(caminho))
+            throw new NotFoundException("O arquivo da foto não foi encontrado.");
+        return caminho;
+    }
+
+    private void apagarArquivo(String nomeArquivo) {
+        if (nomeArquivo == null)
+            return;
+        try {
+            Files.deleteIfExists(Path.of(pastaImagens).resolve(nomeArquivo));
+        } catch (IOException e) {
+            // se não conseguir apagar a foto antiga, segue: não atrapalha o cadastro
+        }
     }
 
     private Marca buscarMarca(Long idMarca) {

@@ -1,0 +1,128 @@
+:host { display: flex; flex-direction: column; min-height: 100vh; }
+
+.faixa {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.cabecalho {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(14, 12, 12, 0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--borda);
+}
+
+.cabecalho .faixa {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  height: 64px;
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--texto);
+  text-decoration: none;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.logo-icone {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background: var(--vermelho);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.logo-icone mat-icon { font-size: 20px; width: 20px; height: 20px; }
+
+.busca {
+  flex: 1;
+  max-width: 520px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--borda);
+  border-radius: 20px;
+  background: var(--cartao);
+}
+.busca:focus-within { border-color: var(--vermelho); }
+.busca mat-icon { color: var(--texto-suave); }
+.busca input {
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--texto);
+  font: inherit;
+  font-size: 14px;
+}
+
+.acoes { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.acoes .ativo { color: var(--vermelho); }
+.conta mat-icon { margin-right: 4px; }
+
+.conteudo { flex: 1; }
+
+.menu-categorias { border-top: 1px solid var(--borda); background: var(--cartao); }
+.menu-categorias .faixa {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.link-categoria {
+  padding: 12px 14px;
+  color: var(--texto-suave);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+}
+.link-categoria:hover { color: var(--texto); border-bottom-color: var(--vermelho); }
+
+.rodape {
+  margin-top: 64px;
+  padding: 28px 0;
+  border-top: 1px solid var(--borda);
+  color: var(--texto-suave);
+  font-size: 13px;
+}
+.rodape .faixa { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+.rodape strong { color: var(--texto); }
+.rodape p { margin: 6px 0 0; max-width: 62ch; line-height: 1.5; }
+.rodape .academico { align-self: flex-end; }
+
+@media (max-width: 720px) {
+  .cabecalho .faixa { height: auto; flex-wrap: wrap; padding-top: 10px; padding-bottom: 10px; gap: 10px; }
+  .busca { order: 3; flex-basis: 100%; max-width: none; }
+}
+
+/* aviso para o admin que abriu a loja */
+.faixa-admin {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 8px 20px;
+  background: var(--vermelho-escuro);
+  color: #ffd2cc;
+  font-size: 13px;
+}
+.faixa-admin span { display: inline-flex; align-items: center; gap: 6px; }
+.faixa-admin mat-icon { font-size: 18px; width: 18px; height: 18px; }
+.faixa-admin a { color: #fff; font-weight: 700; }

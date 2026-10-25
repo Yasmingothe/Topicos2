@@ -12,7 +12,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class ProdutoRepository implements PanacheRepository<Produto> {
 
-    public PanacheQuery<Produto> buscar(String nome, Long idMarca, Categoria categoria) {
+    public PanacheQuery<Produto> buscar(String nome, Long idMarca, Categoria categoria, Boolean publicado) {
         StringBuilder consulta = new StringBuilder("1 = 1");
         Map<String, Object> parametros = new HashMap<>();
 
@@ -29,6 +29,12 @@ public class ProdutoRepository implements PanacheRepository<Produto> {
         if (categoria != null) {
             consulta.append(" and categoria = :categoria");
             parametros.put("categoria", categoria);
+        }
+
+        // a loja só mostra os publicados; o admin vê todos
+        if (publicado != null) {
+            consulta.append(" and publicado = :publicado");
+            parametros.put("publicado", publicado);
         }
 
         consulta.append(" order by nome");

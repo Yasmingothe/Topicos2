@@ -17,12 +17,13 @@ import { ProdutoService } from '../../../services/produto.service';
 import { NotificacaoService } from '../../../services/notificacao.service';
 import { ProdutoDetalhe } from '../produto-detalhe/produto-detalhe';
 import { exportarCsv } from '../../../utils/exportar-csv';
+import { ProdutoImagem } from '../../shared/produto-imagem';
 
 @Component({
   selector: 'app-produto-list',
   imports: [
     RouterLink, MatTableModule, MatPaginatorModule, MatFormFieldModule,
-    MatInputModule, MatSelectModule, MatButtonModule, MatIconModule,
+    MatInputModule, MatSelectModule, MatButtonModule, MatIconModule, ProdutoImagem,
   ],
   templateUrl: './produto-list.html',
   styleUrl: './produto-list.css',

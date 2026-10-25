@@ -9,6 +9,102 @@
   --vermelho-escuro: #3a1515;
   --verde: #4cc38a;        /* valores positivos */
   --laranja: #e0893a;      /* alertas de estoque */
+  --latao: #c9a35b;        /* cor de cartucho: preços na loja */
+  --azul: #5b9bd5;         /* situações "em andamento" */
+  --fonte-titulo: 'Roboto', sans-serif;
+}
+
+/* ===== peças usadas pelas telas novas ===== */
+.adm-pagina { margin: 0; padding: 0; }
+
+.adm-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.adm-topo h1 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.adm-topo .subtitulo {
+  margin: 6px 0 0;
+  color: var(--texto-suave);
+  font-size: 13px;
+}
+
+.adm-botoes {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.adm-filtros {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.adm-filtros mat-form-field { flex: 1 1 220px; }
+.adm-filtros .botao-limpar { height: 56px; }
+
+.adm-cartao {
+  background: var(--cartao);
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.adm-rotulo {
+  margin: 0 0 12px;
+  color: var(--texto-suave);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+}
+
+.tabela-larga { width: 100%; }
+.tabela-larga .mat-mdc-row.clicavel { cursor: pointer; }
+.numero { text-align: right !important; }
+.acoes { text-align: right !important; white-space: nowrap; }
+.vazio { padding: 24px; text-align: center; color: var(--texto-suave); }
+.mensagem-erro { color: #eb5757; }
+.texto-suave { color: var(--texto-suave); }
+.linha-dupla small { display: block; color: var(--texto-suave); font-size: 12px; }
+
+/* selinho de situação: cor = significado */
+.chip {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.06);
+  color: #cfcfcf;
+}
+.chip.verde { background: #1f3d2b; color: #6fcf97; }
+.chip.laranja { background: rgba(224, 137, 58, 0.15); color: var(--laranja); }
+.chip.vermelho { background: var(--vermelho-escuro); color: #ff8a80; }
+.chip.azul { background: rgba(91, 155, 213, 0.15); color: var(--azul); }
+
+/* foco visível no teclado */
+a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--vermelho);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 
 /* ===== listas (produtos, marcas, clientes) ===== */
@@ -80,4 +176,35 @@ mat-paginator {
   --mat-snack-bar-container-color: #3a1515;
   --mat-snack-bar-supporting-text-color: #ffd2cc;
   --mat-snack-bar-button-color: var(--vermelho);
+}
+/* formulários simples em 2 colunas */
+.formulario-estreito .grade-form { max-width: 820px; }
+
+.grade-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 16px;
+}
+
+.grade-form .cheia { grid-column: 1 / -1; }
+
+.botoes-form {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+@media (max-width: 720px) {
+  .grade-form { grid-template-columns: 1fr; }
+}
+
+/* todos os títulos de página do painel no mesmo padrão (MARCAS, PRODUTOS, NOTAS...) */
+.layout main h1 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }

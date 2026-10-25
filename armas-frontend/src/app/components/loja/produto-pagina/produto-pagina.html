@@ -1,0 +1,74 @@
+<section class="pagina">
+
+  <a href="/" appVoltar="/" class="voltar"><mat-icon>arrow_back</mat-icon> Voltar</a>
+
+  @if (erro()) {
+    <p class="mensagem-erro">{{ erro() }}</p>
+  }
+
+  @if (produto(); as p) {
+    <div class="colunas">
+      <div class="vitrine">
+        <app-produto-imagem class="imagem" [idProduto]="p.id" [categoria]="p.categoria.codigo" [nome]="p.nome" [temImagem]="p.temImagem" [imagemUrl]="p.imagemUrl" />
+      </div>
+
+      <div class="info">
+        <a class="categoria" routerLink="/" [queryParams]="{ categoria: p.categoria.codigo }">{{ p.categoria.nome }}</a>
+        <h1>{{ p.nome }}</h1>
+        <p class="marca">{{ p.marca.nome }}, {{ p.marca.paisOrigem }}</p>
+
+        <p class="preco">{{ moeda(p.preco) }}</p>
+        <p class="parcelas">ou até 10x de {{ moeda(p.preco / 10) }} no cartão</p>
+
+        @if (p.categoria.controlada) {
+          <div class="regra">
+            <mat-icon>verified_user</mat-icon>
+            <div>
+              <strong>Produto controlado</strong>
+              <p>Para comprar, você precisa ter 25 anos ou mais e uma autorização de compra aprovada pela loja.
+                Envie a sua em Minha conta. A retirada é na loja, com documento.</p>
+            </div>
+          </div>
+        }
+
+        @if (auth.ehAdmin()) {
+          <div class="compra">
+            <a mat-flat-button class="botao" [routerLink]="['/admin/produtos/editar', p.id]">
+              <mat-icon>edit</mat-icon> Editar produto
+            </a>
+            <a mat-stroked-button class="botao" [routerLink]="['/admin/lotes']" [queryParams]="{ produto: p.id }">
+              <mat-icon>qr_code_2</mat-icon> Ver lotes
+            </a>
+          </div>
+          <p class="disponivel">{{ p.estoque }} unidade(s) em estoque</p>
+        } @else if (p.estoque > 0) {
+          <div class="compra">
+            <div class="quantidade" role="group" aria-label="Quantidade">
+              <button type="button" (click)="mudarQuantidade(-1)" [disabled]="quantidade() <= 1" aria-label="Diminuir">−</button>
+              <span aria-live="polite">{{ quantidade() }}</span>
+              <button type="button" (click)="mudarQuantidade(1)" [disabled]="quantidade() >= p.estoque" aria-label="Aumentar">+</button>
+            </div>
+            <button mat-flat-button class="botao" (click)="adicionar(true)">Comprar</button>
+            <button mat-stroked-button class="botao" (click)="adicionar(false)">
+              <mat-icon>add_shopping_cart</mat-icon> Adicionar
+            </button>
+          </div>
+          <p class="disponivel">{{ p.estoque }} unidade(s) disponível(is)</p>
+        } @else {
+          <p class="sem-estoque">Esgotado no momento.</p>
+        }
+
+        <dl class="ficha">
+          <div><dt>Calibre</dt><dd>{{ p.calibre || 'Não se aplica' }}</dd></div>
+          <div><dt>Fabricante</dt><dd>{{ p.marca.nome }}</dd></div>
+          <div><dt>Categoria</dt><dd>{{ p.categoria.nome }}</dd></div>
+          <div><dt>Código</dt><dd>#{{ p.id }}</dd></div>
+        </dl>
+
+        @if (p.descricao) {
+          <p class="descricao">{{ p.descricao }}</p>
+        }
+      </div>
+    </div>
+  }
+</section>

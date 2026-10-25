@@ -8,6 +8,7 @@ export interface DadosConfirmacao {
   titulo: string;
   mensagem: string;
   textoBotao?: string;
+  icone?: string; // ícone do Material no topo (padrão: lixeira)
 }
 
 // janela usada no lugar do confirm() do navegador
@@ -16,7 +17,7 @@ export interface DadosConfirmacao {
   imports: [MatDialogModule, MatButtonModule, MatIconModule],
   template: `
     <div class="janela">
-      <span class="icone"><mat-icon>delete_forever</mat-icon></span>
+      <span class="icone"><mat-icon>{{ dados.icone ?? 'delete_forever' }}</mat-icon></span>
       <h2>{{ dados.titulo }}</h2>
       <p>{{ dados.mensagem }}</p>
 

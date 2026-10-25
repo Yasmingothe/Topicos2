@@ -1,0 +1,49 @@
+<div class="layout">
+
+  <aside class="menu">
+    <a class="logo" routerLink="/admin/dashboard">
+      <span class="logo-icone"><mat-icon>gps_fixed</mat-icon></span>
+      <span>
+        <strong>ZERO1</strong>
+        <small>ARMAS &amp; EQUIPAMENTOS</small>
+      </span>
+    </a>
+    <p class="painel">PAINEL ADMINISTRATIVO</p>
+
+    <nav class="itens">
+      @for (grupo of grupos; track grupo.titulo) {
+        <p class="grupo">{{ grupo.titulo }}</p>
+        @for (item of grupo.itens; track item.rota) {
+          <a class="item" [routerLink]="item.rota" routerLinkActive="ativo">
+            <mat-icon>{{ item.icone }}</mat-icon> {{ item.rotulo }}
+          </a>
+        }
+      }
+    </nav>
+
+    <a class="sair" routerLink="/">
+      <mat-icon>storefront</mat-icon> Ver a loja
+    </a>
+    <button type="button" class="sair" (click)="sair()">
+      <mat-icon>logout</mat-icon> Sair
+    </button>
+  </aside>
+
+  <div class="conteudo">
+    <header class="topo">
+      <span class="topo-titulo">ADMINISTRAÇÃO</span>
+      <span class="usuario">
+        <span class="usuario-texto">
+          <strong>{{ auth.usuario()?.nome }}</strong>
+          <small>{{ auth.usuario()?.perfil?.nome }}</small>
+        </span>
+        <span class="avatar">{{ iniciais() }}</span>
+      </span>
+    </header>
+
+    <main>
+      <router-outlet />
+    </main>
+  </div>
+
+</div>

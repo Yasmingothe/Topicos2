@@ -1,0 +1,37 @@
+.pagina { max-width: 900px; margin: 0 auto; padding: 32px 20px 0; box-sizing: border-box; }
+h1 { margin: 0; font-size: 32px; font-weight: 700; line-height: 1.15; }
+.apoio { margin: 4px 0 20px; color: var(--texto-suave); }
+
+.conteudo-aba { padding: 24px 0 0; }
+
+.grade { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px 14px; }
+.c1 { grid-column: span 1; }
+.c2 { grid-column: span 2; }
+.c3 { grid-column: span 3; }
+.c4 { grid-column: span 4; }
+
+.botoes { display: flex; justify-content: flex-end; margin-top: 8px; }
+.botoes button { height: 46px; min-width: 180px; font-weight: 700; }
+
+.aviso { margin: 0 0 16px; padding: 10px 14px; border-radius: 6px; background: rgba(224, 137, 58, 0.12); color: var(--laranja); font-size: 13px; }
+
+.autorizacao { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+.explicacao h2 { margin: 0 0 8px; font-family: var(--fonte-titulo); font-size: 26px; font-weight: 700; }
+.explicacao p { margin: 0 0 10px; color: var(--texto-suave); font-size: 14px; line-height: 1.6; }
+.aviso-idade { display: flex; gap: 6px; align-items: center; color: var(--laranja) !important; }
+
+.situacao-cartao { padding: 20px; border: 1px solid var(--borda); border-radius: 8px; background: var(--cartao); }
+.situacao-cartao > p { margin: 10px 0 0; font-size: 14px; }
+.situacao-cartao form { display: flex; flex-direction: column; margin-top: 18px; }
+.situacao-cartao form button { height: 46px; font-weight: 700; }
+.ok { display: flex; align-items: center; gap: 6px; color: var(--verde); }
+.dica { margin: 8px 0 0; color: var(--texto-suave); font-size: 12px; }
+
+.voltar { margin-top: 20px; }
+
+@media (max-width: 760px) {
+  .grade { grid-template-columns: 1fr 1fr; }
+  .c1, .c2 { grid-column: span 1; }
+  .c3, .c4 { grid-column: span 2; }
+  .autorizacao { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,83 @@
+<section class="adm-pagina">
+
+  <header class="adm-topo">
+    <div>
+      <p class="trilha">PESSOAS / USUÁRIOS</p>
+      <h1>Usuários</h1>
+      <p class="subtitulo">Quem pode entrar no sistema. Clientes criam a própria conta pela loja.</p>
+    </div>
+    <div class="adm-botoes">
+      <button mat-flat-button (click)="novo()">
+        <mat-icon>person_add</mat-icon>
+        Novo usuário
+      </button>
+    </div>
+  </header>
+
+  <div class="adm-filtros">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Buscar por nome ou e-mail</mat-label>
+      <input matInput [value]="filtroNome()" (input)="buscar($any($event.target).value)">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Perfil</mat-label>
+      <mat-select [value]="filtroPerfil()" (selectionChange)="filtrarPerfil($event.value)">
+        <mat-option [value]="null">Todos</mat-option>
+        @for (perfil of (opcoes.perfis$ | async) ?? []; track perfil.codigo) {
+          <mat-option [value]="perfil.codigo">{{ perfil.nome }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  @if (erro()) {
+    <p class="mensagem-erro">{{ erro() }}</p>
+  }
+
+  <table mat-table [dataSource]="usuarios()" class="tabela tabela-larga">
+    <ng-container matColumnDef="nome">
+      <th mat-header-cell *matHeaderCellDef>Usuário</th>
+      <td mat-cell *matCellDef="let u" class="linha-dupla">
+        {{ u.nome }}
+        @if (u.id === auth.usuario()?.id) { <span class="chip azul">você</span> }
+        <small>{{ u.email }}</small>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="perfil">
+      <th mat-header-cell *matHeaderCellDef>Perfil</th>
+      <td mat-cell *matCellDef="let u">
+        <span class="chip" [class.vermelho]="u.perfil.codigo === 'ADMIN'">{{ u.perfil.nome }}</span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="cadastro">
+      <th mat-header-cell *matHeaderCellDef>Desde</th>
+      <td mat-cell *matCellDef="let u">{{ data(u.dataCadastro) }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="ativo">
+      <th mat-header-cell *matHeaderCellDef class="acoes">Acesso</th>
+      <td mat-cell *matCellDef="let u" class="acoes">
+        <mat-slide-toggle [checked]="u.ativo" (change)="alternar(u)"
+                          [disabled]="u.id === auth.usuario()?.id"
+                          [attr.aria-label]="u.ativo ? 'Desativar ' + u.nome : 'Ativar ' + u.nome">
+          {{ u.ativo ? 'Ativo' : 'Desativado' }}
+        </mat-slide-toggle>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="colunas"></tr>
+    <tr mat-row *matRowDef="let linha; columns: colunas"></tr>
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell vazio" [attr.colspan]="colunas.length">
+        {{ carregando() ? 'Carregando...' : 'Nenhum usuário encontrado.' }}
+      </td>
+    </tr>
+  </table>
+
+  <mat-paginator [length]="totalItems()" [pageIndex]="pageIndex()" [pageSize]="pageSize()"
+                 [pageSizeOptions]="[5, 10, 20]" (page)="mudarPagina($event)" />
+</section>

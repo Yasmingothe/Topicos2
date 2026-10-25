@@ -26,7 +26,17 @@
       <mat-icon matSuffix>search</mat-icon>
     </mat-form-field>
 
-    <button mat-stroked-button class="botao-limpar" (click)="limparFiltro()" [disabled]="!filtro()">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Autorização de compra</mat-label>
+      <mat-select [value]="filtroAutorizacao()" (selectionChange)="filtrarAutorizacao($event.value)">
+        <mat-option [value]="null">Todas</mat-option>
+        @for (s of (opcoes.situacoesAutorizacao$ | async) ?? []; track s.codigo) {
+          <mat-option [value]="s.codigo">{{ s.nome }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-stroked-button class="botao-limpar" (click)="limparFiltro()" [disabled]="!filtro() && !filtroAutorizacao()">
       <mat-icon>restart_alt</mat-icon>
       Limpar
     </button>
@@ -42,7 +52,10 @@
       <th mat-header-cell *matHeaderCellDef>Nome</th>
       <td mat-cell *matCellDef="let cliente">
         {{ cliente.nome }}
-        <span class="email">{{ cliente.email }}</span>
+        @if (cliente.temConta) {
+          <mat-icon class="conta" matTooltip="Tem conta na loja">verified_user</mat-icon>
+        }
+        <span class="email">{{ cliente.email }}, {{ cliente.idade }} anos</span>
       </td>
     </ng-container>
 
@@ -51,9 +64,17 @@
       <td mat-cell *matCellDef="let cliente">{{ formatarCpf(cliente.cpf) }}</td>
     </ng-container>
 
-    <ng-container matColumnDef="telefone">
-      <th mat-header-cell *matHeaderCellDef>Telefone</th>
-      <td mat-cell *matCellDef="let cliente">{{ formatarTelefone(cliente.telefone) }}</td>
+    <ng-container matColumnDef="autorizacao">
+      <th mat-header-cell *matHeaderCellDef>Autorização de compra</th>
+      <td mat-cell *matCellDef="let cliente">
+        <span class="chip {{ corSituacao(cliente.situacaoAutorizacao.codigo) }}">{{ cliente.situacaoAutorizacao.nome }}</span>
+        @if (cliente.numeroAutorizacao) {
+          <span class="email">Nº {{ cliente.numeroAutorizacao }}, vale até {{ data(cliente.validadeAutorizacao) }}</span>
+        }
+        @if (cliente.idade < 25) {
+          <span class="email aviso-idade">Menor de 25: não compra arma</span>
+        }
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="cidade">
@@ -66,6 +87,16 @@
     <ng-container matColumnDef="acoes">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let cliente" class="acoes">
+        @if (cliente.situacaoAutorizacao.codigo === 'EM_ANALISE') {
+          <button mat-icon-button class="aprovar" (click)="avaliar(cliente, 'APROVADA')"
+                  matTooltip="Aprovar autorização" aria-label="Aprovar autorização">
+            <mat-icon>task_alt</mat-icon>
+          </button>
+          <button mat-icon-button class="recusar" (click)="avaliar(cliente, 'RECUSADA')"
+                  matTooltip="Recusar autorização" aria-label="Recusar autorização">
+            <mat-icon>do_not_disturb_on</mat-icon>
+          </button>
+        }
         <a mat-icon-button [routerLink]="['/admin/clientes/editar', cliente.id]" aria-label="Editar">
           <mat-icon>edit</mat-icon>
         </a>

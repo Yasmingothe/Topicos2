@@ -1,0 +1,63 @@
+<section class="adm-pagina">
+
+  @if (erro()) {
+    <p class="mensagem-erro">{{ erro() }}</p>
+    <a mat-stroked-button routerLink="/admin/notas">Voltar para as notas</a>
+  }
+
+  @if (nota(); as nota) {
+    <header class="adm-topo">
+      <div>
+        <p class="trilha">ESTOQUE / NOTAS DE ENTRADA</p>
+        <h1>NF {{ nota.numero }} <span class="serie">série {{ nota.serie }}</span></h1>
+        <p class="subtitulo">{{ nota.fornecedor.razaoSocial }} — CNPJ {{ cnpj(nota.fornecedor.cnpj) }}</p>
+      </div>
+      <div class="adm-botoes">
+        <button type="button" mat-stroked-button appVoltar="/admin/notas"><mat-icon>arrow_back</mat-icon> Voltar</button>
+        <button mat-stroked-button (click)="excluir()" [disabled]="!nota.podeExcluir">
+          <mat-icon>delete</mat-icon> Excluir nota
+        </button>
+      </div>
+    </header>
+
+    @if (!nota.podeExcluir) {
+      <p class="aviso-bloqueio">
+        <mat-icon>lock</mat-icon>
+        Esta nota não pode ser excluída: unidades dela já foram vendidas e fazem parte do rastreio.
+      </p>
+    }
+
+    <div class="faixa">
+      <div><span>Emissão</span><strong>{{ data(nota.dataEmissao) }}</strong></div>
+      <div><span>Entrada no estoque</span><strong>{{ data(nota.dataEntrada) }}</strong></div>
+      <div><span>Unidades</span><strong>{{ nota.quantidadeTotal }}</strong></div>
+      <div><span>Valor total</span><strong class="verde">{{ moeda(nota.valorTotal) }}</strong></div>
+    </div>
+
+    @if (nota.observacao) {
+      <p class="observacao">{{ nota.observacao }}</p>
+    }
+
+    <div class="adm-cartao">
+      <p class="adm-rotulo">LOTES GERADOS POR ESTA NOTA</p>
+      @for (item of nota.itens; track item.id) {
+        <div class="item">
+          <app-produto-imagem class="miniatura" [idProduto]="item.produto.id" [categoria]="item.produto.categoria.codigo"
+                              [nome]="item.produto.nome" [temImagem]="item.produto.temImagem" [imagemUrl]="item.produto.imagemUrl" />
+          <div class="nome">
+            <strong>{{ item.produto.nome }}</strong>
+            <small>{{ item.quantidade }} un. × {{ moeda(item.custoUnitario) }} = {{ moeda(item.subtotal) }}</small>
+          </div>
+          <a class="codigo-lote" [routerLink]="['/admin/lotes']" [queryParams]="{ lote: item.idLote }"
+             aria-label="Rastrear lote">
+            <mat-icon>qr_code_2</mat-icon> {{ item.codigoLote }}
+          </a>
+          <div class="saldo">
+            <span>Ainda em estoque</span>
+            <strong>{{ item.quantidadeDisponivel }} de {{ item.quantidade }}</strong>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</section>

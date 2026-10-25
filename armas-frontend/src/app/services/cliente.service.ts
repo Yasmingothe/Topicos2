@@ -10,10 +10,12 @@ export class ClienteService {
   private http = inject(HttpClient);
   private readonly url = 'http://localhost:8080/clientes';
 
-  listar(nome = '', page = 0, pageSize = 10): Observable<Pagina<Cliente>> {
+  listar(nome = '', page = 0, pageSize = 10, autorizacao: string | null = null): Observable<Pagina<Cliente>> {
     let params = new HttpParams().set('page', page).set('pageSize', pageSize);
     if (nome.trim())
       params = params.set('nome', nome.trim());
+    if (autorizacao)
+      params = params.set('autorizacao', autorizacao);
 
     return this.http.get<Pagina<Cliente>>(this.url, { params });
   }
@@ -36,5 +38,10 @@ export class ClienteService {
 
   listarEstados(): Observable<Estado[]> {
     return this.http.get<Estado[]>('http://localhost:8080/estados');
+  }
+
+  // APROVADA ou RECUSADA
+  avaliarAutorizacao(id: number, situacao: string): Observable<void> {
+    return this.http.patch<void>(`${this.url}/${id}/autorizacao`, { situacao });
   }
 }

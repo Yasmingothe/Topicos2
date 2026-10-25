@@ -1,3 +1,5 @@
+import { Opcao } from './opcao.model';
+
 export interface Estado {
   id: number;
   nome: string;
@@ -23,6 +25,17 @@ export interface Cliente {
   complemento: string | null;
   bairro: string;
   municipio: Municipio;
+  idade: number;
+  temConta: boolean;
+  numeroAutorizacao: string | null;
+  validadeAutorizacao: string | null;
+  situacaoAutorizacao: Opcao;
+  autorizacaoValida: boolean;
+}
+
+export interface AutorizacaoRequest {
+  numero: string;
+  validade: string;
 }
 
 export interface ClienteRequest {
