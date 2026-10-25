@@ -1,5 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
@@ -26,9 +27,22 @@ export class LojaLayout {
 
   categorias = signal<Categoria[]>([]);
 
+  // em qual categoria a pessoa está agora (para deixar o item do menu marcado)
+  categoriaAtual = signal<string | null>(null);
+  naLoja = signal(true); // true = está no catálogo (página inicial da loja)
+
   constructor() {
     // menu de categorias do topo
     inject(CategoriaService).listar().subscribe((lista) => this.categorias.set(lista));
+
+    this.lerUrl();
+    this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe(() => this.lerUrl());
+  }
+
+  private lerUrl(): void {
+    const arvore = this.router.parseUrl(this.router.url);
+    this.categoriaAtual.set(arvore.queryParams['categoria'] ?? null);
+    this.naLoja.set(!arvore.root.children['primary']);
   }
 
   primeiroNome = computed(() => (this.auth.usuario()?.nome ?? '').split(' ')[0]);

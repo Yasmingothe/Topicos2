@@ -93,6 +93,8 @@
   border-bottom: 2px solid transparent;
 }
 .link-categoria:hover { color: var(--texto); border-bottom-color: var(--vermelho); }
+/* categoria em que a pessoa está: fica marcada mesmo sem o mouse em cima */
+.link-categoria.ativo { color: var(--texto); font-weight: 700; border-bottom-color: var(--vermelho); }
 
 .rodape {
   margin-top: 64px;

@@ -51,6 +51,8 @@ export class Catalogo {
   moeda = moeda;
 
   filtrando = computed(() => !!(this.busca() || this.categoria() || this.marca()));
+  // "Limpar" só aparece com marca ou busca; a categoria continua escolhida
+  temFiltro = computed(() => !!(this.busca() || this.marca()));
   temMais = computed(() => this.produtos().length < this.total());
   nomeCategoria = computed(() => this.categorias().find((c) => c.codigo === this.categoria())?.nome ?? '');
 
@@ -106,7 +108,16 @@ export class Catalogo {
     this.carregar(true);
   }
 
+  // tira a marca e a busca, mas continua na categoria em que a pessoa está
   limpar(): void {
+    this.marca.set(null);
+    if (this.busca())
+      this.router.navigate(['/'], { queryParams: { categoria: this.categoria() || null } });
+    else
+      this.carregar(true);
+  }
+
+  verTodos(): void {
     this.marca.set(null);
     this.router.navigate(['/']);
   }

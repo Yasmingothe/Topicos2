@@ -49,9 +49,11 @@
   <!-- menu de categorias, igual loja online -->
   <nav class="menu-categorias" aria-label="Categorias">
     <div class="faixa">
-      <a routerLink="/" [queryParams]="{}" class="link-categoria">Todos os produtos</a>
+      <a routerLink="/" [queryParams]="{}" class="link-categoria"
+         [class.ativo]="naLoja() && !categoriaAtual()">Todos os produtos</a>
       @for (c of categorias(); track c.codigo) {
-        <a routerLink="/" [queryParams]="{ categoria: c.codigo }" class="link-categoria">{{ c.nome }}</a>
+        <a routerLink="/" [queryParams]="{ categoria: c.codigo }" class="link-categoria"
+           [class.ativo]="categoriaAtual() === c.codigo">{{ c.nome }}</a>
       }
     </div>
   </nav>

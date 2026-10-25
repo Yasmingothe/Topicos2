@@ -48,7 +48,7 @@
           }
         </mat-select>
       </mat-form-field>
-      @if (filtrando()) {
+      @if (temFiltro()) {
         <button mat-stroked-button (click)="limpar()"><mat-icon>restart_alt</mat-icon> Limpar</button>
       }
     </div>
@@ -85,7 +85,7 @@
       @if (!carregando()) {
         <div class="vazio-loja">
           <p>Nada encontrado com esses filtros.</p>
-          <button mat-stroked-button (click)="limpar()">Ver todos os produtos</button>
+          <button mat-stroked-button (click)="verTodos()">Ver todos os produtos</button>
         </div>
       }
     }
