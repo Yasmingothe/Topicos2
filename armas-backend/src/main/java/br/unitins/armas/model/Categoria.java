@@ -7,8 +7,9 @@ public enum Categoria {
     REVOLVER("Revólveres", true),
     RIFLE_CARABINA("Rifles e Carabinas", true),
     ESPINGARDA("Espingardas", true),
-    ACESSORIO_OPTICA("Acessórios e Óptica", false),
-    MUNICAO("Munição", true);
+    MUNICAO("Munição", true),
+    MIRA_OPTICA("Miras e Ópticas", false),
+    ACESSORIO("Acessórios", false);
 
     private final String nome;
     private final boolean controlada;

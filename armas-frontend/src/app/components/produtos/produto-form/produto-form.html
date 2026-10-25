@@ -88,7 +88,7 @@
           <p class="rotulo">FOTO</p>
           <div class="foto">
             <app-produto-imagem class="foto-imagem" [idProduto]="id() ?? 0"
-                                [categoria]="form.controls.categoria.value || 'ACESSORIO_OPTICA'"
+                                [categoria]="form.controls.categoria.value || 'ACESSORIO'"
                                 [nome]="form.controls.nome.value" [temImagem]="temImagem()" [versao]="versaoImagem()"
                                 [imagemUrl]="form.controls.imagemUrl.valid ? form.controls.imagemUrl.value : null" />
           </div>

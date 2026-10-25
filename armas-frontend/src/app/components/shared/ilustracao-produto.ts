@@ -20,6 +20,7 @@ export class IlustracaoProduto {
     if (categoria === 'RIFLE_CARABINA') return 'rifle';
     if (categoria === 'ESPINGARDA') return 'espingarda';
     if (categoria === 'MUNICAO') return 'municao';
+    if (categoria === 'MIRA_OPTICA') return 'mira';
 
     const nome = this.nome().toLowerCase();
     if (nome.includes('mira') || nome.includes('luneta')) return 'mira';
