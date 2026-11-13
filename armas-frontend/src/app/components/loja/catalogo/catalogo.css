@@ -5,17 +5,95 @@
   box-sizing: border-box;
 }
 
-/* ===== banner ===== */
-.banner {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 440px);
-  gap: 40px;
-  align-items: center;
-  padding: 36px 40px;
-  border: 1px solid var(--borda);
-  border-radius: 12px;
-  background: linear-gradient(110deg, #221313 0%, #171212 60%);
+/* ===== banner de ponta a ponta (hero) =====
+   os destaques ficam empilhados e trocam com fade; a arma flutua sobre o fundo,
+   com o nome da categoria gigante atrás e uma luz vermelha */
+.hero {
+  --mx: 0;
+  --my: 0;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  height: 540px;
+  background:
+    radial-gradient(ellipse 50% 70% at 72% 50%, rgba(120, 22, 22, 0.32) 0%, transparent 70%),
+    linear-gradient(180deg, #140e0e 0%, #0e0c0c 100%);
+  border-bottom: 1px solid var(--borda);
 }
+
+/* grade fininha no fundo, bem discreta */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse at 70% 50%, #000 0%, transparent 75%);
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.8s ease, visibility 0s linear 0.8s;
+}
+.slide.ativo {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.8s ease, visibility 0s;
+}
+
+.slide-conteudo {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: center;
+  height: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px 40px;
+  box-sizing: border-box;
+}
+
+/* nome da categoria gigante, só o contorno */
+.banner-fundo-texto {
+  position: absolute;
+  right: 2%;
+  top: 50%;
+  z-index: -1;
+  translate: calc(var(--mx) * -12px) -50%;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.07);
+  font-size: clamp(100px, 14vw, 210px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+  transition: translate 0.4s var(--suave);
+}
+
+/* luz vermelha atrás da arma, "respirando" devagar */
+.banner-luz {
+  position: absolute;
+  right: 20%;
+  top: 50%;
+  z-index: -1;
+  width: 460px;
+  height: 460px;
+  margin-top: -250px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(214, 58, 58, 0.32) 0%, transparent 65%);
+  filter: blur(20px);
+  pointer-events: none;
+}
+
+.banner-texto { position: relative; z-index: 2; }
 
 .etiqueta {
   display: inline-block;
@@ -27,28 +105,210 @@
   font-weight: 700;
 }
 
-.banner h1 { margin: 14px 0 6px; font-size: clamp(30px, 3.6vw, 44px); font-weight: 700; line-height: 1.1; }
+.banner-texto h1 { margin: 14px 0 6px; font-size: clamp(30px, 3.6vw, 46px); font-weight: 700; line-height: 1.08; letter-spacing: -0.02em; }
 .banner-marca { margin: 0; color: var(--texto-suave); }
 .banner-preco { margin: 22px 0 0; font-size: 36px; font-weight: 700; color: var(--latao); line-height: 1; }
 .banner-parcela { margin: 6px 0 24px; color: var(--texto-suave); font-size: 14px; }
 .banner-botoes { display: flex; gap: 10px; flex-wrap: wrap; }
 .banner-botoes a { height: 44px; }
 
+/* a foto: as bordas somem (máscara), então não aparece o quadrado */
 .banner-foto {
+  position: relative;
+  z-index: 1;
   display: block;
+  width: 100%;
+  max-width: 480px;
   aspect-ratio: 1 / 1;
-  border-radius: 10px;
-  overflow: hidden;
-  background: #130f0f;
+  justify-self: end;
+  translate: calc(var(--mx) * 16px) calc(var(--my) * 10px);
+  transition: translate 0.4s var(--suave);
 }
-.banner-foto app-produto-imagem { width: 100%; height: 100%; }
+.banner-foto app-produto-imagem {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  -webkit-mask-image: radial-gradient(closest-side, #000 62%, transparent 100%);
+  mask-image: radial-gradient(closest-side, #000 62%, transparent 100%);
+  transition: transform 0.6s var(--suave);
+}
+.banner-foto:hover app-produto-imagem { transform: scale(1.04); }
+
+/* entrada do slide ativo: textos sobem em cascata, a arma desliza, o fundo acompanha */
+.slide.ativo .banner-texto > * { animation: subir 0.6s var(--suave) 0.15s both; }
+.slide.ativo .banner-texto > :nth-child(2) { animation-delay: 0.2s; }
+.slide.ativo .banner-texto > :nth-child(3) { animation-delay: 0.25s; }
+.slide.ativo .banner-texto > :nth-child(4) { animation-delay: 0.3s; }
+.slide.ativo .banner-texto > :nth-child(5) { animation-delay: 0.33s; }
+.slide.ativo .banner-texto > :nth-child(6) { animation-delay: 0.38s; }
+.slide.ativo .banner-foto { animation: entrar-foto 0.9s var(--suave) 0.1s both; }
+.slide.ativo .banner-fundo-texto { animation: deslizar-fundo 1.2s var(--suave) both; }
+.slide.ativo .banner-luz { animation: aparecer 0.8s ease both, respirar 4s ease-in-out 0.8s infinite; }
+
+@keyframes subir {
+  from { opacity: 0; translate: 0 20px; }
+  to { opacity: 1; translate: 0 0; }
+}
+@keyframes aparecer {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes entrar-foto {
+  from { opacity: 0; transform: translateX(70px) rotate(-3deg); filter: blur(6px); }
+  to { opacity: 1; transform: none; filter: blur(0); }
+}
+@keyframes deslizar-fundo {
+  from { opacity: 0; transform: translateX(120px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes respirar {
+  0%, 100% { opacity: 0.8; scale: 1; }
+  50% { opacity: 1; scale: 1.08; }
+}
+
+/* setas nas laterais da tela (aparecem com o mouse em cima) */
+.hero-seta {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  margin-top: -23px;
+  border: 1px solid var(--borda);
+  border-radius: 50%;
+  background: rgba(14, 12, 12, 0.6);
+  color: var(--texto);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.25s ease, translate 0.3s var(--suave), border-color 0.2s ease, background-color 0.2s ease;
+}
+.hero-seta mat-icon { font-size: 20px; width: 20px; height: 20px; }
+.hero-seta.esquerda { left: 24px; translate: -8px 0; }
+.hero-seta.direita { right: 24px; translate: 8px 0; }
+.hero:hover .hero-seta { opacity: 1; translate: 0 0; }
+.hero-seta:hover { border-color: var(--vermelho); background: var(--vermelho-escuro); }
+
+/* contador e barrinhas, embaixo no centro */
+.banner-controles {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  translate: -50% 0;
+}
+.contador { color: var(--texto-suave); font-size: 13px; font-variant-numeric: tabular-nums; }
+.contador strong { color: var(--texto); font-weight: 600; }
+
+.banner-pontos { display: flex; gap: 8px; }
+.ponto {
+  width: 44px;
+  padding: 10px 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.ponto-trilho {
+  position: relative;
+  display: block;
+  height: 2px;
+  border-radius: 2px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.15);
+  transition: background-color 0.2s ease;
+}
+.ponto:hover .ponto-trilho { background: rgba(255, 255, 255, 0.3); }
+.ponto-tempo {
+  position: absolute;
+  inset: 0;
+  background: var(--vermelho);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+.ponto.ativo .ponto-tempo { animation: encher 5s linear forwards; }
+/* mouse em cima do banner: a barrinha para e o destaque não troca */
+.hero.pausado .ponto.ativo .ponto-tempo { animation-play-state: paused; }
+
+@keyframes encher {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* ===== títulos de seção: pequenos, maiúsculos e centralizados ===== */
+.titulo-secao {
+  margin: 0 0 22px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* ===== blocos grandes por categoria ===== */
+.categorias { margin: 0 0 56px; }
+.blocos {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+.bloco {
+  display: flex;
+  flex-direction: column;
+  color: var(--texto);
+  text-decoration: none;
+}
+.bloco-foto {
+  display: block;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 6px;
+}
+.bloco-foto app-produto-imagem { width: 100%; height: 100%; transition: transform 0.8s var(--suave); }
+.bloco:hover .bloco-foto app-produto-imagem { transform: scale(1.07); }
+
+/* nome com seta e linha embaixo que fica vermelha no hover */
+.bloco-nome {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0 10px;
+  border-bottom: 1px solid var(--borda);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.bloco-nome::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: var(--vermelho);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s var(--suave);
+}
+.bloco:hover .bloco-nome::after { transform: scaleX(1); }
+.bloco-nome mat-icon { font-size: 18px; width: 18px; height: 18px; transition: translate 0.25s var(--suave); }
+.bloco:hover .bloco-nome mat-icon { translate: 4px 0; color: var(--vermelho); }
+
+/* na página inicial, "Todos os produtos" segue o mesmo estilo dos outros títulos */
+.barra-inicio { padding-top: 40px; border-top: 1px solid var(--borda); }
 
 /* ===== vantagens ===== */
 .vantagens {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
-  margin: 16px 0 40px;
+  margin: 0 0 56px;
   padding: 0;
   list-style: none;
 }
@@ -63,7 +323,10 @@
   font-size: 13px;
   color: var(--texto-suave);
 }
-.vantagens mat-icon { color: var(--vermelho); }
+.vantagens li { transition: border-color 0.2s ease; }
+.vantagens li:hover { border-color: #3a3232; }
+.vantagens mat-icon { color: var(--vermelho); transition: transform 0.3s var(--suave); }
+.vantagens li:hover mat-icon { transform: translateY(-2px); }
 .vantagens strong { display: block; color: var(--texto); font-size: 14px; }
 
 /* ===== título + filtro ===== */
@@ -75,7 +338,7 @@
   flex-wrap: wrap;
   margin-bottom: 18px;
 }
-.barra h2 { margin: 0; font-size: 24px; font-weight: 700; }
+.barra h2 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.01em; }
 .barra h2 span { margin-left: 10px; color: var(--texto-suave); font-size: 13px; font-weight: 400; }
 .barra-filtros { display: flex; gap: 10px; align-items: center; }
 .barra-filtros mat-form-field { width: 200px; }
@@ -85,7 +348,10 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 18px;
+  transition: opacity 0.2s ease;
 }
+/* trocando de filtro: a grade antiga fica apagadinha até a nova chegar */
+.grade.atualizando { opacity: 0.45; pointer-events: none; }
 
 .produto {
   display: flex;
@@ -97,7 +363,16 @@
   border-radius: 10px;
   background: var(--cartao);
 }
-.produto:hover { border-color: #4a3d3d; }
+
+/* hover do card: sobe um pouco, borda avermelhada e sombra; a foto aproxima */
+.produto {
+  transition: transform 0.3s var(--suave), border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.produto:hover {
+  transform: translateY(-4px);
+  border-color: rgba(214, 58, 58, 0.45);
+  box-shadow: 0 18px 32px -18px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(214, 58, 58, 0.08);
+}
 
 .produto-foto {
   position: relative;
@@ -109,7 +384,8 @@
   overflow: hidden;
   background: #130f0f;
 }
-.produto-foto app-produto-imagem { width: 100%; height: 100%; }
+.produto-foto app-produto-imagem { width: 100%; height: 100%; transition: transform 0.6s var(--suave); }
+.produto:hover .produto-foto app-produto-imagem { transform: scale(1.06); }
 .esgotado .produto-foto { opacity: 0.5; }
 
 .selo {
@@ -132,18 +408,59 @@
   font-weight: 500;
   line-height: 1.3;
 }
-.produto-nome:hover { color: #fff; text-decoration: underline; }
+.produto-nome { transition: color 0.2s ease; }
+.produto-nome:hover { color: #fff; }
 .produto-marca { margin-top: 2px; color: var(--texto-suave); font-size: 12px; }
 .produto-preco { margin-top: 10px; font-size: 22px; font-weight: 700; color: var(--latao); }
 .produto-parcela { color: var(--texto-suave); font-size: 12px; }
-.comprar { width: 100%; height: 42px; margin-top: 14px; font-weight: 700; }
+.comprar {
+  width: 100%;
+  height: 42px;
+  margin-top: 14px;
+  font-weight: 600;
+  transition: background-color 0.2s ease, transform 0.12s ease;
+}
+.comprar:active { transform: scale(0.98); }
+/* depois de clicar em Comprar: fica verde-escuro com "Adicionado" */
+.comprar.ok {
+  --mat-button-filled-container-color: #1f3d2b;
+  --mat-button-filled-label-text-color: #8fe3b3;
+  animation: confirmar 0.35s var(--suave);
+}
+.comprar.ok mat-icon { font-size: 18px; width: 18px; height: 18px; }
+@keyframes confirmar {
+  0% { transform: scale(0.96); }
+  100% { transform: scale(1); }
+}
+
+/* ===== cards cinza enquanto carrega ===== */
+.esqueleto, .esqueleto:hover { transform: none; box-shadow: none; border-color: var(--borda); }
+.esq {
+  border-radius: 6px;
+  background: linear-gradient(90deg, #1d1818 0%, #2a2323 50%, #1d1818 100%);
+  background-size: 200% 100%;
+  animation: brilho 1.4s ease-in-out infinite;
+}
+.esq-foto { width: 100%; aspect-ratio: 1 / 1; margin-bottom: 14px; border-radius: 8px; }
+.esq-linha { width: 70%; height: 13px; margin-top: 6px; }
+.esq-linha.curta { width: 40%; height: 10px; }
+.esq-preco { width: 50%; height: 22px; margin-top: 14px; }
+.esq-botao { width: 100%; height: 42px; margin-top: 18px; border-radius: 21px; }
+@keyframes brilho {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
+}
 
 .vazio-loja { grid-column: 1 / -1; padding: 48px 0; text-align: center; color: var(--texto-suave); }
 .mais { display: flex; justify-content: center; margin-top: 24px; }
 
 @media (max-width: 900px) {
-  .banner { grid-template-columns: 1fr; padding: 24px; gap: 24px; }
-  .banner-foto { order: -1; max-width: 420px; }
+  .hero { height: 720px; }
+  .slide-conteudo { grid-template-columns: 1fr; align-content: center; padding-bottom: 70px; }
+  .banner-foto { order: -1; max-width: 320px; justify-self: center; }
+  .banner-luz { right: 50%; margin-right: -230px; top: 30%; }
+  .hero-seta { display: none; }
+  .blocos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .vantagens { grid-template-columns: 1fr; }
 }
 

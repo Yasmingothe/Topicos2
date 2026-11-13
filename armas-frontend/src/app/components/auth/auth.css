@@ -7,9 +7,61 @@
 }
 
 .topo {
+  position: relative;
   display: flex;
   justify-content: center;
   padding: 28px 20px 0;
+}
+
+/* link no canto para sair da tela de login sem entrar */
+.voltar-loja {
+  position: absolute;
+  left: 28px;
+  top: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--texto-suave);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+.voltar-loja mat-icon { font-size: 18px; width: 18px; height: 18px; transition: translate 0.2s var(--suave); }
+.voltar-loja:hover { color: var(--texto); }
+.voltar-loja:hover mat-icon { translate: -3px 0; }
+
+@media (max-width: 600px) {
+  .voltar-loja { position: static; margin-bottom: 16px; }
+  .topo { flex-direction: column; align-items: center; }
+}
+
+/* "ou" com uma linha de cada lado */
+.separador {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 22px 0 16px;
+  color: var(--texto-suave);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.separador::before, .separador::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--borda);
+}
+
+.botao-visitante { height: 44px; font-weight: 600; }
+
+.dica-visitante {
+  margin: 10px 0 0;
+  color: var(--texto-suave);
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
 }
 
 .logo {

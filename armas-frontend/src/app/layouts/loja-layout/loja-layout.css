@@ -44,7 +44,12 @@
   align-items: center;
   justify-content: center;
 }
-.logo-icone mat-icon { font-size: 20px; width: 20px; height: 20px; }
+.logo-icone mat-icon {
+  font-size: 20px; width: 20px; height: 20px;
+  transition: transform 0.5s var(--suave);
+}
+/* a mira gira um quarto de volta ao passar o mouse no logo */
+.logo:hover .logo-icone mat-icon { transform: rotate(90deg); }
 
 .busca {
   flex: 1;
@@ -57,8 +62,14 @@
   border: 1px solid var(--borda);
   border-radius: 20px;
   background: var(--cartao);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
-.busca:focus-within { border-color: var(--vermelho); }
+.busca:hover { border-color: #3a3232; }
+.busca:focus-within {
+  border-color: var(--vermelho);
+  background: #1c1717;
+  box-shadow: 0 0 0 3px rgba(214, 58, 58, 0.14);
+}
 .busca mat-icon { color: var(--texto-suave); }
 .busca input {
   flex: 1;
@@ -72,12 +83,22 @@
 
 .acoes { display: flex; align-items: center; gap: 8px; margin-left: auto; }
 .acoes .ativo { color: var(--vermelho); }
+
+/* pulinho do carrinho quando entra produto */
+.botao-carrinho.pulando mat-icon { animation: pulo 0.55s var(--suave); }
+@keyframes pulo {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.25) rotate(-8deg); }
+  60% { transform: scale(0.94) rotate(4deg); }
+  100% { transform: scale(1) rotate(0); }
+}
 .conta mat-icon { margin-right: 4px; }
 
 .conteudo { flex: 1; }
 
-.menu-categorias { border-top: 1px solid var(--borda); background: var(--cartao); }
+.menu-categorias { position: relative; border-top: 1px solid var(--borda); background: var(--cartao); }
 .menu-categorias .faixa {
+  position: relative;
   display: flex;
   gap: 4px;
   overflow-x: auto;
@@ -90,27 +111,89 @@
   font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
-  border-bottom: 2px solid transparent;
+  transition: color 0.2s ease;
 }
-.link-categoria:hover { color: var(--texto); border-bottom-color: var(--vermelho); }
+.link-categoria:hover, .link-categoria.com-menu { color: var(--texto); }
 /* categoria em que a pessoa está: fica marcada mesmo sem o mouse em cima */
-.link-categoria.ativo { color: var(--texto); font-weight: 700; border-bottom-color: var(--vermelho); }
+.link-categoria.ativo { color: var(--texto); font-weight: 600; }
+
+/* linha vermelha que desliza até a categoria do mouse e volta para a marcada */
+.indicador {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--vermelho);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.35s var(--suave), width 0.35s var(--suave), opacity 0.2s ease;
+}
+.indicador.visivel { opacity: 1; }
 
 .rodape {
-  margin-top: 64px;
-  padding: 28px 0;
+  margin-top: 80px;
   border-top: 1px solid var(--borda);
+  background: #0b0909;
   color: var(--texto-suave);
   font-size: 13px;
 }
-.rodape .faixa { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
-.rodape strong { color: var(--texto); }
-.rodape p { margin: 6px 0 0; max-width: 62ch; line-height: 1.5; }
-.rodape .academico { align-self: flex-end; }
+
+.rodape-colunas {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 32px;
+  padding-top: 48px;
+  padding-bottom: 40px;
+}
+
+.logo-rodape { font-size: 18px; }
+.logo-rodape .logo-icone { width: 26px; height: 26px; }
+.logo-rodape .logo-icone mat-icon { font-size: 17px; width: 17px; height: 17px; }
+.rodape-sobre p { margin: 14px 0 0; max-width: 32ch; line-height: 1.6; }
+
+.rodape h3 {
+  margin: 4px 0 14px;
+  color: var(--texto);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.rodape ul { margin: 0; padding: 0; list-style: none; }
+.rodape li { margin-bottom: 9px; line-height: 1.4; }
+
+/* links do rodapé: sublinhado que cresce da esquerda para a direita */
+.rodape-colunas li a {
+  color: var(--texto-suave);
+  text-decoration: none;
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  padding-bottom: 2px;
+  transition: color 0.2s ease, background-size 0.3s var(--suave);
+}
+.rodape-colunas li a:hover { color: var(--texto); background-size: 100% 1px; }
+
+.rodape-base {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding-top: 20px;
+  padding-bottom: 28px;
+  border-top: 1px solid var(--borda);
+  font-size: 12px;
+}
+.rodape-base p { margin: 0; max-width: 62ch; line-height: 1.6; }
+.rodape-base .academico { align-self: flex-end; }
+
+@media (max-width: 900px) {
+  .rodape-colunas { grid-template-columns: 1fr 1fr; }
+}
 
 @media (max-width: 720px) {
   .cabecalho .faixa { height: auto; flex-wrap: wrap; padding-top: 10px; padding-bottom: 10px; gap: 10px; }
   .busca { order: 3; flex-basis: 100%; max-width: none; }
+  .rodape-colunas { grid-template-columns: 1fr; gap: 24px; }
 }
 
 /* aviso para o admin que abriu a loja */

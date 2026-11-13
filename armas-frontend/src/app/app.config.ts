@@ -1,6 +1,6 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
+import { provideRouter, withComponentInputBinding, withInMemoryScrolling, withViewTransitions } from '@angular/router';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 
 import { routes } from './app.routes';
@@ -11,7 +11,9 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     // scrollPositionRestoration = ao trocar de tela, volta para o topo
-    provideRouter(routes, withComponentInputBinding(), withInMemoryScrolling({ scrollPositionRestoration: 'top' })),
+    provideRouter(routes, withComponentInputBinding(), withInMemoryScrolling({ scrollPositionRestoration: 'top' }),
+      // troca de tela com um fade curto (o navegador faz a transição)
+      withViewTransitions({ skipInitialTransition: true })),
     // todo pedido HTTP passa pelo interceptor (que coloca o token)
     provideHttpClient(withInterceptors([authInterceptor])),
     // usa a versão em português do paginador no sistema todo

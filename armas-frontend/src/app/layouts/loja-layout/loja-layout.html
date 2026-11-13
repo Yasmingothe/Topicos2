@@ -23,7 +23,8 @@
       }
 
       @if (!auth.ehAdmin()) {
-        <a mat-icon-button routerLink="/carrinho" aria-label="Carrinho" routerLinkActive="ativo">
+        <a mat-icon-button routerLink="/carrinho" aria-label="Carrinho" routerLinkActive="ativo"
+           class="botao-carrinho" [class.pulando]="pulando()">
           <mat-icon [matBadge]="carrinho.quantidadeTotal() || null" matBadgeColor="primary" matBadgeSize="medium"
                     aria-hidden="false">shopping_bag</mat-icon>
         </a>
@@ -46,16 +47,25 @@
     </nav>
   </div>
 
-  <!-- menu de categorias, igual loja online -->
-  <nav class="menu-categorias" aria-label="Categorias">
-    <div class="faixa">
+  <!-- menu de categorias; ao passar o mouse abre o mega menu -->
+  <nav class="menu-categorias" aria-label="Categorias" (mouseleave)="sairMenu()">
+    <div class="faixa" #trilho>
       <a routerLink="/" [queryParams]="{}" class="link-categoria"
-         [class.ativo]="naLoja() && !categoriaAtual()">Todos os produtos</a>
+         [class.ativo]="naLoja() && !categoriaAtual()"
+         (mouseenter)="entrarCategoria($event, null)">Todos os produtos</a>
       @for (c of categorias(); track c.codigo) {
         <a routerLink="/" [queryParams]="{ categoria: c.codigo }" class="link-categoria"
-           [class.ativo]="categoriaAtual() === c.codigo">{{ c.nome }}</a>
+           [class.ativo]="categoriaAtual() === c.codigo"
+           [class.com-menu]="menuAberto()?.codigo === c.codigo"
+           (mouseenter)="entrarCategoria($event, c)">{{ c.nome }}</a>
       }
+      <span class="indicador" aria-hidden="true"
+            [class.visivel]="indicador().largura > 0"
+            [style.width.px]="indicador().largura"
+            [style.transform]="'translateX(' + indicador().esquerda + 'px)'"></span>
     </div>
+
+    <app-mega-menu [categoria]="ultimoMenu()" [class.aberto]="!!menuAberto()" (escolheu)="fecharMenu()" />
   </nav>
 </header>
 
@@ -64,12 +74,54 @@
 </main>
 
 <footer class="rodape">
-  <div class="faixa">
-    <div>
-      <strong>ZERO1 Armas e Equipamentos</strong>
-      <p>Armas e munições são vendidas só para maiores de 25 anos com autorização de compra válida
-        (Lei 10.826/2003). A retirada é feita na loja, com documento.</p>
+  <div class="faixa rodape-colunas">
+    <div class="rodape-sobre" appRevelar>
+      <a routerLink="/" class="logo logo-rodape" aria-label="ZERO1, página inicial">
+        <span class="logo-icone"><mat-icon>gps_fixed</mat-icon></span>
+        <span>ZERO1</span>
+      </a>
+      <p>Armas, munições e acessórios com venda legalizada e retirada na loja.</p>
     </div>
+
+    <div [appRevelar]="1">
+      <h3>Loja</h3>
+      <ul>
+        @for (c of categorias(); track c.codigo) {
+          <li><a routerLink="/" [queryParams]="{ categoria: c.codigo }">{{ c.nome }}</a></li>
+        }
+      </ul>
+    </div>
+
+    <div [appRevelar]="2">
+      <h3>Sua conta</h3>
+      <ul>
+        @if (auth.ehAdmin()) {
+          <li><a routerLink="/admin/dashboard">Painel administrativo</a></li>
+        } @else if (auth.logado()) {
+          <li><a routerLink="/minha-conta">Minha conta</a></li>
+          <li><a routerLink="/meus-pedidos">Meus pedidos</a></li>
+          <li><a routerLink="/carrinho">Carrinho</a></li>
+        } @else {
+          <li><a routerLink="/login">Entrar</a></li>
+          <li><a routerLink="/cadastro">Criar conta</a></li>
+          <li><a routerLink="/carrinho">Carrinho</a></li>
+        }
+      </ul>
+    </div>
+
+    <div [appRevelar]="3">
+      <h3>Atendimento</h3>
+      <ul class="info">
+        <li>Segunda a sexta, 9h às 18h</li>
+        <li>Sábado, 9h às 13h</li>
+        <li>Retirada com documento com foto</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="faixa rodape-base">
+    <p>Armas e munições são vendidas só para maiores de 25 anos com autorização de compra válida
+      (Lei 10.826/2003). A retirada é feita na loja, com documento.</p>
     <p class="academico">Projeto acadêmico de Tópicos 2, UNITINS, {{ ano }}. Produtos e preços fictícios.</p>
   </div>
 </footer>

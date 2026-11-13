@@ -1,0 +1,31 @@
+@if (produtos().length) {
+  <section class="vitrine">
+    <header class="vitrine-topo" appRevelar>
+      <h2>{{ titulo() }}</h2>
+      @if (categoria()) {
+        <a routerLink="/" [queryParams]="{ categoria: categoria() }" class="ver-tudo">Ver tudo <mat-icon>east</mat-icon></a>
+      }
+    </header>
+
+    <div class="area">
+      <button type="button" class="seta esquerda" (click)="rolar(-1)" aria-label="Ver anteriores"><mat-icon>west</mat-icon></button>
+
+      <div class="trilho" #trilho>
+        @for (p of produtos(); track p.id; let i = $index) {
+          <a class="card" [routerLink]="['/produto', p.id]" [appRevelar]="i">
+            <span class="foto">
+              <app-produto-imagem [idProduto]="p.id" [categoria]="p.categoria.codigo" [nome]="p.nome" [temImagem]="p.temImagem" [imagemUrl]="p.imagemUrl" />
+              @if (p.categoria.controlada) { <span class="selo">Exige autorização</span> }
+            </span>
+            <span class="nome">{{ p.nome }}</span>
+            <span class="marca">{{ p.marca.nome }}{{ p.calibre ? ' · ' + p.calibre : '' }}</span>
+            <span class="preco">{{ moeda(p.preco) }}</span>
+            <span class="parcela">ou 10x de {{ parcela(p.preco) }}</span>
+          </a>
+        }
+      </div>
+
+      <button type="button" class="seta direita" (click)="rolar(1)" aria-label="Ver próximos"><mat-icon>east</mat-icon></button>
+    </div>
+  </section>
+}

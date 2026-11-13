@@ -1,0 +1,126 @@
+.vitrine { margin: 0 0 56px; }
+
+/* título pequeno, em maiúsculas e centralizado (estilo loja de moda) */
+.vitrine-topo {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 22px;
+}
+.vitrine-topo h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.ver-tudo {
+  position: absolute;
+  right: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--texto-suave);
+  text-decoration: none;
+  font-size: 13px;
+  transition: color 0.2s ease;
+}
+.ver-tudo mat-icon { font-size: 16px; width: 16px; height: 16px; transition: translate 0.2s var(--suave); }
+.ver-tudo:hover { color: var(--texto); }
+.ver-tudo:hover mat-icon { translate: 4px 0; }
+
+.area { position: relative; }
+
+/* os cards ficam lado a lado e "encaixam" ao rolar */
+.trilho {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: calc((100% - 3 * 16px) / 4);
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.trilho::-webkit-scrollbar { display: none; }
+
+.card {
+  display: flex;
+  flex-direction: column;
+  scroll-snap-align: start;
+  color: var(--texto);
+  text-decoration: none;
+}
+
+.foto {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 6px;
+}
+.foto app-produto-imagem { width: 100%; height: 100%; transition: transform 0.7s var(--suave); }
+.card:hover .foto app-produto-imagem { transform: scale(1.06); }
+
+/* linha vermelha que cresce embaixo da foto no hover */
+.foto::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--vermelho);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s var(--suave);
+}
+.card:hover .foto::after { transform: scaleX(1); }
+
+.selo {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(58, 21, 21, 0.92);
+  color: #ffb3ab;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.nome { margin-top: 12px; font-size: 14px; font-weight: 500; line-height: 1.3; }
+.marca { margin-top: 2px; color: var(--texto-suave); font-size: 12px; }
+.preco { margin-top: 8px; color: var(--latao); font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.parcela { color: var(--texto-suave); font-size: 12px; }
+
+/* setas nas laterais, aparecem ao passar o mouse na faixa */
+.seta {
+  position: absolute;
+  top: 38%;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--borda);
+  border-radius: 50%;
+  background: rgba(14, 12, 12, 0.85);
+  color: var(--texto);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease, border-color 0.2s ease, translate 0.25s var(--suave);
+}
+.seta mat-icon { font-size: 18px; width: 18px; height: 18px; }
+.seta.esquerda { left: -16px; translate: 6px 0; }
+.seta.direita { right: -16px; translate: -6px 0; }
+.area:hover .seta { opacity: 1; translate: 0 0; }
+.seta:hover { border-color: var(--vermelho); }
+
+@media (max-width: 900px) {
+  .trilho { grid-auto-columns: calc((100% - 16px) / 2.3); }
+  .seta { display: none; }
+  .ver-tudo { position: static; margin-left: auto; }
+  .vitrine-topo { justify-content: space-between; }
+}

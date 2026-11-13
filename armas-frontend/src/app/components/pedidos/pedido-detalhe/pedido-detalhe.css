@@ -56,7 +56,7 @@
   font-family: var(--fonte-titulo); font-size: 14px; letter-spacing: 0.03em;
 }
 .lotes a:hover { border-color: var(--vermelho); }
-.lotes span { color: var(--texto-suave); font-family: Roboto, sans-serif; font-size: 11px; }
+.lotes span { color: var(--texto-suave); font-family: inherit; font-size: 11px; }
 
 .total {
   display: flex; justify-content: space-between; align-items: baseline;

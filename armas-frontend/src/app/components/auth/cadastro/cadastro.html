@@ -1,6 +1,7 @@
 <div class="tela">
 
   <header class="topo">
+    <a routerLink="/" class="voltar-loja"><mat-icon>arrow_back</mat-icon> Voltar para a loja</a>
     <a routerLink="/" class="logo" aria-label="ZERO1, voltar para a loja">
       <span class="logo-icone"><mat-icon>gps_fixed</mat-icon></span>
       ZERO1
@@ -49,6 +50,10 @@
       </button>
 
       <p class="troca">Já tem conta? <a routerLink="/login">Entrar</a></p>
+      <!-- entrar como visitante: vê a loja e monta o carrinho; o login só é pedido para finalizar a compra -->
+      <div class="separador"><span>ou</span></div>
+      <a mat-stroked-button routerLink="/" class="botao-visitante">Continuar sem entrar</a>
+      <p class="dica-visitante">Você pode ver os produtos e montar o carrinho. A conta só é pedida para finalizar a compra.</p>
     </form>
   </section>
 

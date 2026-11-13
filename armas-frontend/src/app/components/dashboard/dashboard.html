@@ -41,36 +41,80 @@
     </a>
   </div>
 
-  <!-- ===== vitrine: cada produto em um quadrado, com a foto ===== -->
+  <!-- ===== produtos: lista compacta com busca, filtro e ordem ===== -->
   <div class="painel">
     <div class="painel-topo">
-      <h2>PRODUTOS ({{ produtos().length }})</h2>
+      <h2>PRODUTOS</h2>
       <a routerLink="/admin/produtos" class="ver-todos">Gerenciar produtos</a>
     </div>
 
-    <div class="vitrine">
-      @for (p of produtos(); track p.id) {
-        <a class="item-vitrine" [routerLink]="['/admin/produtos/editar', p.id]">
-          <div class="foto">
+    <div class="ferramentas">
+      <div class="filtros" role="tablist" aria-label="Filtrar produtos">
+        <button type="button" role="tab" [class.ativo]="filtro() === 'todos'" (click)="escolherFiltro('todos')">
+          Todos <span>{{ contagens().todos }}</span>
+        </button>
+        <button type="button" role="tab" [class.ativo]="filtro() === 'baixo'" (click)="escolherFiltro('baixo')">
+          Estoque baixo <span class="laranja">{{ contagens().baixo }}</span>
+        </button>
+        <button type="button" role="tab" [class.ativo]="filtro() === 'zerado'" (click)="escolherFiltro('zerado')">
+          Sem estoque <span class="vermelho">{{ contagens().zerado }}</span>
+        </button>
+        <button type="button" role="tab" [class.ativo]="filtro() === 'rascunho'" (click)="escolherFiltro('rascunho')">
+          Rascunhos <span>{{ contagens().rascunho }}</span>
+        </button>
+      </div>
+
+      <label class="busca-produtos">
+        <mat-icon>search</mat-icon>
+        <input type="search" placeholder="Buscar por nome, marca ou calibre" aria-label="Buscar produtos"
+               [value]="busca()" (input)="pesquisar($any($event.target).value)">
+      </label>
+    </div>
+
+    <div class="tabela-produtos" role="table" aria-label="Produtos">
+      <div class="linha-produto cabecalho-tabela" role="row">
+        <span></span>
+        <button type="button" (click)="ordenarPor('nome')">Produto <mat-icon>{{ setaOrdem('nome') }}</mat-icon></button>
+        <button type="button" class="col-categoria" (click)="ordenarPor('categoria')">Categoria <mat-icon>{{ setaOrdem('categoria') }}</mat-icon></button>
+        <button type="button" class="direita" (click)="ordenarPor('preco')">Preço <mat-icon>{{ setaOrdem('preco') }}</mat-icon></button>
+        <button type="button" (click)="ordenarPor('estoque')">Estoque <mat-icon>{{ setaOrdem('estoque') }}</mat-icon></button>
+        <span class="col-situacao">Situação</span>
+      </div>
+
+      @for (p of visiveis(); track p.id) {
+        <a class="linha-produto" role="row" [routerLink]="['/admin/produtos/editar', p.id]">
+          <span class="miniatura">
             <app-produto-imagem [idProduto]="p.id" [categoria]="p.categoria.codigo" [nome]="p.nome" [temImagem]="p.temImagem" [imagemUrl]="p.imagemUrl" />
-            <span class="selo-estoque" [class.baixo]="p.estoque <= 6" [class.zerado]="p.estoque === 0">
-              {{ p.estoque }} un.
-            </span>
-            @if (!p.publicado) { <span class="selo-rascunho">Rascunho</span> }
-          </div>
-          <strong class="nome-produto">{{ p.nome }}</strong>
-          <span class="linha-preco">
-            <span class="suave">{{ p.marca.nome }}</span>
-            <span>{{ formatarPreco(p.preco) }}</span>
           </span>
+          <span class="info">
+            <strong>{{ p.nome }}</strong>
+            <small>{{ p.marca.nome }}{{ p.calibre ? ' · ' + p.calibre : '' }}</small>
+          </span>
+          <span class="col-categoria suave">{{ p.categoria.nome }}</span>
+          <span class="direita preco">{{ formatarPreco(p.preco) }}</span>
+          <span class="estoque-col">
+            <span class="medidor">
+              <span [style.width.%]="nivelEstoque(p.estoque)"
+                    [class.baixo]="p.estoque <= 6" [class.zerado]="p.estoque === 0"></span>
+            </span>
+            <b>{{ p.estoque }}</b>
+          </span>
+          <span class="col-situacao"><span class="chip {{ situacao(p).cor }}">{{ situacao(p).texto }}</span></span>
         </a>
       } @empty {
-        <p class="suave">Nenhum produto cadastrado.</p>
+        <p class="suave vazio-lista">Nenhum produto encontrado.</p>
+      }
+    </div>
+
+    <div class="rodape-lista">
+      <span class="suave">Mostrando {{ visiveis().length }} de {{ listaFiltrada().length }}</span>
+      @if (visiveis().length < listaFiltrada().length) {
+        <button mat-stroked-button (click)="mostrarMais()">Mostrar mais</button>
       }
     </div>
   </div>
 
-  <!-- ===== pedidos + estoque baixo ===== -->
+  <!-- ===== pedidos + estoque por categoria ===== -->
   <div class="meio">
     <div class="painel">
       <div class="painel-topo">
@@ -94,19 +138,18 @@
 
     <div class="painel">
       <div class="painel-topo">
-        <h2>ESTOQUE BAIXO</h2>
+        <h2>ESTOQUE POR CATEGORIA</h2>
         <a routerLink="/admin/notas/nova" class="ver-todos">Repor estoque</a>
       </div>
-      @for (produto of estoqueBaixo(); track produto.id) {
-        <a class="linha estoque" [routerLink]="['/admin/lotes']" [queryParams]="{ produto: produto.id }">
-          <span>
-            <span class="nome">{{ produto.nome }}</span>
-            <small class="suave">{{ produto.marca.nome }}</small>
-          </span>
-          <span class="selo">{{ produto.estoque }} UN.</span>
-        </a>
+      @for (c of porCategoria(); track c.nome) {
+        <div class="barra-linha">
+          <span>{{ c.nome }}</span>
+          <span class="barra-fundo"><span class="barra" [style.width.%]="c.largura"></span></span>
+          <span class="direita"><b>{{ c.unidades }}</b> un.</span>
+          <span class="direita suave">{{ formatarPreco(c.valor) }}</span>
+        </div>
       } @empty {
-        <p class="suave">Nenhum produto com estoque baixo.</p>
+        <p class="suave">Nenhum produto cadastrado.</p>
       }
     </div>
   </div>

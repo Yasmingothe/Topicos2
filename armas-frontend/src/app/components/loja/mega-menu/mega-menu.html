@@ -1,0 +1,43 @@
+@if (categoria(); as c) {
+  <div class="painel">
+    <div class="coluna">
+      <p class="rotulo">Marcas em {{ c.nome }}</p>
+
+      @if (produtos() === null) {
+        <ul class="marcas">
+          @for (n of [1, 2, 3, 4]; track n) { <li><span class="linha-carregando"></span></li> }
+        </ul>
+      } @else {
+        <ul class="marcas">
+          @for (m of marcas(); track m.id) {
+            <li>
+              <a routerLink="/" [queryParams]="{ categoria: c.codigo, idMarca: m.id }" (click)="escolheu.emit()">{{ m.nome }}</a>
+            </li>
+          } @empty {
+            <li class="sem-itens">Nenhuma marca por enquanto.</li>
+          }
+        </ul>
+      }
+
+      <a class="ver-tudo" routerLink="/" [queryParams]="{ categoria: c.codigo }" (click)="escolheu.emit()">
+        Ver tudo em {{ c.nome }} <mat-icon>arrow_forward</mat-icon>
+      </a>
+
+      @if (c.controlada) {
+        <p class="aviso"><mat-icon>verified_user</mat-icon> Venda só com autorização de compra</p>
+      }
+    </div>
+
+    <div class="vitrine">
+      @for (p of vitrine(); track p.id; let i = $index) {
+        <a class="mini" [routerLink]="['/produto', p.id]" (click)="escolheu.emit()" [style.--i]="i">
+          <span class="mini-foto">
+            <app-produto-imagem [idProduto]="p.id" [categoria]="p.categoria.codigo" [nome]="p.nome" [temImagem]="p.temImagem" [imagemUrl]="p.imagemUrl" />
+          </span>
+          <span class="mini-nome">{{ p.nome }}</span>
+          <span class="mini-preco">{{ moeda(p.preco) }}</span>
+        </a>
+      }
+    </div>
+  </div>
+}
