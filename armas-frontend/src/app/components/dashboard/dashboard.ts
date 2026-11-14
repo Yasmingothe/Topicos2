@@ -15,11 +15,11 @@ import { PedidoService } from '../../services/pedido.service';
 import { AuthService } from '../../services/auth.service';
 import { corSituacao, dataHora, moeda } from '../../utils/formatar';
 import { ProdutoImagem } from '../shared/produto-imagem';
+import { ESTOQUE_BAIXO } from '../../utils/estoque';
 
 type FiltroEstoque = 'todos' | 'baixo' | 'zerado' | 'rascunho';
 type CampoOrdem = 'nome' | 'categoria' | 'preco' | 'estoque';
 
-const ESTOQUE_BAIXO = 6; // 6 unidades ou menos = estoque baixo
 const POR_VEZ = 8;       // quantas linhas aparecem de cada vez
 
 @Component({
@@ -59,9 +59,9 @@ export class Dashboard implements OnInit {
 
   unidadesEmEstoque = computed(() => this.produtos().reduce((soma, p) => soma + p.estoque, 0));
 
-  // estoque baixo = 6 unidades ou menos, do menor para o maior
+  // estoque baixo (ver utils/estoque.ts), do menor para o maior
   estoqueBaixo = computed(() =>
-    this.produtos().filter((p) => p.estoque <= 6).sort((a, b) => a.estoque - b.estoque));
+    this.produtos().filter((p) => p.estoque <= ESTOQUE_BAIXO).sort((a, b) => a.estoque - b.estoque));
 
   // unidades e valor em estoque de cada categoria (para as barras)
   porCategoria = computed(() => {
@@ -81,7 +81,7 @@ export class Dashboard implements OnInit {
   // ===== lista de produtos (busca, filtro e ordem) =====
   busca = signal('');
   filtro = signal<FiltroEstoque>('todos');
-  ordem = signal<{ campo: CampoOrdem; crescente: boolean }>({ campo: 'estoque', crescente: true });
+  ordem = signal<{ campo: CampoOrdem; crescente: boolean }>({ campo: 'nome', crescente: true }); // começa em ordem alfabética
   quantosMostrar = signal(POR_VEZ);
 
   // números que aparecem nos botões de filtro
@@ -144,6 +144,8 @@ export class Dashboard implements OnInit {
   mostrarMais(): void {
     this.quantosMostrar.update((n) => n + POR_VEZ);
   }
+
+  esBaixo = ESTOQUE_BAIXO; // para usar no HTML
 
   // barrinha de estoque: cheia com 30 unidades ou mais
   nivelEstoque(estoque: number): number {

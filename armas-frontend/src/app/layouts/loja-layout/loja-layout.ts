@@ -33,6 +33,7 @@ export class LojaLayout {
   // em qual categoria a pessoa está agora (para deixar o item do menu marcado)
   categoriaAtual = signal<string | null>(null);
   naLoja = signal(true); // true = está no catálogo (página inicial da loja)
+  verTodos = signal(false); // true = está na lista "Todos os produtos" (/?ver=todos)
 
   // ===== linha vermelha que desliza embaixo das categorias =====
   private trilho = viewChild<ElementRef<HTMLElement>>('trilho');
@@ -72,6 +73,7 @@ export class LojaLayout {
   private lerUrl(): void {
     const arvore = this.router.parseUrl(this.router.url);
     this.categoriaAtual.set(arvore.queryParams['categoria'] ?? null);
+    this.verTodos.set(arvore.queryParams['ver'] === 'todos');
     this.naLoja.set(!arvore.root.children['primary']);
     this.menuAberto.set(null);
     setTimeout(() => this.posicionarIndicador());

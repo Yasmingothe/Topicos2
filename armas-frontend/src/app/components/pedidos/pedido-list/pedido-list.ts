@@ -11,10 +11,11 @@ import { Pedido } from '../../../models/pedido.model';
 import { OpcaoService } from '../../../services/opcao.service';
 import { PedidoService } from '../../../services/pedido.service';
 import { corSituacao, dataHora, moeda } from '../../../utils/formatar';
+import { FiltroMenu } from '../../shared/filtro-menu';
 
 @Component({
   selector: 'app-pedido-list',
-  imports: [AsyncPipe, MatTableModule, MatPaginatorModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatIconModule],
+  imports: [FiltroMenu, AsyncPipe, MatTableModule, MatPaginatorModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatIconModule],
   templateUrl: './pedido-list.html',
 })
 export class PedidoList implements OnInit {

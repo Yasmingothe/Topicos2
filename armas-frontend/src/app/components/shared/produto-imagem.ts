@@ -7,7 +7,7 @@ import { IlustracaoProduto } from './ilustracao-produto';
 @Component({
   selector: 'app-produto-imagem',
   imports: [IlustracaoProduto],
-  host: { '[class.com-foto]': 'mostrarFoto()' },
+  host: { '[class.com-foto]': 'mostrarFoto()', '[class.conter]': "ajuste() === 'conter'" },
   template: `
     @if (mostrarFoto()) {
       <img [src]="endereco()" [alt]="nome()" loading="lazy" (error)="falhou.set(true)">
@@ -17,6 +17,7 @@ import { IlustracaoProduto } from './ilustracao-produto';
   `,
   styles: `
     :host {
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -28,6 +29,8 @@ import { IlustracaoProduto } from './ilustracao-produto';
     }
     /* a foto preenche o quadrado inteiro (as imagens geradas já vêm com o fundo do estúdio) */
     img { width: 100%; height: 100%; object-fit: cover; }
+    /* "conter": mostra a foto inteira, sem cortar (para espaços que não são quadrados) */
+    :host(.conter) img { object-fit: contain; }
     .desenho { width: 70%; height: 70%; }
   `,
 })
@@ -40,6 +43,7 @@ export class ProdutoImagem {
   temImagem = input(false);              // foto enviada (arquivo no back)
   imagemUrl = input<string | null>(null); // ou link de foto
   versao = input('');
+  ajuste = input<'cobrir' | 'conter'>('cobrir'); // cobrir = preenche cortando as bordas
 
   falhou = signal(false);
 

@@ -18,10 +18,12 @@ import { NotificacaoService } from '../../../services/notificacao.service';
 import { ProdutoDetalhe } from '../produto-detalhe/produto-detalhe';
 import { exportarCsv } from '../../../utils/exportar-csv';
 import { ProdutoImagem } from '../../shared/produto-imagem';
+import { ESTOQUE_BAIXO } from '../../../utils/estoque';
+import { FiltroMenu } from '../../shared/filtro-menu';
 
 @Component({
   selector: 'app-produto-list',
-  imports: [
+  imports: [FiltroMenu, 
     RouterLink, MatTableModule, MatPaginatorModule, MatFormFieldModule,
     MatInputModule, MatSelectModule, MatButtonModule, MatIconModule, ProdutoImagem,
   ],
@@ -29,6 +31,8 @@ import { ProdutoImagem } from '../../shared/produto-imagem';
   styleUrl: './produto-list.css',
 })
 export class ProdutoList implements OnInit {
+
+  estoqueBaixoAte = ESTOQUE_BAIXO; // regra única de estoque baixo (utils/estoque.ts)
 
   private produtoService = inject(ProdutoService);
   private marcaService = inject(MarcaService);

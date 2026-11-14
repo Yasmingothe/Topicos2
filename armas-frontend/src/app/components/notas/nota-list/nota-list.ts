@@ -12,10 +12,11 @@ import { NotaEntrada } from '../../../models/nota-entrada.model';
 import { FornecedorService } from '../../../services/fornecedor.service';
 import { NotaEntradaService } from '../../../services/nota-entrada.service';
 import { data, moeda } from '../../../utils/formatar';
+import { FiltroMenu } from '../../shared/filtro-menu';
 
 @Component({
   selector: 'app-nota-list',
-  imports: [RouterLink, MatTableModule, MatPaginatorModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule],
+  imports: [FiltroMenu, RouterLink, MatTableModule, MatPaginatorModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule],
   templateUrl: './nota-list.html',
 })
 export class NotaList implements OnInit {

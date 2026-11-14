@@ -35,6 +35,13 @@
           <mat-icon>account_circle</mat-icon> {{ primeiroNome() }}
         </button>
         <mat-menu #menuConta="matMenu" xPosition="before">
+          <div class="menu-cabecalho" (click)="$event.stopPropagation()">
+            <strong>{{ auth.usuario()?.nome }}</strong>
+            <small>{{ auth.usuario()?.email }}</small>
+          </div>
+          @if (auth.ehAdmin()) {
+            <a mat-menu-item routerLink="/admin/dashboard"><mat-icon>dashboard</mat-icon> Painel administrativo</a>
+          }
           @if (auth.ehCliente()) {
             <a mat-menu-item routerLink="/minha-conta"><mat-icon>badge</mat-icon> Minha conta</a>
             <a mat-menu-item routerLink="/meus-pedidos"><mat-icon>receipt_long</mat-icon> Meus pedidos</a>
@@ -50,8 +57,8 @@
   <!-- menu de categorias; ao passar o mouse abre o mega menu -->
   <nav class="menu-categorias" aria-label="Categorias" (mouseleave)="sairMenu()">
     <div class="faixa" #trilho>
-      <a routerLink="/" [queryParams]="{}" class="link-categoria"
-         [class.ativo]="naLoja() && !categoriaAtual()"
+      <a routerLink="/" [queryParams]="{ ver: 'todos' }" class="link-categoria"
+         [class.ativo]="naLoja() && verTodos() && !categoriaAtual()"
          (mouseenter)="entrarCategoria($event, null)">Todos os produtos</a>
       @for (c of categorias(); track c.codigo) {
         <a routerLink="/" [queryParams]="{ categoria: c.codigo }" class="link-categoria"

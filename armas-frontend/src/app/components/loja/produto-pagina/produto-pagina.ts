@@ -10,11 +10,10 @@ import { ProdutoService } from '../../../services/produto.service';
 import { moeda } from '../../../utils/formatar';
 import { ProdutoImagem } from '../../shared/produto-imagem';
 
-import { VoltarDirective } from '../../../directives/voltar.directive';
 
 @Component({
   selector: 'app-produto-pagina',
-  imports: [VoltarDirective, RouterLink, MatButtonModule, MatIconModule, ProdutoImagem],
+  imports: [RouterLink, MatButtonModule, MatIconModule, ProdutoImagem],
   templateUrl: './produto-pagina.html',
   styleUrl: './produto-pagina.css',
 })

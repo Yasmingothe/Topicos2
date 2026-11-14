@@ -29,14 +29,14 @@ h1 {
 /* busca + botão Limpar na mesma linha */
 .filtros {
   display: grid;
-  grid-template-columns: 1fr 240px auto;
+  grid-template-columns: 1fr auto auto;
   gap: 12px;
   align-items: center;
   margin-bottom: 16px;
 }
 
 .botao-limpar {
-  height: 56px;
+  height: 40px;
 }
 
 .tabela {

@@ -32,13 +32,28 @@
   <div class="conteudo">
     <header class="topo">
       <span class="topo-titulo">ADMINISTRAÇÃO</span>
-      <span class="usuario">
+      <!-- nome + iniciais: clicando, abre o menu da conta (igual site de verdade) -->
+      <button type="button" class="usuario" [matMenuTriggerFor]="menuConta" aria-label="Menu da conta">
         <span class="usuario-texto">
           <strong>{{ auth.usuario()?.nome }}</strong>
           <small>{{ auth.usuario()?.perfil?.nome }}</small>
         </span>
         <span class="avatar">{{ iniciais() }}</span>
-      </span>
+        <mat-icon class="seta-menu">expand_more</mat-icon>
+      </button>
+
+      <mat-menu #menuConta="matMenu" xPosition="before" class="menu-conta-admin">
+        <div class="menu-cabecalho" (click)="$event.stopPropagation()">
+          <span class="avatar grande">{{ iniciais() }}</span>
+          <span>
+            <strong>{{ auth.usuario()?.nome }}</strong>
+            <small>{{ auth.usuario()?.email }}</small>
+          </span>
+        </div>
+        <a mat-menu-item routerLink="/admin/dashboard"><mat-icon>bar_chart</mat-icon> Dashboard</a>
+        <a mat-menu-item routerLink="/"><mat-icon>storefront</mat-icon> Ver a loja</a>
+        <button mat-menu-item (click)="sair()"><mat-icon>logout</mat-icon> Sair</button>
+      </mat-menu>
     </header>
 
     <main>

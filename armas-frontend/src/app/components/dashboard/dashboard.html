@@ -22,22 +22,26 @@
       <span class="rotulo">FATURAMENTO</span>
       <strong class="valor verde">{{ moeda(resumo()?.faturamento) }}</strong>
       <small class="suave">{{ resumo()?.totalPedidos ?? 0 }} venda(s), sem contar canceladas</small>
+      <span class="ir">Ver vendas <mat-icon>east</mat-icon></span>
     </a>
     <a class="cartao" routerLink="/admin/lotes">
       <span class="rotulo">VALOR EM ESTOQUE</span>
       <strong class="valor">{{ formatarPreco(valorEstoque()) }}</strong>
       <small class="suave">{{ unidadesEmEstoque() }} unidades em {{ resumo()?.lotesComSaldo ?? 0 }} lotes</small>
+      <span class="ir">Ver lotes em estoque <mat-icon>east</mat-icon></span>
     </a>
     <a class="cartao" routerLink="/admin/pedidos">
       <span class="rotulo">PEDIDOS EM ANDAMENTO</span>
       <strong class="valor">{{ resumo()?.pedidosEmAberto ?? 0 }}</strong>
       <small class="suave">pagos, em separação ou para retirada</small>
+      <span class="ir">Ver pedidos <mat-icon>east</mat-icon></span>
     </a>
     <a class="cartao" [class.alerta]="(resumo()?.autorizacoesEmAnalise ?? 0) > 0"
        routerLink="/admin/clientes" [queryParams]="{ autorizacao: 'EM_ANALISE' }">
       <span class="rotulo">AUTORIZAÇÕES PARA CONFERIR</span>
       <strong class="valor">{{ resumo()?.autorizacoesEmAnalise ?? 0 }}</strong>
       <small class="suave">clientes esperando liberação</small>
+      <span class="ir">Conferir agora <mat-icon>east</mat-icon></span>
     </a>
   </div>
 
@@ -95,7 +99,7 @@
           <span class="estoque-col">
             <span class="medidor">
               <span [style.width.%]="nivelEstoque(p.estoque)"
-                    [class.baixo]="p.estoque <= 6" [class.zerado]="p.estoque === 0"></span>
+                    [class.baixo]="p.estoque <= esBaixo" [class.zerado]="p.estoque === 0"></span>
             </span>
             <b>{{ p.estoque }}</b>
           </span>

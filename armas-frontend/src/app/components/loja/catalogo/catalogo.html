@@ -1,26 +1,22 @@
-@if (!filtrando()) {
+@if (paginaInicial()) {
   <!-- ===== banner de ponta a ponta: os destaques trocam com fade suave ===== -->
   @if (destaques().length) {
-    <section class="hero" [class.pausado]="pausado()"
-             (mouseenter)="pausado.set(true)" (mouseleave)="pausado.set(false); mexerMouse(null)"
-             (mousemove)="mexerMouse($event)"
+    <section class="hero"
+             (mouseleave)="mexerMouse(null)" (mousemove)="mexerMouse($event)"
              [style.--mx]="mouse().x" [style.--my]="mouse().y">
 
       <!-- todos os slides ficam empilhados; só o "ativo" aparece -->
       @for (item of destaques(); track item.id; let i = $index) {
         <div class="slide" [class.ativo]="i === indice()" [attr.inert]="i !== indice() ? '' : null">
-          <span class="banner-fundo-texto" aria-hidden="true">{{ item.categoria.nome }}</span>
-          <span class="banner-luz" aria-hidden="true"></span>
+          <span class="banner-fundo-texto" aria-hidden="true" [style.--letras]="palavraFundo(item.categoria.codigo, item.categoria.nome).length">{{ palavraFundo(item.categoria.codigo, item.categoria.nome) }}</span>
 
           <div class="slide-conteudo">
             <div class="banner-texto">
               <span class="etiqueta">Destaque da semana</span>
               <h1>{{ item.nome }}</h1>
               <p class="banner-marca">{{ item.marca.nome }}{{ item.calibre ? ' · calibre ' + item.calibre : '' }}</p>
-              <p class="banner-preco">{{ moeda(item.preco) }}</p>
-              <p class="banner-parcela">ou 10x de {{ parcela(item.preco) }} sem juros</p>
               <div class="banner-botoes">
-                <a mat-flat-button [routerLink]="['/produto', item.id]">Ver produto</a>
+                <a mat-flat-button [routerLink]="['/produto', item.id]">Conhecer</a>
                 <a mat-stroked-button routerLink="/" [queryParams]="{ categoria: item.categoria.codigo }">Mais {{ item.categoria.nome.toLowerCase() }}</a>
               </div>
             </div>
@@ -37,7 +33,6 @@
         <button type="button" class="hero-seta direita" (click)="proximo()" aria-label="Próximo destaque"><mat-icon>east</mat-icon></button>
 
         <div class="banner-controles">
-          <span class="contador"><strong>{{ numero(indice() + 1) }}</strong> / {{ numero(destaques().length) }}</span>
           <div class="banner-pontos" role="tablist" aria-label="Produtos em destaque">
             @for (p of destaques(); track p.id; let i = $index) {
               <button type="button" role="tab" class="ponto" [class.ativo]="i === indice()"
@@ -56,7 +51,7 @@
 
 <div class="faixa">
 
-  @if (!filtrando()) {
+  @if (paginaInicial()) {
     <!-- ===== faixa de vantagens ===== -->
     <ul class="vantagens">
       <li [appRevelar]="0"><mat-icon>credit_card</mat-icon><span><strong>Até 10x sem juros</strong>no cartão de crédito</span></li>
@@ -77,17 +72,46 @@
               <span class="bloco-nome">{{ b.categoria.nome }} <mat-icon>east</mat-icon></span>
             </a>
           }
+          <!-- último bloco: mosaico com 4 fotos pequenas, leva para todos os produtos -->
+          <a class="bloco" routerLink="/" [queryParams]="{ ver: 'todos' }" [appRevelar]="blocosCategoria().length">
+            <span class="bloco-foto bloco-mosaico">
+              @for (p of mosaico(); track p.id) {
+                <app-produto-imagem [idProduto]="p.id" [categoria]="p.categoria.codigo" [nome]="p.nome" [temImagem]="p.temImagem" [imagemUrl]="p.imagemUrl" />
+              }
+            </span>
+            <span class="bloco-nome">Todos os produtos <mat-icon>east</mat-icon></span>
+          </a>
         </div>
       </section>
     }
 
-    <!-- ===== vitrines que rolam para o lado ===== -->
-    <app-vitrine-carrossel titulo="Pistolas" [produtos]="pistolas()" categoria="PISTOLA" />
-    <app-vitrine-carrossel titulo="Para completar o kit" [produtos]="kit()" />
-  }
+    <!-- ===== uma vitrine só, misturando as categorias ===== -->
+    <app-vitrine-carrossel titulo="Em destaque" [produtos]="emDestaque()" />
+
+    <div class="chamada-todos" appRevelar>
+      <a mat-stroked-button routerLink="/" [queryParams]="{ ver: 'todos' }">Ver todos os produtos</a>
+    </div>
+  } @else {
+
+  <!-- ===== caminho (breadcrumb): mostra onde a pessoa está e volta para o início ===== -->
+  <nav class="caminho" aria-label="Você está em">
+    <a routerLink="/">Início</a>
+    <mat-icon aria-hidden="true">chevron_right</mat-icon>
+    @if (busca()) {
+      @if (categoria()) {
+        <a routerLink="/" [queryParams]="{ categoria: categoria() }">{{ nomeCategoria() }}</a>
+        <mat-icon aria-hidden="true">chevron_right</mat-icon>
+      }
+      <span aria-current="page">Busca: "{{ busca() }}"</span>
+    } @else if (categoria()) {
+      <span aria-current="page">{{ nomeCategoria() }}</span>
+    } @else {
+      <span aria-current="page">Todos os produtos</span>
+    }
+  </nav>
 
   <!-- ===== título + filtro ===== -->
-  <div class="barra" [class.barra-inicio]="!filtrando()">
+  <div class="barra">
     <h2>
       @if (busca()) { Resultados para "{{ busca() }}" }
       @else if (categoria()) { {{ nomeCategoria() }} }
@@ -95,20 +119,18 @@
     </h2>
 
     <div class="barra-filtros">
-      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <mat-label>Marca</mat-label>
-        <mat-select [value]="marca()" (selectionChange)="escolherMarca($event.value)">
-          <mat-option [value]="null">Todas</mat-option>
-          @for (m of marcas(); track m.id) {
-            <mat-option [value]="m.id">{{ m.nome }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+      <!-- o mesmo botão de filtro do painel; só aparecem as marcas desta categoria -->
+      @if (marcasDisponiveis().length > 1) {
+        <app-filtro-menu rotulo="Marca" textoTodos="Todas as marcas"
+                         [opcoes]="marcasDisponiveis()" campoValor="id"
+                         [valor]="marca()" (mudou)="escolherMarca($any($event))" />
+      }
       @if (temFiltro()) {
-        <button mat-stroked-button (click)="limpar()"><mat-icon>restart_alt</mat-icon> Limpar</button>
+        <button type="button" class="botao-limpar" (click)="limpar()"><mat-icon>close</mat-icon> Limpar</button>
       }
     </div>
   </div>
+
 
   @if (erro()) {
     <p class="mensagem-erro">{{ erro() }}</p>
@@ -166,5 +188,6 @@
         {{ carregando() ? 'Carregando...' : 'Mostrar mais produtos' }}
       </button>
     </div>
+  }
   }
 </div>

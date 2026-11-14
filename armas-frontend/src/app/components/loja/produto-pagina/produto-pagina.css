@@ -1,10 +1,18 @@
 .pagina { max-width: 1200px; margin: 0 auto; padding: 24px 20px 0; box-sizing: border-box; }
 
-.voltar {
-  display: inline-flex; align-items: center; gap: 6px;
-  margin-bottom: 20px; color: var(--texto-suave); text-decoration: none; font-size: 14px;
+/* caminho (breadcrumb) */
+.caminho {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 4px;
+  margin-bottom: 20px; color: var(--texto-suave); font-size: 13px;
 }
-.voltar:hover { color: var(--texto); }
+.caminho a {
+  color: var(--texto-suave); text-decoration: none;
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  transition: color 0.2s ease, background-size 0.3s var(--suave);
+}
+.caminho a:hover { color: var(--texto); background-size: 100% 1px; }
+.caminho mat-icon { font-size: 16px; width: 16px; height: 16px; opacity: 0.6; }
+.caminho [aria-current] { color: var(--texto); }
 
 .colunas { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; align-items: start; }
 

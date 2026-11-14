@@ -13,11 +13,12 @@ import { Produto } from '../../../models/produto.model';
 import { LoteService } from '../../../services/lote.service';
 import { ProdutoService } from '../../../services/produto.service';
 import { corSituacao, data, dataHora, moeda } from '../../../utils/formatar';
+import { FiltroMenu } from '../../shared/filtro-menu';
 
 // rastreio: escolhe um lote e vê a "história" dele (de onde veio, para quem foi)
 @Component({
   selector: 'app-lote-rastreio',
-  imports: [
+  imports: [FiltroMenu, 
     RouterLink, MatTableModule, MatPaginatorModule, MatFormFieldModule, MatInputModule,
     MatSelectModule, MatButtonModule, MatIconModule, MatSlideToggleModule,
   ],

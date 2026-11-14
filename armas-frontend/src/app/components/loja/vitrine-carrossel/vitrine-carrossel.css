@@ -32,35 +32,41 @@
 
 .area { position: relative; }
 
-/* os cards ficam lado a lado e "encaixam" ao rolar */
-.trilho {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: calc((100% - 3 * 16px) / 4);
-  gap: 16px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
+/* a janela esconde o que está fora; --por-vez = quantos cards aparecem */
+.janela {
+  --por-vez: 4;
+  --espaco: 16px;
+  overflow: hidden;
 }
-.trilho::-webkit-scrollbar { display: none; }
+
+/* cada card ocupa exatamente 1/4 da janela (descontando os espaços);
+   a faixa anda "--inicio" cards para a esquerda */
+.faixa-cards {
+  display: flex;
+  gap: var(--espaco);
+  transform: translateX(calc(var(--inicio, 0) * -1 * (100% + var(--espaco)) / var(--por-vez)));
+  transition: transform 0.6s var(--suave);
+}
 
 .card {
+  flex: 0 0 calc((100% - (var(--por-vez) - 1) * var(--espaco)) / var(--por-vez));
   display: flex;
   flex-direction: column;
-  scroll-snap-align: start;
+  min-width: 0;
   color: var(--texto);
   text-decoration: none;
 }
 
+/* foto quadrada, igual ao formato das imagens: nada é cortado */
 .foto {
   position: relative;
   display: block;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 1 / 1;
   overflow: hidden;
   border-radius: 6px;
 }
 .foto app-produto-imagem { width: 100%; height: 100%; transition: transform 0.7s var(--suave); }
-.card:hover .foto app-produto-imagem { transform: scale(1.06); }
+.card:hover .foto app-produto-imagem { transform: scale(1.05); }
 
 /* linha vermelha que cresce embaixo da foto no hover */
 .foto::after {
@@ -89,37 +95,66 @@
   font-weight: 700;
 }
 
-.nome { margin-top: 12px; font-size: 14px; font-weight: 500; line-height: 1.3; }
+.nome {
+  margin-top: 12px;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
 .marca { margin-top: 2px; color: var(--texto-suave); font-size: 12px; }
 .preco { margin-top: 8px; color: var(--latao); font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .parcela { color: var(--texto-suave); font-size: 12px; }
 
-/* setas nas laterais, aparecem ao passar o mouse na faixa */
+/* setas nas laterais, na altura do meio das fotos */
 .seta {
   position: absolute;
-  top: 38%;
+  top: calc((100% - 80px) / 2);
   z-index: 2;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 42px;
   height: 42px;
+  margin-top: -21px;
   border: 1px solid var(--borda);
   border-radius: 50%;
-  background: rgba(14, 12, 12, 0.85);
+  background: rgba(14, 12, 12, 0.9);
   color: var(--texto);
   cursor: pointer;
-  opacity: 0;
-  transition: opacity 0.2s ease, border-color 0.2s ease, translate 0.25s var(--suave);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
 }
-.seta mat-icon { font-size: 18px; width: 18px; height: 18px; }
-.seta.esquerda { left: -16px; translate: 6px 0; }
-.seta.direita { right: -16px; translate: -6px 0; }
-.area:hover .seta { opacity: 1; translate: 0 0; }
-.seta:hover { border-color: var(--vermelho); }
+.seta mat-icon { font-size: 18px; width: 18px; height: 18px; transition: translate 0.2s var(--suave); }
+.seta.esquerda { left: -21px; }
+.seta.direita { right: -21px; }
+.seta:hover { border-color: var(--vermelho); background: var(--vermelho-escuro); }
+.seta.esquerda:hover mat-icon { translate: -2px 0; }
+.seta.direita:hover mat-icon { translate: 2px 0; }
+
+/* barrinhas das "páginas" */
+.paginas {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 22px;
+}
+.paginas button {
+  width: 24px;
+  height: 3px;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  transition: width 0.3s var(--suave), background-color 0.2s ease;
+}
+.paginas button:hover { background: rgba(255, 255, 255, 0.35); }
+.paginas button.ativa { width: 40px; background: var(--vermelho); }
 
 @media (max-width: 900px) {
-  .trilho { grid-auto-columns: calc((100% - 16px) / 2.3); }
+  .janela { --por-vez: 2; }
   .seta { display: none; }
   .ver-tudo { position: static; margin-left: auto; }
   .vitrine-topo { justify-content: space-between; }

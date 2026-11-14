@@ -16,10 +16,11 @@ import { OpcaoService } from '../../../services/opcao.service';
 import { UsuarioService } from '../../../services/usuario.service';
 import { data } from '../../../utils/formatar';
 import { UsuarioDialog } from '../usuario-dialog/usuario-dialog';
+import { FiltroMenu } from '../../shared/filtro-menu';
 
 @Component({
   selector: 'app-usuario-list',
-  imports: [
+  imports: [FiltroMenu, 
     AsyncPipe, MatTableModule, MatPaginatorModule, MatFormFieldModule, MatInputModule,
     MatSelectModule, MatButtonModule, MatIconModule, MatSlideToggleModule,
   ],

@@ -1,6 +1,15 @@
 <section class="pagina">
 
-  <a href="/" appVoltar="/" class="voltar"><mat-icon>arrow_back</mat-icon> Voltar</a>
+  <!-- caminho (breadcrumb): Início › Categoria › Produto -->
+  <nav class="caminho" aria-label="Você está em">
+    <a routerLink="/">Início</a>
+    @if (produto(); as p) {
+      <mat-icon aria-hidden="true">chevron_right</mat-icon>
+      <a routerLink="/" [queryParams]="{ categoria: p.categoria.codigo }">{{ p.categoria.nome }}</a>
+      <mat-icon aria-hidden="true">chevron_right</mat-icon>
+      <span aria-current="page">{{ p.nome }}</span>
+    }
+  </nav>
 
   @if (erro()) {
     <p class="mensagem-erro">{{ erro() }}</p>

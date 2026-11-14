@@ -57,7 +57,7 @@
 }
 
 .adm-filtros mat-form-field { flex: 1 1 220px; }
-.adm-filtros .botao-limpar { height: 56px; }
+.adm-filtros .botao-limpar { height: 40px; }
 
 .adm-cartao {
   background: var(--cartao);
@@ -230,3 +230,7 @@ mat-paginator {
 
 /* preços com números do mesmo tamanho (como em loja de verdade) */
 .produto-preco, .banner-preco, .mini-preco { font-variant-numeric: tabular-nums; }
+
+/* lista do botão de filtro (app-filtro-menu): no máximo ~7 opções visíveis, o resto rola */
+.mat-mdc-menu-panel.menu-filtro { min-width: 220px; max-height: 340px; }
+.menu-filtro .mat-mdc-menu-item { min-height: 40px; font-size: 14px; }

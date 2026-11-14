@@ -8,6 +8,7 @@ import { Produto } from '../../../models/produto.model';
 import { LoteService } from '../../../services/lote.service';
 import { data, moeda } from '../../../utils/formatar';
 import { ProdutoImagem } from '../../shared/produto-imagem';
+import { ESTOQUE_BAIXO } from '../../../utils/estoque';
 
 @Component({
   selector: 'app-produto-detalhe',
@@ -16,6 +17,8 @@ import { ProdutoImagem } from '../../shared/produto-imagem';
   styleUrl: './produto-detalhe.css',
 })
 export class ProdutoDetalhe implements OnInit {
+
+  estoqueBaixoAte = ESTOQUE_BAIXO; // regra única de estoque baixo (utils/estoque.ts)
 
   private loteService = inject(LoteService);
 

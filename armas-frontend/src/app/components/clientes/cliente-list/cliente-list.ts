@@ -15,10 +15,11 @@ import { NotificacaoService } from '../../../services/notificacao.service';
 import { OpcaoService } from '../../../services/opcao.service';
 import { corSituacao, data } from '../../../utils/formatar';
 import { exportarCsv } from '../../../utils/exportar-csv';
+import { FiltroMenu } from '../../shared/filtro-menu';
 
 @Component({
   selector: 'app-cliente-list',
-  imports: [
+  imports: [FiltroMenu, 
     AsyncPipe, RouterLink, MatTableModule, MatPaginatorModule, MatFormFieldModule,
     MatInputModule, MatButtonModule, MatIconModule, MatSelectModule, MatTooltipModule,
   ],

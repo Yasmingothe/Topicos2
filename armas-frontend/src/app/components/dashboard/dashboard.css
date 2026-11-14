@@ -29,6 +29,21 @@
 
 .cartao.alerta { border-color: var(--laranja); }
 
+/* "Ver vendas →": deixa claro para onde o cartão leva */
+.ir {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  color: var(--texto-suave);
+  font-size: 12px;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+.ir mat-icon { font-size: 14px; width: 14px; height: 14px; transition: translate 0.2s var(--suave); }
+a.cartao:hover .ir { color: var(--vermelho); }
+a.cartao:hover .ir mat-icon { translate: 3px 0; }
+
 a.cartao:hover, a.cartao.alerta:hover { border-color: var(--vermelho); }
 
 .rotulo {

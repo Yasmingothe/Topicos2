@@ -15,15 +15,9 @@
       <mat-icon matSuffix>search</mat-icon>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" subscriptSizing="dynamic">
-      <mat-label>Produto</mat-label>
-      <mat-select [value]="filtroProduto()" (selectionChange)="filtrarProduto($event.value)">
-        <mat-option [value]="null">Todos</mat-option>
-        @for (p of produtos(); track p.id) {
-          <mat-option [value]="p.id">{{ p.nome }}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
+    <app-filtro-menu rotulo="Produto" textoTodos="Todos os produtos"
+                     [opcoes]="produtos()" campoValor="id"
+                     [valor]="filtroProduto()" (mudou)="filtrarProduto($any($event))" />
 
     <mat-slide-toggle [checked]="somenteComSaldo()" (change)="alternarSaldo($event.checked)">
       Só lotes com saldo

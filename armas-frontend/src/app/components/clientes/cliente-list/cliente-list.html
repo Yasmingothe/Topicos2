@@ -26,15 +26,9 @@
       <mat-icon matSuffix>search</mat-icon>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" subscriptSizing="dynamic">
-      <mat-label>Autorização de compra</mat-label>
-      <mat-select [value]="filtroAutorizacao()" (selectionChange)="filtrarAutorizacao($event.value)">
-        <mat-option [value]="null">Todas</mat-option>
-        @for (s of (opcoes.situacoesAutorizacao$ | async) ?? []; track s.codigo) {
-          <mat-option [value]="s.codigo">{{ s.nome }}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
+    <app-filtro-menu rotulo="Autorização" textoTodos="Todas as autorizações"
+                     [opcoes]="(opcoes.situacoesAutorizacao$ | async) ?? []"
+                     [valor]="filtroAutorizacao()" (mudou)="filtrarAutorizacao($any($event))" />
 
     <button mat-stroked-button class="botao-limpar" (click)="limparFiltro()" [disabled]="!filtro() && !filtroAutorizacao()">
       <mat-icon>restart_alt</mat-icon>

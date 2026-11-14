@@ -28,7 +28,7 @@
       <strong>{{ produto().calibre || '—' }}</strong>
 
       <span>Estoque</span>
-      <strong [class.baixo]="produto().estoque <= 6">{{ produto().estoque }} unidades</strong>
+      <strong [class.baixo]="produto().estoque <= estoqueBaixoAte">{{ produto().estoque }} unidades</strong>
 
       <span>Código</span>
       <strong>#{{ produto().id }}</strong>

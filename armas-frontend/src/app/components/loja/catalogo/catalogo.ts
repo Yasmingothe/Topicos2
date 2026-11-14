@@ -2,8 +2,6 @@ import { Component, computed, effect, inject, input, signal, untracked } from '@
 import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
 import { Categoria } from '../../../models/categoria.model';
 import { Marca } from '../../../models/marca.model';
 import { Produto } from '../../../models/produto.model';
@@ -15,6 +13,7 @@ import { NotificacaoService } from '../../../services/notificacao.service';
 import { ProdutoService } from '../../../services/produto.service';
 import { moeda } from '../../../utils/formatar';
 import { ProdutoImagem } from '../../shared/produto-imagem';
+import { FiltroMenu } from '../../shared/filtro-menu';
 import { RevelarDirective } from '../../../directives/revelar.directive';
 import { VitrineCarrossel } from '../vitrine-carrossel/vitrine-carrossel';
 
@@ -22,9 +21,6 @@ const POR_PAGINA = 12;
 
 // ordem de preferência das categorias no banner de destaque
 const ORDEM_DESTAQUE = ['PISTOLA', 'RIFLE_CARABINA', 'REVOLVER', 'ESPINGARDA'];
-// categorias de arma e munição (o resto entra em "Para completar o kit")
-const ARMAS_E_MUNICAO = [...ORDEM_DESTAQUE, 'MUNICAO'];
-
 const temFoto = (p: Produto) => !!(p.temImagem || p.imagemUrl);
 
 // com estoque e com foto primeiro
@@ -54,7 +50,7 @@ function escolherDestaques(lista: Produto[]): Produto[] {
 
 @Component({
   selector: 'app-catalogo',
-  imports: [RouterLink, MatButtonModule, MatIconModule, MatFormFieldModule, MatSelectModule, ProdutoImagem, RevelarDirective, VitrineCarrossel],
+  imports: [RouterLink, MatButtonModule, MatIconModule, ProdutoImagem, FiltroMenu, RevelarDirective, VitrineCarrossel],
   templateUrl: './catalogo.html',
   styleUrl: './catalogo.css',
 })
@@ -71,10 +67,21 @@ export class Catalogo {
   // vêm da URL: /?busca=g2c&categoria=PISTOLA
   busca = input<string>();
   categoria = input<string>();
+  ver = input<string>(); // /?ver=todos -> lista todos os produtos (sem isso, é a página inicial)
   idMarca = input<string>(); // vem do mega menu: /?categoria=PISTOLA&idMarca=3
 
   categorias = signal<Categoria[]>([]);
   marcas = signal<Marca[]>([]);
+  nomeMarca = computed(() => this.marcas().find((m) => m.id === this.marca())?.nome ?? '');
+
+  // só as marcas que têm produto na categoria aberta (em "Todos", todas que têm produto)
+  marcasDisponiveis = computed(() => {
+    const categoria = this.categoria();
+    const ids = new Set(this.todos()
+      .filter((p) => !categoria || p.categoria.codigo === categoria)
+      .map((p) => p.marca.id));
+    return this.marcas().filter((m) => ids.has(m.id));
+  });
   produtos = signal<Produto[]>([]);
   // todos os produtos (para o banner, as categorias e as vitrines da página inicial)
   todos = signal<Produto[]>([]);
@@ -82,19 +89,60 @@ export class Catalogo {
   // banner: vários destaques que trocam sozinhos
   destaques = computed(() => escolherDestaques(this.todos()));
 
-  // um bloco grande por categoria de arma, com a foto de um produto dela
+  // ===== para não repetir foto: cada parte da página usa produtos diferentes =====
+  // banner -> blocos de categoria -> mosaico do "Todos os produtos" -> vitrine "Em destaque"
+
+  // um bloco por categoria (todas as do menu), com um produto que NÃO está no banner
   blocosCategoria = computed(() => {
     const lista = ordenarVitrine(this.todos());
-    return ORDEM_DESTAQUE
-      .map((codigo) => lista.find((p) => p.categoria.codigo === codigo))
-      .filter((p): p is Produto => !!p)
-      .map((p) => ({ categoria: p.categoria, produto: p }));
+    const doBanner = new Set(this.destaques().map((p) => p.id));
+    return this.categorias()
+      .map((c) => {
+        const daCategoria = lista.filter((p) => p.categoria.codigo === c.codigo);
+        return { categoria: c, produto: daCategoria.find((p) => !doBanner.has(p.id)) ?? daCategoria[0] };
+      })
+      .filter((b): b is { categoria: Categoria; produto: Produto } => !!b.produto);
   });
 
-  pistolas = computed(() => ordenarVitrine(this.todos()).filter((p) => p.categoria.codigo === 'PISTOLA').slice(0, 12));
-  kit = computed(() => ordenarVitrine(this.todos()).filter((p) => !ARMAS_E_MUNICAO.includes(p.categoria.codigo)).slice(0, 12));
+  // ids que já aparecem no banner ou nos blocos
+  private usadosNoTopo = computed(() => new Set([
+    ...this.destaques().map((p) => p.id),
+    ...this.blocosCategoria().map((b) => b.produto.id),
+  ]));
+
+  // 4 fotos pequenas para o bloco "Todos os produtos", de categorias diferentes
+  mosaico = computed(() => {
+    const usados = this.usadosNoTopo();
+    const livres = ordenarVitrine(this.todos()).filter((p) => !usados.has(p.id) && temFoto(p));
+    const escolhidos: Produto[] = [];
+    const categorias = new Set<string>();
+    for (const p of livres)
+      if (escolhidos.length < 4 && !categorias.has(p.categoria.codigo)) {
+        escolhidos.push(p);
+        categorias.add(p.categoria.codigo);
+      }
+    for (const p of livres)
+      if (escolhidos.length < 4 && !escolhidos.includes(p)) escolhidos.push(p);
+    return escolhidos;
+  });
+
+  // vitrine: um produto de cada categoria por vez, sem os que já apareceram em cima
+  emDestaque = computed(() => {
+    const jaApareceram = new Set([...this.usadosNoTopo(), ...this.mosaico().map((p) => p.id)]);
+    const porCategoria = new Map<string, Produto[]>();
+    for (const p of ordenarVitrine(this.todos()).filter((x) => !jaApareceram.has(x.id))) {
+      const lista = porCategoria.get(p.categoria.codigo) ?? [];
+      lista.push(p);
+      porCategoria.set(p.categoria.codigo, lista);
+    }
+    const filas = [...porCategoria.values()];
+    const misturados: Produto[] = [];
+    for (let i = 0; misturados.length < 12 && filas.some((f) => f.length > i); i++)
+      for (const fila of filas)
+        if (fila[i] && misturados.length < 12) misturados.push(fila[i]);
+    return misturados;
+  });
   indice = signal(0);
-  pausado = signal(false); // mouse em cima do banner = para de trocar
   destaque = computed(() => this.destaques()[this.indice()] ?? null);
   mouse = signal({ x: 0, y: 0 });
 
@@ -110,6 +158,8 @@ export class Catalogo {
   moeda = moeda;
 
   filtrando = computed(() => !!(this.busca() || this.categoria() || this.marca()));
+  // página inicial = sem busca, sem categoria e sem pedir "todos os produtos"
+  paginaInicial = computed(() => !this.filtrando() && this.ver() !== 'todos');
   // "Limpar" só aparece com marca ou busca; a categoria continua escolhida
   temFiltro = computed(() => !!(this.busca() || this.marca()));
   temMais = computed(() => this.produtos().length < this.total());
@@ -172,14 +222,14 @@ export class Catalogo {
   limpar(): void {
     this.marca.set(null);
     if (this.busca())
-      this.router.navigate(['/'], { queryParams: { categoria: this.categoria() || null } });
+      this.router.navigate(['/'], { queryParams: { categoria: this.categoria() || null, ver: this.categoria() ? null : 'todos' } });
     else
       this.carregar(true);
   }
 
   verTodos(): void {
     this.marca.set(null);
-    this.router.navigate(['/']);
+    this.router.navigate(['/'], { queryParams: { ver: 'todos' } });
   }
 
   // ===== banner =====
@@ -197,6 +247,15 @@ export class Catalogo {
 
   irPara(posicao: number): void {
     this.indice.set(posicao);
+  }
+
+  // palavra curta para o texto gigante de fundo do banner (nome inteiro não cabe)
+  palavraFundo(codigo: string, nome: string): string {
+    const curtas: Record<string, string> = {
+      PISTOLA: 'Pistolas', REVOLVER: 'Revólveres', RIFLE_CARABINA: 'Rifles',
+      ESPINGARDA: 'Espingardas', MUNICAO: 'Munição', MIRA_OPTICA: 'Miras', ACESSORIO: 'Acessórios',
+    };
+    return curtas[codigo] ?? nome.split(' ')[0];
   }
 
   // 1 -> "01" (contador do banner)

@@ -21,15 +21,9 @@
       <mat-icon matSuffix>search</mat-icon>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" subscriptSizing="dynamic">
-      <mat-label>Fornecedor</mat-label>
-      <mat-select [value]="filtroFornecedor()" (selectionChange)="filtrarFornecedor($event.value)">
-        <mat-option [value]="null">Todos</mat-option>
-        @for (f of fornecedores(); track f.id) {
-          <mat-option [value]="f.id">{{ f.nomeFantasia || f.razaoSocial }}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
+    <app-filtro-menu rotulo="Fornecedor" textoTodos="Todos os fornecedores"
+                     [opcoes]="fornecedores()" campoValor="id" campoNome="nomeFantasia" campoNomeReserva="razaoSocial"
+                     [valor]="filtroFornecedor()" (mudou)="filtrarFornecedor($any($event))" />
   </div>
 
   @if (erro()) {

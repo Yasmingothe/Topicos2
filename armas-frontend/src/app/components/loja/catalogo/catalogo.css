@@ -15,9 +15,8 @@
   overflow: hidden;
   isolation: isolate;
   height: 540px;
-  background:
-    radial-gradient(ellipse 50% 70% at 72% 50%, rgba(120, 22, 22, 0.32) 0%, transparent 70%),
-    linear-gradient(180deg, #140e0e 0%, #0e0c0c 100%);
+  /* fundo escuro e liso: o único brilho vermelho é o da própria foto */
+  background: linear-gradient(180deg, #0c0a0a 0%, #090808 100%);
   border-bottom: 1px solid var(--borda);
 }
 
@@ -39,12 +38,12 @@
   inset: 0;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.8s ease, visibility 0s linear 0.8s;
+  transition: opacity 0.6s ease, visibility 0s linear 0.6s;
 }
 .slide.ativo {
   opacity: 1;
   visibility: visible;
-  transition: opacity 0.8s ease, visibility 0s;
+  transition: opacity 0.6s ease, visibility 0s;
 }
 
 .slide-conteudo {
@@ -68,7 +67,8 @@
   translate: calc(var(--mx) * -12px) -50%;
   color: transparent;
   -webkit-text-stroke: 1px rgba(255, 255, 255, 0.07);
-  font-size: clamp(100px, 14vw, 210px);
+  /* o tamanho diminui conforme o número de letras, para a palavra sempre caber */
+  font-size: calc(min(13vw, 190px) * 8 / max(8, var(--letras, 8)));
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.04em;
@@ -106,7 +106,7 @@
 }
 
 .banner-texto h1 { margin: 14px 0 6px; font-size: clamp(30px, 3.6vw, 46px); font-weight: 700; line-height: 1.08; letter-spacing: -0.02em; }
-.banner-marca { margin: 0; color: var(--texto-suave); }
+.banner-marca { margin: 0 0 28px; color: var(--texto-suave); font-size: 16px; }
 .banner-preco { margin: 22px 0 0; font-size: 36px; font-weight: 700; color: var(--latao); line-height: 1; }
 .banner-parcela { margin: 6px 0 24px; color: var(--texto-suave); font-size: 14px; }
 .banner-botoes { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -135,15 +135,12 @@
 .banner-foto:hover app-produto-imagem { transform: scale(1.04); }
 
 /* entrada do slide ativo: textos sobem em cascata, a arma desliza, o fundo acompanha */
-.slide.ativo .banner-texto > * { animation: subir 0.6s var(--suave) 0.15s both; }
-.slide.ativo .banner-texto > :nth-child(2) { animation-delay: 0.2s; }
-.slide.ativo .banner-texto > :nth-child(3) { animation-delay: 0.25s; }
-.slide.ativo .banner-texto > :nth-child(4) { animation-delay: 0.3s; }
-.slide.ativo .banner-texto > :nth-child(5) { animation-delay: 0.33s; }
-.slide.ativo .banner-texto > :nth-child(6) { animation-delay: 0.38s; }
-.slide.ativo .banner-foto { animation: entrar-foto 0.9s var(--suave) 0.1s both; }
-.slide.ativo .banner-fundo-texto { animation: deslizar-fundo 1.2s var(--suave) both; }
-.slide.ativo .banner-luz { animation: aparecer 0.8s ease both, respirar 4s ease-in-out 0.8s infinite; }
+.slide.ativo .banner-texto > * { animation: subir 0.5s var(--suave) 0.1s both; }
+.slide.ativo .banner-texto > :nth-child(2) { animation-delay: 0.14s; }
+.slide.ativo .banner-texto > :nth-child(3) { animation-delay: 0.18s; }
+.slide.ativo .banner-texto > :nth-child(4) { animation-delay: 0.22s; }
+.slide.ativo .banner-foto { animation: entrar-foto 0.7s var(--suave) 0.05s both; }
+.slide.ativo .banner-fundo-texto { animation: deslizar-fundo 0.9s var(--suave) both; }
 
 @keyframes subir {
   from { opacity: 0; translate: 0 20px; }
@@ -202,8 +199,6 @@
   gap: 18px;
   translate: -50% 0;
 }
-.contador { color: var(--texto-suave); font-size: 13px; font-variant-numeric: tabular-nums; }
-.contador strong { color: var(--texto); font-weight: 600; }
 
 .banner-pontos { display: flex; gap: 8px; }
 .ponto {
@@ -230,9 +225,7 @@
   transform: scaleX(0);
   transform-origin: left;
 }
-.ponto.ativo .ponto-tempo { animation: encher 5s linear forwards; }
-/* mouse em cima do banner: a barrinha para e o destaque não troca */
-.hero.pausado .ponto.ativo .ponto-tempo { animation-play-state: paused; }
+.ponto.ativo .ponto-tempo { animation: encher 4s linear forwards; }
 
 @keyframes encher {
   from { transform: scaleX(0); }
@@ -251,11 +244,28 @@
 
 /* ===== blocos grandes por categoria ===== */
 .categorias { margin: 0 0 56px; }
+/* 4 por linha, todos quadrados (7 categorias + o bloco "Ver tudo" = 4 + 4) */
 .blocos {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
+  gap: 24px 16px;
 }
+
+/* bloco "Todos os produtos": 4 fotos pequenas em mosaico (2 x 2) */
+.bloco-foto.bloco-mosaico {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 3px;
+  background: var(--fundo);
+}
+.bloco-foto.bloco-mosaico app-produto-imagem {
+  width: 100%;
+  height: 100%;
+  transition: filter 0.4s ease;
+}
+/* no hover, as fotos clareiam (aproximar faria uma invadir a outra) */
+.bloco:hover .bloco-foto.bloco-mosaico app-produto-imagem { transform: none; filter: brightness(1.2); }
 .bloco {
   display: flex;
   flex-direction: column;
@@ -264,7 +274,7 @@
 }
 .bloco-foto {
   display: block;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 1 / 1;
   overflow: hidden;
   border-radius: 6px;
 }
@@ -300,8 +310,9 @@
 .bloco-nome mat-icon { font-size: 18px; width: 18px; height: 18px; transition: translate 0.25s var(--suave); }
 .bloco:hover .bloco-nome mat-icon { translate: 4px 0; color: var(--vermelho); }
 
-/* na página inicial, "Todos os produtos" segue o mesmo estilo dos outros títulos */
-.barra-inicio { padding-top: 40px; border-top: 1px solid var(--borda); }
+/* botão no fim da página inicial */
+.chamada-todos { display: flex; justify-content: center; margin: 8px 0 24px; }
+.chamada-todos a { height: 48px; padding: 0 32px; font-weight: 600; }
 
 /* ===== vantagens ===== */
 .vantagens {
@@ -341,7 +352,27 @@
 .barra h2 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.01em; }
 .barra h2 span { margin-left: 10px; color: var(--texto-suave); font-size: 13px; font-weight: 400; }
 .barra-filtros { display: flex; gap: 10px; align-items: center; }
-.barra-filtros mat-form-field { width: 200px; }
+
+/* botão "Limpar" ao lado do filtro de marca */
+.botao-limpar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 14px 0 10px;
+  border: 0;
+  background: transparent;
+  color: var(--texto-suave);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.botao-limpar mat-icon { font-size: 18px; width: 18px; height: 18px; }
+.botao-limpar:hover { color: var(--texto); }
 
 /* ===== cards de produto (quadrado com foto, nome, preço, comprar) ===== */
 .grade {
@@ -461,6 +492,7 @@
   .banner-luz { right: 50%; margin-right: -230px; top: 30%; }
   .hero-seta { display: none; }
   .blocos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
   .vantagens { grid-template-columns: 1fr; }
 }
 
@@ -468,5 +500,26 @@
   .grade { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .produto { padding: 8px 8px 12px; }
   .produto-preco { font-size: 18px; }
-  .barra-filtros mat-form-field { width: 150px; }
+
 }
+
+/* ===== caminho (breadcrumb) ===== */
+.caminho {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 4px 0 10px;
+  color: var(--texto-suave);
+  font-size: 13px;
+}
+.caminho a {
+  color: var(--texto-suave);
+  text-decoration: none;
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  transition: color 0.2s ease, background-size 0.3s var(--suave);
+}
+.caminho a:hover { color: var(--texto); background-size: 100% 1px; }
+.caminho mat-icon { font-size: 16px; width: 16px; height: 16px; opacity: 0.6; }
+.caminho [aria-current] { color: var(--texto); }
+

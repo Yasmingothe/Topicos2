@@ -29,14 +29,14 @@ h1 {
 /* 3 filtros + o botão Limpar no fim (auto = só o tamanho do botão) */
 .filtros {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr auto;
+  grid-template-columns: 1fr auto auto auto;
   gap: 12px;
   align-items: center;
   margin-bottom: 16px;
 }
 
 .botao-limpar {
-  height: 56px;
+  height: 40px;
 }
 
 .tabela {

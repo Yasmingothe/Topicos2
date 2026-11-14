@@ -21,15 +21,9 @@
       <mat-icon matSuffix>search</mat-icon>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" subscriptSizing="dynamic">
-      <mat-label>Perfil</mat-label>
-      <mat-select [value]="filtroPerfil()" (selectionChange)="filtrarPerfil($event.value)">
-        <mat-option [value]="null">Todos</mat-option>
-        @for (perfil of (opcoes.perfis$ | async) ?? []; track perfil.codigo) {
-          <mat-option [value]="perfil.codigo">{{ perfil.nome }}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
+    <app-filtro-menu rotulo="Perfil" textoTodos="Todos os perfis"
+                     [opcoes]="(opcoes.perfis$ | async) ?? []"
+                     [valor]="filtroPerfil()" (mudou)="filtrarPerfil($any($event))" />
   </div>
 
   @if (erro()) {

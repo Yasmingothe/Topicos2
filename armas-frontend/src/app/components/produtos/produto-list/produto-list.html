@@ -27,25 +27,13 @@
       <mat-icon matSuffix>search</mat-icon>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" subscriptSizing="dynamic">
-      <mat-label>Marca</mat-label>
-      <mat-select [value]="filtroMarca()" (selectionChange)="filtrarPorMarca($event.value)">
-        <mat-option [value]="null">Todas as marcas</mat-option>
-        @for (marca of marcas(); track marca.id) {
-          <mat-option [value]="marca.id">{{ marca.nome }}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
+    <app-filtro-menu rotulo="Marca" textoTodos="Todas as marcas"
+                     [opcoes]="marcas()" campoValor="id"
+                     [valor]="filtroMarca()" (mudou)="filtrarPorMarca($any($event))" />
 
-    <mat-form-field appearance="outline" subscriptSizing="dynamic">
-      <mat-label>Categoria</mat-label>
-      <mat-select [value]="filtroCategoria()" (selectionChange)="filtrarPorCategoria($event.value)">
-        <mat-option [value]="null">Todas as categorias</mat-option>
-        @for (categoria of categorias(); track categoria.codigo) {
-          <mat-option [value]="categoria.codigo">{{ categoria.nome }}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
+    <app-filtro-menu rotulo="Categoria" textoTodos="Todas as categorias"
+                     [opcoes]="categorias()" campoValor="codigo"
+                     [valor]="filtroCategoria()" (mudou)="filtrarPorCategoria($any($event))" />
 
     <button mat-stroked-button class="botao-limpar" (click)="limparFiltros()" [disabled]="!temFiltro()">
       <mat-icon>restart_alt</mat-icon>
@@ -88,7 +76,7 @@
     <ng-container matColumnDef="estoque">
       <th mat-header-cell *matHeaderCellDef class="numero">Estoque</th>
       <td mat-cell *matCellDef="let produto" class="numero">
-        <span class="selo-estoque" [class.baixo]="produto.estoque <= 6">{{ produto.estoque }} un.</span>
+        <span class="selo-estoque" [class.baixo]="produto.estoque <= estoqueBaixoAte">{{ produto.estoque }} un.</span>
       </td>
     </ng-container>
 
