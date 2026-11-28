@@ -1,7 +1,5 @@
 package br.unitins.armas.resource;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
-
 import br.unitins.armas.dto.AutorizacaoRequestDTO;
 import br.unitins.armas.dto.ClienteRequestDTO;
 import br.unitins.armas.dto.ClienteResponseDTO;
@@ -10,6 +8,7 @@ import br.unitins.armas.dto.PedidoRequestDTO;
 import br.unitins.armas.dto.PedidoResponseDTO;
 import br.unitins.armas.service.ClienteService;
 import br.unitins.armas.service.PedidoService;
+import br.unitins.armas.service.UsuarioLogadoHelper;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -27,8 +26,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
-// tudo do cliente LOGADO: o id vem do token, nunca da URL
-// (assim um cliente não consegue ver os dados de outro)
+// tudo do cliente LOGADO: o id vem do token OIDC, resolvido pelo helper
 @Path("/minha-conta")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -42,10 +40,10 @@ public class MinhaContaResource {
     PedidoService pedidoService;
 
     @Inject
-    JsonWebToken jwt;
+    UsuarioLogadoHelper helper;
 
     private Long idUsuario() {
-        return Long.valueOf(jwt.getSubject());
+        return helper.getIdUsuarioLogado();
     }
 
     // ===== dados e endereço =====

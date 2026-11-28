@@ -1,0 +1,163 @@
+{
+  "realm": "zero1",
+  "displayName": "ZERO1 Armas & Acessórios",
+  "displayNameHtml": "<b>ZERO1</b> Armas & Acessórios",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": true,
+  "registrationEmailAsUsername": true,
+  "rememberMe": true,
+  "verifyEmail": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "defaultRoles": [
+    "CLIENTE"
+  ],
+  "roles": {
+    "realm": [
+      {
+        "id": "r0000000-0000-0000-0000-000000000001",
+        "name": "ADMIN",
+        "description": "Administrador da loja ZERO1"
+      },
+      {
+        "id": "r0000000-0000-0000-0000-000000000002",
+        "name": "CLIENTE",
+        "description": "Cliente consumidor da loja ZERO1"
+      }
+    ]
+  },
+  "defaultRole": {
+    "name": "default-roles-zero1",
+    "description": "${role_default-roles}",
+    "composite": true,
+    "composites": {
+      "realm": [
+        "CLIENTE"
+      ]
+    }
+  },
+  "clients": [
+    {
+      "id": "c0000000-0000-0000-0000-000000000001",
+      "clientId": "armas-frontend",
+      "name": "Frontend Angular ZERO1",
+      "description": "Cliente público SPA Angular com PKCE",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "fullScopeAllowed": true,
+      "rootUrl": "http://localhost:4200",
+      "baseUrl": "http://localhost:4200",
+      "redirectUris": [
+        "http://localhost:4200/*",
+        "http://localhost:4200/"
+      ],
+      "webOrigins": [
+        "http://localhost:4200",
+        "+"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:4200/*##http://localhost:4200/"
+      }
+    },
+    {
+      "id": "c0000000-0000-0000-0000-000000000002",
+      "clientId": "armas-backend",
+      "name": "Backend Quarkus ZERO1",
+      "description": "API REST protegida por token Bearer",
+      "enabled": true,
+      "bearerOnly": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "fullScopeAllowed": true
+    }
+  ],
+  "users": [
+    {
+      "id": "e0000000-0000-0000-0000-000000000001",
+      "username": "admin@zero1.com",
+      "email": "admin@zero1.com",
+      "firstName": "Yasmin",
+      "lastName": "Gothe",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "ADMIN"
+      ]
+    },
+    {
+      "id": "e0000000-0000-0000-0000-000000000002",
+      "username": "carlos@email.com",
+      "email": "carlos@email.com",
+      "firstName": "Carlos",
+      "lastName": "Mendes",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "123456",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "CLIENTE"
+      ]
+    },
+    {
+      "id": "e0000000-0000-0000-0000-000000000003",
+      "username": "maria@email.com",
+      "email": "maria@email.com",
+      "firstName": "Maria",
+      "lastName": "Souza",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "123456",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "CLIENTE"
+      ]
+    },
+    {
+      "id": "e0000000-0000-0000-0000-000000000004",
+      "username": "lucas@email.com",
+      "email": "lucas@email.com",
+      "firstName": "Lucas",
+      "lastName": "Pereira",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "123456",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "CLIENTE"
+      ]
+    }
+  ]
+}

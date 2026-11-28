@@ -9,52 +9,22 @@
   </header>
 
   <section class="formulario">
-    <form [formGroup]="form" (ngSubmit)="criar()" class="cartao">
-      <h1>Criar conta</h1>
-      <p class="apoio">Endereço e documentos você completa depois, em Minha conta.</p>
+    <div class="cartao" style="text-align: center; padding: 2rem;">
+      <h1>Criar conta no ZERO1</h1>
+      <p class="apoio">Você está sendo redirecionado para a página de cadastro seguro do Keycloak.</p>
 
-      @if (erro()) {
-        <p class="erro" role="alert">{{ erro() }}</p>
-      }
-
-      <mat-form-field appearance="outline">
-        <mat-label>Nome completo</mat-label>
-        <input matInput formControlName="nome" autocomplete="name">
-        <mat-error>Informe o nome (pelo menos 2 letras).</mat-error>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>E-mail</mat-label>
-        <input matInput type="email" formControlName="email" autocomplete="email">
-        <mat-error>{{ erroEmail() }}</mat-error>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Senha</mat-label>
-        <input matInput type="password" formControlName="senha" autocomplete="new-password">
-        <mat-hint>Pelo menos 6 caracteres.</mat-hint>
-        <mat-error>A senha deve ter pelo menos 6 caracteres.</mat-error>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Confirmar senha</mat-label>
-        <input matInput type="password" formControlName="confirmacao" autocomplete="new-password">
-        <mat-error>Repita a senha.</mat-error>
-      </mat-form-field>
-      @if (form.hasError('senhasDiferentes') && form.controls.confirmacao.touched) {
-        <p class="erro-campo">As senhas não são iguais.</p>
-      }
-
-      <button mat-flat-button type="submit" class="botao" [disabled]="salvando()">
-        {{ salvando() ? 'Criando...' : 'Criar conta' }}
-      </button>
+      <div style="margin: 2rem 0;">
+        <button mat-flat-button type="button" class="botao" (click)="criar()">
+          <mat-icon>person_add</mat-icon>
+          Ir para o Cadastro no Keycloak
+        </button>
+      </div>
 
       <p class="troca">Já tem conta? <a routerLink="/login">Entrar</a></p>
-      <!-- entrar como visitante: vê a loja e monta o carrinho; o login só é pedido para finalizar a compra -->
       <div class="separador"><span>ou</span></div>
       <a mat-stroked-button routerLink="/" class="botao-visitante">Continuar sem entrar</a>
       <p class="dica-visitante">Você pode ver os produtos e montar o carrinho. A conta só é pedida para finalizar a compra.</p>
-    </form>
+    </div>
   </section>
 
 </div>

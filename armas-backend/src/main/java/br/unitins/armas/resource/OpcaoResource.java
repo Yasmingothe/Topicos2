@@ -8,14 +8,16 @@ import br.unitins.armas.model.FormaPagamento;
 import br.unitins.armas.model.Perfil;
 import br.unitins.armas.model.SituacaoAutorizacao;
 import br.unitins.armas.model.SituacaoPedido;
+import jakarta.annotation.security.PermitAll;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
-// listas fixas (enums) para os selects do front
+// listas fixas (enums) para os selects do front - dados públicos
 @Path("/opcoes")
 @Produces(MediaType.APPLICATION_JSON)
+@PermitAll
 public class OpcaoResource {
 
     @GET

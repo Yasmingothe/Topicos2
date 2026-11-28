@@ -3,9 +3,7 @@ package br.unitins.armas.service;
 import java.util.List;
 
 import br.unitins.armas.dto.PaginaDTO;
-import br.unitins.armas.dto.UsuarioRequestDTO;
 import br.unitins.armas.dto.UsuarioResponseDTO;
-import br.unitins.armas.exception.CampoInvalidoException;
 import br.unitins.armas.exception.RegraNegocioException;
 import br.unitins.armas.model.Perfil;
 import br.unitins.armas.model.Usuario;
@@ -21,29 +19,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Inject
     UsuarioRepository repository;
-
-    @Inject
-    SenhaService senhaService;
-
-    @Override
-    @Transactional
-    public UsuarioResponseDTO create(UsuarioRequestDTO dto) {
-        Perfil perfil = Perfil.buscarPorCodigo(dto.perfil());
-        if (perfil == null)
-            throw new CampoInvalidoException("perfil", "Perfil inválido.");
-
-        if (repository.existeEmail(dto.email(), null))
-            throw new CampoInvalidoException("email", "Já existe um usuário com esse e-mail.");
-
-        Usuario usuario = new Usuario();
-        usuario.setNome(dto.nome().trim());
-        usuario.setEmail(dto.email().trim().toLowerCase());
-        usuario.setSenha(senhaService.gerarHash(dto.senha()));
-        usuario.setPerfil(perfil);
-        repository.persist(usuario);
-
-        return UsuarioResponseDTO.valueOf(usuario);
-    }
 
     @Override
     @Transactional

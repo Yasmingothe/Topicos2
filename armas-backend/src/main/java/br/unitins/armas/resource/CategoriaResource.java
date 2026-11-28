@@ -5,6 +5,7 @@ import java.util.List;
 
 import br.unitins.armas.dto.CategoriaDTO;
 import br.unitins.armas.model.Categoria;
+import jakarta.annotation.security.PermitAll;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -12,6 +13,7 @@ import jakarta.ws.rs.core.MediaType;
 
 @Path("/categorias")
 @Produces(MediaType.APPLICATION_JSON)
+@PermitAll
 public class CategoriaResource {
 
     @GET
