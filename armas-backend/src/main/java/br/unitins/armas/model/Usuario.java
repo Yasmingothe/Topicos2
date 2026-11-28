@@ -15,9 +15,10 @@ public class Usuario extends EntidadeBase {
     @Column(length = 120, nullable = false, unique = true)
     private String email;
 
-    // guarda só o hash da senha, nunca a senha de verdade
-    @Column(length = 255, nullable = false)
-    private String senha;
+    // id do usuário lá no Keycloak (o "sub" do token).
+    // a SENHA não fica no nosso banco: quem guarda e confere é o Keycloak
+    @Column(length = 36, unique = true)
+    private String keycloakId;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20, nullable = false)
@@ -32,8 +33,8 @@ public class Usuario extends EntidadeBase {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public String getSenha() { return senha; }
-    public void setSenha(String senha) { this.senha = senha; }
+    public String getKeycloakId() { return keycloakId; }
+    public void setKeycloakId(String keycloakId) { this.keycloakId = keycloakId; }
 
     public Perfil getPerfil() { return perfil; }
     public void setPerfil(Perfil perfil) { this.perfil = perfil; }

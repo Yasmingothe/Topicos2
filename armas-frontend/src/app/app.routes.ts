@@ -5,6 +5,8 @@ import { LojaLayout } from './layouts/loja-layout/loja-layout';
 
 import { Login } from './components/auth/login/login';
 import { Cadastro } from './components/auth/cadastro/cadastro';
+import { EsqueciSenha } from './components/auth/esqueci-senha/esqueci-senha';
+import { RedefinirSenha } from './components/auth/redefinir-senha/redefinir-senha';
 
 import { Dashboard } from './components/dashboard/dashboard';
 import { MarcaList } from './components/marcas/marca-list/marca-list';
@@ -34,6 +36,9 @@ export const routes: Routes = [
   // ===== entrar / criar conta (sem menu) =====
   { path: 'login', component: Login, canActivate: [visitanteGuard], title: 'Entrar | ZERO1' },
   { path: 'cadastro', component: Cadastro, canActivate: [visitanteGuard], title: 'Criar conta | ZERO1' },
+  { path: 'esqueci-senha', component: EsqueciSenha, canActivate: [visitanteGuard], title: 'Esqueci minha senha | ZERO1' },
+  // aberta pelo link do e-mail: /redefinir-senha?token=...
+  { path: 'redefinir-senha', component: RedefinirSenha, title: 'Nova senha | ZERO1' },
 
   // ===== painel: só ADMIN (o guard confere antes de abrir) =====
   {

@@ -35,3 +35,9 @@ h1 { margin: 0; font-size: 32px; font-weight: 700; line-height: 1.15; }
   .c3, .c4 { grid-column: span 2; }
   .autorizacao { grid-template-columns: 1fr; }
 }
+
+/* aba Senha: campos um embaixo do outro, mais estreitos */
+.form-senha { max-width: 420px; display: flex; flex-direction: column; }
+.form-senha mat-form-field { width: 100%; margin-bottom: 8px; }
+.form-senha .texto-suave { margin: 0 0 16px; }
+.erro-senha { margin: -4px 0 12px; color: var(--vermelho); font-size: 12px; }

@@ -135,6 +135,47 @@
           </div>
         </div>
       </mat-tab>
+
+      <!-- ===== trocar senha (a senha fica no Keycloak) ===== -->
+      <mat-tab label="Senha">
+        <form [formGroup]="senha" (ngSubmit)="trocarSenha()" class="conteudo-aba form-senha">
+          <p class="texto-suave">Para trocar a senha, confirme a senha atual.</p>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Senha atual</mat-label>
+            <input matInput [type]="mostrarSenha() ? 'text' : 'password'" formControlName="senhaAtual" autocomplete="current-password">
+            <button mat-icon-button matSuffix type="button" (click)="mostrarSenha.set(!mostrarSenha())"
+                    [attr.aria-label]="mostrarSenha() ? 'Esconder senhas' : 'Mostrar senhas'">
+              <mat-icon>{{ mostrarSenha() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            <mat-error>{{ erroSenha('senhaAtual') }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Nova senha</mat-label>
+            <input matInput [type]="mostrarSenha() ? 'text' : 'password'" formControlName="novaSenha" autocomplete="new-password">
+            @if (senha.controls.novaSenha.value.length < 6) {
+              <mat-hint>Pelo menos 6 caracteres.</mat-hint>
+            }
+            <mat-error>{{ erroSenha('novaSenha') }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Confirmar nova senha</mat-label>
+            <input matInput [type]="mostrarSenha() ? 'text' : 'password'" formControlName="confirmacao" autocomplete="new-password">
+            <mat-error>{{ erroSenha('confirmacao') }}</mat-error>
+          </mat-form-field>
+          @if (senha.hasError('senhasDiferentes') && senha.controls.confirmacao.touched) {
+            <p class="erro-senha">As senhas não são iguais.</p>
+          }
+
+          <div class="botoes">
+            <button mat-flat-button type="submit" [disabled]="trocandoSenha()">
+              {{ trocandoSenha() ? 'Trocando...' : 'Trocar senha' }}
+            </button>
+          </div>
+        </form>
+      </mat-tab>
     </mat-tab-group>
 
     @if (voltar()) {

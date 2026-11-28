@@ -131,7 +131,8 @@ h1 {
 .aviso { background: rgba(224, 137, 58, 0.15); color: var(--laranja); }
 .erro-campo { margin: -12px 0 12px; color: #eb5757; font-size: 12px; }
 
-mat-form-field { width: 100%; }
+/* margem embaixo para a dica/erro de um campo não encostar no título do próximo */
+mat-form-field { width: 100%; margin-bottom: 8px; }
 
 .botao {
   height: 48px;
@@ -148,37 +149,26 @@ mat-form-field { width: 100%; }
 
 .troca a { color: var(--vermelho); }
 
-.contas-teste {
-  width: 100%;
-  max-width: 400px;
-}
-
-.contas-teste p {
-  margin: 0 0 8px;
+/* link "Esqueci minha senha" embaixo do campo de senha */
+.esqueci {
+  align-self: flex-end;
+  margin: -4px 0 8px;
   color: var(--texto-suave);
-  font-size: 12px;
-  text-align: center;
+  font-size: 13px;
+  text-decoration: none;
 }
+.esqueci:hover { color: var(--vermelho); text-decoration: underline; }
 
-.contas-teste button {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 8px 12px;
-  margin-bottom: 4px;
-  border: 1px solid var(--borda);
+/* mensagem de sucesso (e-mail enviado, senha trocada) */
+.sucesso {
+  margin: 0 0 16px;
+  padding: 12px 14px;
   border-radius: 6px;
-  background: transparent;
-  color: var(--texto);
-  font: inherit;
-  font-size: 12px;
-  text-align: left;
-  cursor: pointer;
+  background: rgba(46, 160, 90, 0.15);
+  color: #7ad69c;
+  font-size: 14px;
+  line-height: 1.5;
 }
-
-.contas-teste button:hover { border-color: var(--vermelho); }
-.contas-teste span { color: var(--texto-suave); }
 
 @media (max-width: 480px) {
   .cartao { padding: 24px 18px; }

@@ -31,14 +31,25 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Senha</mat-label>
-        <input matInput type="password" formControlName="senha" autocomplete="new-password">
-        <mat-hint>Pelo menos 6 caracteres.</mat-hint>
+        <input matInput [type]="mostrarSenha() ? 'text' : 'password'" formControlName="senha" autocomplete="new-password">
+        <button mat-icon-button matSuffix type="button" (click)="mostrarSenha.set(!mostrarSenha())"
+                [attr.aria-label]="mostrarSenha() ? 'Esconder senha' : 'Mostrar senha'">
+          <mat-icon>{{ mostrarSenha() ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <!-- a dica some quando a senha já tem 6 caracteres -->
+        @if (form.controls.senha.value.length < 6) {
+          <mat-hint>Pelo menos 6 caracteres.</mat-hint>
+        }
         <mat-error>A senha deve ter pelo menos 6 caracteres.</mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline">
         <mat-label>Confirmar senha</mat-label>
-        <input matInput type="password" formControlName="confirmacao" autocomplete="new-password">
+        <input matInput [type]="mostrarSenha() ? 'text' : 'password'" formControlName="confirmacao" autocomplete="new-password">
+        <button mat-icon-button matSuffix type="button" (click)="mostrarSenha.set(!mostrarSenha())"
+                [attr.aria-label]="mostrarSenha() ? 'Esconder senha' : 'Mostrar senha'">
+          <mat-icon>{{ mostrarSenha() ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
         <mat-error>Repita a senha.</mat-error>
       </mat-form-field>
       @if (form.hasError('senhasDiferentes') && form.controls.confirmacao.touched) {

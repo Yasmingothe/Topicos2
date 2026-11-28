@@ -1,7 +1,5 @@
 package br.unitins.armas.resource;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
-
 import br.unitins.armas.dto.AutorizacaoRequestDTO;
 import br.unitins.armas.dto.ClienteRequestDTO;
 import br.unitins.armas.dto.ClienteResponseDTO;
@@ -10,6 +8,7 @@ import br.unitins.armas.dto.PedidoRequestDTO;
 import br.unitins.armas.dto.PedidoResponseDTO;
 import br.unitins.armas.service.ClienteService;
 import br.unitins.armas.service.PedidoService;
+import br.unitins.armas.service.UsuarioLogado;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -41,11 +40,12 @@ public class MinhaContaResource {
     @Inject
     PedidoService pedidoService;
 
+    // o usuário do token (o quarkus-oidc já conferiu a assinatura com o Keycloak)
     @Inject
-    JsonWebToken jwt;
+    UsuarioLogado usuarioLogado;
 
     private Long idUsuario() {
-        return Long.valueOf(jwt.getSubject());
+        return usuarioLogado.id();
     }
 
     // ===== dados e endereço =====

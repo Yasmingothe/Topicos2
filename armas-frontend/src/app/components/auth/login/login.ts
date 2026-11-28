@@ -34,18 +34,6 @@ export class Login {
     senha: ['', [Validators.required]],
   });
 
-  // contas do import.sql, para a apresentação (pode apagar este bloco depois)
-  contasDeTeste = [
-    { email: 'admin@zero1.com', senha: 'admin123', descricao: 'Administrador' },
-    { email: 'carlos@email.com', senha: '123456', descricao: 'Cliente com autorização aprovada' },
-    { email: 'maria@email.com', senha: '123456', descricao: 'Cliente sem autorização' },
-    { email: 'lucas@email.com', senha: '123456', descricao: 'Cliente de 22 anos, autorização em análise' },
-  ];
-
-  usarConta(conta: { email: string; senha: string }): void {
-    this.form.setValue({ email: conta.email, senha: conta.senha });
-  }
-
   entrar(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();

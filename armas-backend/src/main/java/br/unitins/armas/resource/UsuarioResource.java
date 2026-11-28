@@ -1,10 +1,9 @@
 package br.unitins.armas.resource;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
-
 import br.unitins.armas.dto.PaginaDTO;
 import br.unitins.armas.dto.UsuarioRequestDTO;
 import br.unitins.armas.dto.UsuarioResponseDTO;
+import br.unitins.armas.service.UsuarioLogado;
 import br.unitins.armas.service.UsuarioService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -32,7 +31,7 @@ public class UsuarioResource {
     UsuarioService service;
 
     @Inject
-    JsonWebToken jwt;
+    UsuarioLogado usuarioLogado;
 
     @GET
     public PaginaDTO<UsuarioResponseDTO> listar(
@@ -51,12 +50,12 @@ public class UsuarioResource {
     @PATCH
     @Path("/{id}/ativar")
     public void ativar(@PathParam("id") Long id) {
-        service.alterarAtivo(id, true, Long.valueOf(jwt.getSubject()));
+        service.alterarAtivo(id, true, usuarioLogado.id());
     }
 
     @PATCH
     @Path("/{id}/desativar")
     public void desativar(@PathParam("id") Long id) {
-        service.alterarAtivo(id, false, Long.valueOf(jwt.getSubject()));
+        service.alterarAtivo(id, false, usuarioLogado.id());
     }
 }

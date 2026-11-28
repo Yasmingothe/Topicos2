@@ -1,0 +1,25 @@
+# Keycloak do trabalho 06 (provedor de identidade) + Mailpit (caixa de e-mail de teste)
+# subir:   docker compose up -d
+# console: http://localhost:8180  (usuário admin / senha admin)
+# o realm "armas" (papéis, clients e usuários de teste) é importado sozinho do arquivo keycloak/armas-realm.json
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.4
+    container_name: armas-keycloak
+    command: start-dev --import-realm
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    ports:
+      - "8180:8080"
+    volumes:
+      - ./keycloak/armas-realm.json:/opt/keycloak/data/import/armas-realm.json:ro
+
+  # caixa de e-mail de TESTE: os e-mails do "Esqueci minha senha" chegam aqui (não vão para a internet)
+  # ver os e-mails: http://localhost:8025
+  mailpit:
+    image: axllent/mailpit
+    container_name: armas-mailpit
+    ports:
+      - "1025:1025"   # SMTP (o Quarkus manda por aqui)
+      - "8025:8025"   # página para ler os e-mails

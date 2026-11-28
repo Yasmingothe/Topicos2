@@ -63,14 +63,15 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-rest</artifactId>
         </dependency>
-        <!-- login com token JWT: smallrye-jwt confere o token, jwt-build gera o token -->
+        <!-- Keycloak: o quarkus-oidc confere o token (assinatura, validade e papéis) em toda requisição -->
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-smallrye-jwt</artifactId>
+            <artifactId>quarkus-oidc</artifactId>
         </dependency>
+        <!-- envio de e-mail (link do "Esqueci minha senha") -->
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-smallrye-jwt-build</artifactId>
+            <artifactId>quarkus-mailer</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>

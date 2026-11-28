@@ -23,7 +23,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     UsuarioRepository repository;
 
     @Inject
-    SenhaService senhaService;
+    KeycloakService keycloak;
 
     @Override
     @Transactional
@@ -35,12 +35,22 @@ public class UsuarioServiceImpl implements UsuarioService {
         if (repository.existeEmail(dto.email(), null))
             throw new CampoInvalidoException("email", "Já existe um usuário com esse e-mail.");
 
+        String email = dto.email().trim().toLowerCase();
+
+        // a senha vai para o Keycloak (com o papel escolhido); no nosso banco não fica senha
+        String idKeycloak = keycloak.criarUsuario(dto.nome().trim(), email, dto.senha(), perfil);
+
         Usuario usuario = new Usuario();
         usuario.setNome(dto.nome().trim());
-        usuario.setEmail(dto.email().trim().toLowerCase());
-        usuario.setSenha(senhaService.gerarHash(dto.senha()));
+        usuario.setEmail(email);
         usuario.setPerfil(perfil);
-        repository.persist(usuario);
+        usuario.setKeycloakId(idKeycloak);
+        try {
+            repository.persistAndFlush(usuario);
+        } catch (RuntimeException e) {
+            keycloak.removerUsuario(idKeycloak);
+            throw e;
+        }
 
         return UsuarioResponseDTO.valueOf(usuario);
     }
@@ -59,6 +69,12 @@ public class UsuarioServiceImpl implements UsuarioService {
             throw new RegraNegocioException("Este é o último administrador ativo e não pode ser desativado.");
 
         usuario.setAtivo(ativo);
+
+        // bloqueia (ou libera) o login lá no Keycloak também; ao desativar, derruba as sessões abertas
+        if (usuario.getKeycloakId() == null)
+            usuario.setKeycloakId(keycloak.buscarIdPorEmail(usuario.getEmail()));
+        if (usuario.getKeycloakId() != null)
+            keycloak.alterarAtivo(usuario.getKeycloakId(), ativo);
     }
 
     @Override

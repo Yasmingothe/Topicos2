@@ -1,0 +1,151 @@
+{
+  "realm": "armas",
+  "displayName": "ZERO1 - Armas",
+  "enabled": true,
+  "sslRequired": "none",
+  "loginWithEmailAllowed": true,
+  "registrationEmailAsUsername": true,
+  "duplicateEmailsAllowed": false,
+  "registrationAllowed": false,
+  "bruteForceProtected": true,
+  "failureFactor": 10,
+  "accessTokenLifespan": 300,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "roles": {
+    "realm": [
+      {
+        "name": "ADMIN",
+        "description": "Administrador: acessa o painel (produtos, estoque, pedidos, usuários)"
+      },
+      {
+        "name": "CLIENTE",
+        "description": "Cliente da loja: compra, vê os próprios pedidos e dados"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "armas-backend",
+      "name": "Back-end Quarkus (login dos usuários)",
+      "description": "Usado pelo Quarkus para trocar e-mail e senha por tokens, renovar e fazer logout. O Angular não usa este client.",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "0BYTZg9JilJV811Gq2ItOsAOzWSgT18y",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "frontchannelLogout": false,
+      "fullScopeAllowed": true
+    },
+    {
+      "clientId": "armas-admin",
+      "name": "Back-end Quarkus (administração de usuários)",
+      "description": "Conta de serviço do Quarkus para cadastrar usuários, dar papéis e desativar contas pela Admin API.",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "DbaAPv_U-sqTZb0KG1m7iUY7XQlOvxOV",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "frontchannelLogout": false
+    }
+  ],
+  "users": [
+    {
+      "id": "6f1c2a10-0000-4000-8000-000000000001",
+      "username": "admin@zero1.com",
+      "email": "admin@zero1.com",
+      "firstName": "Yasmin",
+      "lastName": "Gothe",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "ADMIN"
+      ]
+    },
+    {
+      "id": "6f1c2a10-0000-4000-8000-000000000002",
+      "username": "carlos@email.com",
+      "email": "carlos@email.com",
+      "firstName": "Carlos",
+      "lastName": "Mendes",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "123456",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "CLIENTE"
+      ]
+    },
+    {
+      "id": "6f1c2a10-0000-4000-8000-000000000003",
+      "username": "maria@email.com",
+      "email": "maria@email.com",
+      "firstName": "Maria",
+      "lastName": "Souza",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "123456",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "CLIENTE"
+      ]
+    },
+    {
+      "id": "6f1c2a10-0000-4000-8000-000000000004",
+      "username": "lucas@email.com",
+      "email": "lucas@email.com",
+      "firstName": "Lucas",
+      "lastName": "Pereira",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "123456",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "CLIENTE"
+      ]
+    },
+    {
+      "username": "service-account-armas-admin",
+      "enabled": true,
+      "serviceAccountClientId": "armas-admin",
+      "clientRoles": {
+        "realm-management": [
+          "manage-users",
+          "view-users",
+          "query-users",
+          "view-realm"
+        ]
+      }
+    }
+  ]
+}

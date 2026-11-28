@@ -3,7 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
 import { Location } from '@angular/common';
 import { voltar } from '../../../directives/voltar.directive';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -21,6 +21,13 @@ import { corSituacao, cpf, data, soNumeros, telefone } from '../../../utils/form
 import {
   cpfValido, dataFutura, dataNascimentoValida, naoSomenteEspacos, telefoneValido,
 } from '../../../utils/validadores';
+
+// confere se "confirmar nova senha" é igual à nova senha
+function senhasIguais(grupo: AbstractControl): ValidationErrors | null {
+  const nova = grupo.get('novaSenha')?.value;
+  const confirmacao = grupo.get('confirmacao')?.value;
+  return nova && confirmacao && nova !== confirmacao ? { senhasDiferentes: true } : null;
+}
 
 @Component({
   selector: 'app-minha-conta',
@@ -53,6 +60,8 @@ export class MinhaConta implements OnInit {
   buscandoCep = signal(false);
   avisoCep = signal('');
   abaAtual = signal(0);
+  trocandoSenha = signal(false);
+  mostrarSenha = signal(false); // olhinho dos campos de senha
 
   data = data;
   corSituacao = corSituacao;
@@ -75,6 +84,13 @@ export class MinhaConta implements OnInit {
     numero: ['', [Validators.required, Validators.pattern(/^[A-Za-z0-9./-]{5,30}$/)]],
     validade: ['', [Validators.required, dataFutura]],
   });
+
+  // aba "Senha": a senha fica no Keycloak; o back confere a atual e troca lá
+  senha = this.fb.nonNullable.group({
+    senhaAtual: ['', [Validators.required]],
+    novaSenha: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(60)]],
+    confirmacao: ['', [Validators.required]],
+  }, { validators: senhasIguais });
 
   podeEnviarAutorizacao = computed(() => this.cliente() !== null);
 
@@ -188,6 +204,37 @@ export class MinhaConta implements OnInit {
         this.enviandoAutorizacao.set(false);
       },
     });
+  }
+
+  trocarSenha(): void {
+    if (this.senha.invalid) {
+      this.senha.markAllAsTouched();
+      return;
+    }
+    this.trocandoSenha.set(true);
+    const { senhaAtual, novaSenha } = this.senha.getRawValue();
+
+    this.auth.alterarSenha(senhaAtual, novaSenha).subscribe({
+      next: () => {
+        this.trocandoSenha.set(false);
+        this.senha.reset();
+        this.notificacao.sucesso('Senha alterada. Use a nova senha no próximo login.');
+      },
+      error: (erro: HttpErrorResponse) => {
+        this.aplicarErros(erro, this.senha);
+        this.trocandoSenha.set(false);
+      },
+    });
+  }
+
+  erroSenha(campo: 'senhaAtual' | 'novaSenha' | 'confirmacao'): string {
+    const erros = this.senha.controls[campo].errors;
+    if (!erros) return '';
+    if (erros['required']) return 'Campo obrigatório.';
+    if (erros['minlength']) return 'A senha deve ter pelo menos 6 caracteres.';
+    if (erros['maxlength']) return 'Use no máximo 60 caracteres.';
+    if (erros['api']) return erros['api'];
+    return '';
   }
 
   // se veio do checkout para mandar a autorização, não volta antes de mandar

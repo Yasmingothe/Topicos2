@@ -1,0 +1,61 @@
+<div class="tela">
+
+  <header class="topo">
+    <a routerLink="/login" class="voltar-loja"><mat-icon>arrow_back</mat-icon> Voltar para o login</a>
+    <a routerLink="/" class="logo" aria-label="ZERO1, voltar para a loja">
+      <span class="logo-icone"><mat-icon>gps_fixed</mat-icon></span>
+      ZERO1
+    </a>
+  </header>
+
+  <section class="formulario">
+    <form [formGroup]="form" (ngSubmit)="salvar()" class="cartao">
+      <h1>Criar nova senha</h1>
+      <p class="apoio">Escolha uma senha nova para a sua conta.</p>
+
+      @if (!token()) {
+        <p class="erro" role="alert">Link incompleto. Abra de novo o link que chegou no seu e-mail.</p>
+        <a mat-stroked-button routerLink="/esqueci-senha" class="botao">Pedir um novo link</a>
+      } @else {
+        @if (erro()) {
+          <p class="erro" role="alert">{{ erro() }}</p>
+        }
+
+        <mat-form-field appearance="outline">
+          <mat-label>Nova senha</mat-label>
+          <input matInput [type]="mostrarSenha() ? 'text' : 'password'" formControlName="novaSenha" autocomplete="new-password">
+          <button mat-icon-button matSuffix type="button" (click)="mostrarSenha.set(!mostrarSenha())"
+                  [attr.aria-label]="mostrarSenha() ? 'Esconder senha' : 'Mostrar senha'">
+            <mat-icon>{{ mostrarSenha() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (form.controls.novaSenha.value.length < 6) {
+            <mat-hint>Pelo menos 6 caracteres.</mat-hint>
+          }
+          <mat-error>A senha deve ter pelo menos 6 caracteres.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Confirmar nova senha</mat-label>
+          <input matInput [type]="mostrarSenha() ? 'text' : 'password'" formControlName="confirmacao" autocomplete="new-password">
+          <button mat-icon-button matSuffix type="button" (click)="mostrarSenha.set(!mostrarSenha())"
+                  [attr.aria-label]="mostrarSenha() ? 'Esconder senha' : 'Mostrar senha'">
+            <mat-icon>{{ mostrarSenha() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error>Repita a senha.</mat-error>
+        </mat-form-field>
+        @if (form.hasError('senhasDiferentes') && form.controls.confirmacao.touched) {
+          <p class="erro-campo">As senhas não são iguais.</p>
+        }
+
+        <button mat-flat-button type="submit" class="botao" [disabled]="salvando()">
+          {{ salvando() ? 'Salvando...' : 'Salvar nova senha' }}
+        </button>
+
+        @if (erro().includes('expirou')) {
+          <p class="troca"><a routerLink="/esqueci-senha">Pedir um novo link</a></p>
+        }
+      }
+    </form>
+  </section>
+
+</div>

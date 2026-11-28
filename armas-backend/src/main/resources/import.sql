@@ -92,12 +92,14 @@ INSERT INTO municipio (nome, id_estado, dataCadastro) VALUES ('São Paulo', 25, 
 INSERT INTO cliente (nome, email, cpf, dataNascimento, telefone, cep, logradouro, numero, complemento, bairro, id_municipio, situacaoAutorizacao, dataCadastro) VALUES ('Maria Souza', 'maria@email.com', '52998224725', '1995-03-10', '63999990000', '01001000', 'Praça da Sé', '100', NULL, 'Sé', 1, 'NAO_ENVIADA', NOW());
 INSERT INTO cliente (nome, email, cpf, dataNascimento, telefone, cep, logradouro, numero, complemento, bairro, id_municipio, situacaoAutorizacao, dataCadastro) VALUES ('João Pereira', 'joao@email.com', '11144477735', '1990-06-15', '63988887777', '01001000', 'Praça da Sé', '250', NULL, 'Sé', 1, 'NAO_ENVIADA', NOW());
 
--- ===== USUÁRIOS (a senha está guardada como hash) =====
--- admin@zero1.com / admin123   |   clientes: senha 123456
-INSERT INTO usuario (nome, email, senha, perfil, ativo, dataCadastro) VALUES ('Yasmin Gothe', 'admin@zero1.com', 'pbkdf2$120000$HjGcneJ/lAjX3kv28Xa5eQ==$9tEulHvu8afEUfEevS/ucNQ7fgcZi2403guBQTKX3Q0=', 'ADMIN', true, NOW());
-INSERT INTO usuario (nome, email, senha, perfil, ativo, dataCadastro) VALUES ('Carlos Mendes', 'carlos@email.com', 'pbkdf2$120000$v3kzvLtGnCuhZczRRtQbyA==$Ezx66xM2rrszOoiHVoI8A1RKkHGwar/O8M4huV9IVEA=', 'CLIENTE', true, NOW());
-INSERT INTO usuario (nome, email, senha, perfil, ativo, dataCadastro) VALUES ('Maria Souza', 'maria@email.com', 'pbkdf2$120000$XR3YUs+hiO6nlIHFJzR/CQ==$SGK+QCpyU/RG/vPtXWsa4xtKcB+/Zv899nAoKmIDZgk=', 'CLIENTE', true, NOW());
-INSERT INTO usuario (nome, email, senha, perfil, ativo, dataCadastro) VALUES ('Lucas Pereira', 'lucas@email.com', 'pbkdf2$120000$KDZVRoXF17J+tiwGwxAiQg==$legTrDawq0epJjYc8n/ldiKut50mvSSUTPQlyKYNMGY=', 'CLIENTE', true, NOW());
+-- ===== USUÁRIOS =====
+-- a SENHA não fica mais aqui: quem guarda é o Keycloak (realm "armas", arquivo keycloak/armas-realm.json).
+-- keycloakId = o id do mesmo usuário lá no Keycloak (fixo no realm, para os dois ficarem ligados)
+-- logins: admin@zero1.com / admin123   |   clientes: senha 123456
+INSERT INTO usuario (nome, email, keycloakId, perfil, ativo, dataCadastro) VALUES ('Yasmin Gothe', 'admin@zero1.com', '6f1c2a10-0000-4000-8000-000000000001', 'ADMIN', true, NOW());
+INSERT INTO usuario (nome, email, keycloakId, perfil, ativo, dataCadastro) VALUES ('Carlos Mendes', 'carlos@email.com', '6f1c2a10-0000-4000-8000-000000000002', 'CLIENTE', true, NOW());
+INSERT INTO usuario (nome, email, keycloakId, perfil, ativo, dataCadastro) VALUES ('Maria Souza', 'maria@email.com', '6f1c2a10-0000-4000-8000-000000000003', 'CLIENTE', true, NOW());
+INSERT INTO usuario (nome, email, keycloakId, perfil, ativo, dataCadastro) VALUES ('Lucas Pereira', 'lucas@email.com', '6f1c2a10-0000-4000-8000-000000000004', 'CLIENTE', true, NOW());
 
 -- Maria (cliente 1) ganha a conta de login 3 e ainda NÃO enviou autorização -> arma é bloqueada
 UPDATE cliente SET id_usuario = 3 WHERE id = 1;

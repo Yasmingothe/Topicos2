@@ -36,6 +36,7 @@
         </button>
         <mat-error>Informe a senha.</mat-error>
       </mat-form-field>
+      <a routerLink="/esqueci-senha" class="esqueci">Esqueci minha senha</a>
 
       <button mat-flat-button type="submit" class="botao" [disabled]="entrando()">
         {{ entrando() ? 'Entrando...' : 'Entrar' }}
@@ -48,15 +49,6 @@
       <p class="dica-visitante">Você pode ver os produtos e montar o carrinho. A conta só é pedida para finalizar a compra.</p>
     </form>
 
-    <div class="contas-teste">
-      <p>Contas de teste (clique para preencher)</p>
-      @for (conta of contasDeTeste; track conta.email) {
-        <button type="button" (click)="usarConta(conta)">
-          <strong>{{ conta.email }}</strong>
-          <span>{{ conta.descricao }}</span>
-        </button>
-      }
-    </div>
   </section>
 
 </div>

@@ -12,7 +12,13 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class UsuarioRepository implements PanacheRepository<Usuario> {
 
+    public Usuario findByKeycloakId(String keycloakId) {
+        return find("keycloakId", keycloakId).firstResult();
+    }
+
     public Usuario findByEmail(String email) {
+        if (email == null)
+            return null;
         return find("lower(email) = ?1", email.trim().toLowerCase()).firstResult();
     }
 

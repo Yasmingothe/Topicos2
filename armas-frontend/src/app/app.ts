@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { AuthService } from './services/auth.service';
 
 // componente raiz: só troca entre loja, login e painel (cada um tem sua moldura)
 @Component({
@@ -8,4 +9,10 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
-export class App {}
+export class App {
+
+  constructor() {
+    // ao abrir o site com sessão salva, confere no back quem está logado
+    inject(AuthService).conferirSessao();
+  }
+}

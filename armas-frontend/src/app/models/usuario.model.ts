@@ -16,7 +16,10 @@ export interface UsuarioRequest {
   perfil: string;
 }
 
+// resposta do login (os tokens são gerados pelo Keycloak, mas chegam pelo nosso back)
 export interface TokenResponse {
-  token: string;
+  token: string;        // access token: vai no cabeçalho Authorization (vale poucos minutos)
+  refreshToken: string; // usado para pedir um token novo sem digitar a senha de novo
+  expiraEm: number;     // segundos de validade do access token
   usuario: Usuario;
 }

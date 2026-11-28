@@ -32,6 +32,7 @@ export class Cadastro {
   private notificacao = inject(NotificacaoService);
 
   salvando = signal(false);
+  mostrarSenha = signal(false); // olhinho: mostra/esconde as senhas
   erro = signal('');
 
   form = this.fb.nonNullable.group({
